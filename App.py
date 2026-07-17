@@ -100,36 +100,29 @@ else:
         discount = st.number_input("ডিসকাউন্ট (টাকা)", min_value=0, value=0)
         
         if st.button("ইনভয়েস প্রিন্ট/সেভ করুন"):
-            if customer_name:
-                # মোট হিসাব
-                total_bill = service_charge + parts_cost - discount
-                
-                # ইনভয়েসের টেক্সট ফরম্যাট তৈরি
-                invoice_text = (
-                    f"===================================\n"
-                    f"     SRISTI COMPUTER REPAIR        \n"
-                    f"===================================\n"
-                    f"কাস্টমার নাম: {customer_name}\n"
-                    f"-----------------------------------\n"
-                    f"সার্ভিস চার্জ: {service_charge} টাকা\n"
-                    f"পার্টসের মূল্য: {parts_cost} টাকা\n"
-                    f"ডিসকাউন্ট: {discount} টাকা\n"
-                    f"-----------------------------------\n"
-                    f"সর্বমোট বিল: {total_bill} টাকা\n"
-                    f"===================================\n"
-                    f"ধন্যবাদ আবার আসবেন!\n"
-                )
-                
-                st.success("ইনভয়েস তৈরি সম্পন্ন হয়েছে!")
-                
-                # সরাসরি ডাউনলোড বাটন
-                st.download_button(
-                    label="📥 Download PDF/Invoice",
-                    data=invoice_text,
-                    file_name=f"Invoice_{customer_name}.txt",
-                    mime="text/plain"
-                )
-            else:
+        if customer_name:
+        # মোট হিসাব total_bill = service_charge + parts_cost - discount
+        # ইনভয়েসের টেক্সট ফরম্যাট তৈরি invoice_text = (
+        f"===================================\n"
+        f"     SRISTI COMPUTER REPAIR        \n"
+        f"===================================\n"
+        f"কাস্টমার নাম: {customer_name}\n"
+        f"-----------------------------------\n"
+        f"সার্ভিস চার্জ: {service_charge} টাকা\n"
+        f"পার্টসের মূল্য: {parts_cost} টাকা\n"
+        f"ডিসকাউন্ট: {discount} টাকা\n"
+        f"-----------------------------------\n"
+        f"সর্বমোট বিল: {total_bill} টাকা\n"
+        f"===================================\n"
+        f"ধন্যবাদ আবার আসবেন!\n"
+        (st.success("ইনভয়েস তৈরি সম্পন্ন হয়েছে!")
+        # সরাসরি ডাউনলোড বাটন
+        st.download_button(
+        label="📥 Download PDF/Invoice",
+        data=invoice_text,
+        file_name=f"Invoice_{customer_name}.txt",
+        mime="text/plain"
+                )else:
                 st.error("অনুগ্রহ করে কাস্টমারের নাম লিখুন।")
 
         # --- 7. REPORTS ---
