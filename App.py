@@ -53,7 +53,7 @@ if choice == "📄 Invoice Generator":
     
     st.session_state["invoice_items"] = updated_items
     
-    # নতুন রো বা কলাম যোগ এবং ডিলিট করার বাটন
+    # বাটনসমূহ
     col_btn1, col_btn2, _ = st.columns([2, 2, 6])
     with col_btn1:
         if st.button("➕ নতুন আইটেম যোগ করুন"):
@@ -67,9 +67,11 @@ if choice == "📄 Invoice Generator":
     st.markdown("---")
     discount = st.number_input("DISCOUNT (ডিসকাউন্ট টাকা)", min_value=0, value=0)
     
+    # লোগো ইমেজের ইউআরএল (এখানে আপনার আপলোড করা লোগোর লিংক বসাতে পারবেন)
+    logo_url = "https://i.ibb.co/v4v8WbZ/sm-tech-logo.png" 
+    
     if st.button("ইনভয়েস পিডিএফ তৈরি করুন"):
         if customer_name:
-            # সাবটোটাল হিসাব
             sub_total = 0
             table_rows_html = ""
             
@@ -83,101 +85,134 @@ if choice == "📄 Invoice Generator":
                         <td style="text-align: center;">{index + 1}</td>
                         <td>{item["description"]}</td>
                         <td style="text-align: center;">{item["qty"]}</td>
-                        <td style="text-align: right;">{item["uprice"]} Tk</td>
-                        <td style="text-align: right; font-weight: bold;">{amount} Tk</td>
+                        <td style="text-align: right;">{item["uprice"]}</td>
+                        <td style="text-align: right; font-weight: bold;">{amount}</td>
                     </tr>
                     """
             
             total_bill = sub_total - discount
             current_date = datetime.date.today().strftime("%d-%m-%Y")
             
-            # মেমো প্রিন্ট লেআউট HTML
+            # হুবহু H7" W5" সাইজের পেপার এবং নতুন লোগো লেআউট সহ HTML
             invoice_html = f"""
             <!DOCTYPE html>
             <html>
             <head>
                 <meta charset="utf-8">
                 <style>
-                    body {{ font-family: 'Arial', sans-serif; background-color: #f0f0f0; padding: 5px; margin: 0; }}
-                    .main-pad {{ max-width: 800px; margin: auto; padding: 30px; border: 2px solid #0a4da2; background-color: #fff; box-sizing: border-box; }}
+                    /* মেমোর সাইজ ঠিক করার মূল CSS (H 7in, W 5in) */
+                    @page {{
+                        size: 5in 7in;
+                        margin: 0;
+                    }}
+                    body {{ 
+                        font-family: 'Arial', sans-serif; 
+                        background-color: #fff; 
+                        padding: 0; 
+                        margin: 0; 
+                        width: 5in; 
+                        height: 7in;
+                        box-sizing: border-box;
+                    }}
+                    .main-pad {{ 
+                        width: 100%; 
+                        height: 100%; 
+                        padding: 15px 12px; 
+                        border: 1px solid #0a4da2; 
+                        box-sizing: border-box;
+                        background-color: #fff;
+                        position: relative;
+                    }}
                     
-                    .header-table {{ width: 100%; border-collapse: collapse; margin-bottom: 10px; }}
-                    .logo-main {{ font-size: 64px; font-weight: 900; font-style: italic; color: #e63946; margin: 0; line-height: 0.85; font-family: 'Impact', 'Arial Black', sans-serif; letter-spacing: -1px; }}
+                    /* হেডার লেআউট - ডানে লোগো */
+                    .header-table {{ width: 100%; border-collapse: collapse; }}
+                    .logo-main {{ font-size: 32px; font-weight: 900; font-style: italic; color: #e63946; margin: 0; line-height: 0.9; font-family: 'Impact', sans-serif; }}
                     .logo-main span {{ color: #0a4da2; }}
-                    .sub-title {{ font-size: 18px; font-weight: bold; color: #2a9d8f; letter-spacing: 1.5px; margin: 5px 0 3px 0; font-family: 'Arial Black', sans-serif; }}
-                    .tagline {{ font-size: 14px; font-weight: bold; color: #333; margin: 0; }}
+                    .sub-title {{ font-size: 10px; font-weight: bold; color: #2a9d8f; letter-spacing: 0.5px; margin: 2px 0; }}
+                    .tagline {{ font-size: 8px; font-weight: bold; color: #333; margin: 0; }}
                     
-                    .owner-side {{ text-align: right; font-size: 16px; color: #0a4da2; font-weight: bold; line-height: 1.4; vertical-align: top; padding-top: 5px; padding-right: 5px; }}
-                    .owner-name {{ font-size: 22px; font-weight: bold; color: #0a4da2; display: inline-block; margin-bottom: 4px; }}
+                    .logo-img-container {{ text-align: right; vertical-align: top; width: 65px; }}
+                    .logo-img {{ width: 60px; height: 60px; object-fit: contain; background: #fff; border-radius: 50%; }}
                     
-                    .invoice-bar-table {{ width: 100%; margin-top: 20px; border-collapse: collapse; }}
-                    .bill-to {{ font-size: 15px; font-weight: bold; color: white; background-color: #0a4da2; padding: 4px 10px; border-radius: 2px; }}
-                    .invoice-badge {{ background-color: #0a4da2; color: white; font-size: 22px; font-weight: bold; text-align: center; padding: 5px 30px; letter-spacing: 2px; border-radius: 3px; display: inline-block; }}
+                    .owner-info-block {{ font-size: 8px; color: #0a4da2; font-weight: bold; line-height: 1.3; text-align: left; margin-top: 3px; }}
+                    .owner-name {{ font-size: 10px; color: #0a4da2; }}
                     
-                    .info-lines {{ font-size: 15px; line-height: 2.2; }}
-                    .dot-line {{ border-bottom: 1px dotted #555; display: inline-block; padding-left: 5px; font-weight: bold; color: #000; }}
+                    /* ইনভয়েস বার ও কাস্টমার ইনফো */
+                    .invoice-bar-table {{ width: 100%; margin-top: 10px; border-collapse: collapse; }}
+                    .bill-to {{ font-size: 9px; font-weight: bold; color: white; background-color: #0a4da2; padding: 1px 4px; border-radius: 1px; }}
+                    .invoice-badge {{ background-color: #0a4da2; color: white; font-size: 12px; font-weight: bold; text-align: center; padding: 2px 12px; letter-spacing: 1px; border-radius: 2px; display: inline-block; }}
                     
-                    .item-table {{ width: 100%; border-collapse: collapse; margin-top: 20px; border: 2px solid #0a4da2; }}
-                    .item-table th {{ background-color: #0a4da2; color: white; padding: 10px; font-size: 15px; font-weight: bold; border: 1px solid #fff; text-align: center; }}
-                    .item-table td {{ padding: 12px 10px; border-left: 2px solid #0a4da2; border-right: 2px solid #0a4da2; border-bottom: 1px solid #e0e0e0; font-size: 15px; }}
+                    .info-lines {{ font-size: 9px; line-height: 1.8; }}
+                    .dot-line {{ border-bottom: 1px dotted #555; display: inline-block; padding-left: 3px; font-weight: bold; color: #000; }}
                     
-                    .subtotal-title {{ background-color: #0a4da2; color: white; font-weight: bold; padding: 8px; text-align: center; font-size: 15px; }}
-                    .subtotal-val {{ text-align: right; font-weight: bold; border: 2px solid #0a4da2; background-color: #f8f9fa; font-size: 16px; color: #0a4da2; padding: 8px 10px; }}
+                    /* টেবিল ডিজাইন */
+                    .item-table {{ width: 100%; border-collapse: collapse; margin-top: 10px; border: 1.5px solid #0a4da2; }}
+                    .item-table th {{ background-color: #0a4da2; color: white; padding: 5px 3px; font-size: 9px; font-weight: bold; border: 1px solid #fff; text-align: center; }}
+                    .item-table td {{ padding: 6px 4px; border-left: 1.5px solid #0a4da2; border-right: 1.5px solid #0a4da2; border-bottom: 1px solid #e0e0e0; font-size: 9px; }}
                     
-                    .bottom-area {{ width: 100%; border-collapse: collapse; margin-top: 45px; }}
-                    .pay-method-box {{ border: 2px solid #0a4da2; border-radius: 4px; padding: 12px; width: 310px; font-size: 14px; font-weight: bold; color: #0a4da2; }}
-                    .pay-title {{ background-color: #0a4da2; color: white; font-weight: bold; padding: 2px 8px; display: inline-block; margin-bottom: 10px; }}
+                    /* সাবটোটাল বক্স */
+                    .subtotal-title {{ background-color: #0a4da2; color: white; font-weight: bold; padding: 4px; text-align: center; font-size: 9px; }}
+                    .subtotal-val {{ text-align: right; font-weight: bold; border: 1.5px solid #0a4da2; background-color: #f8f9fa; font-size: 10px; color: #0a4da2; padding: 4px; }}
                     
-                    .signature-area {{ text-align: right; font-size: 14px; font-weight: bold; color: #333; vertical-align: bottom; }}
-                    .sig-line {{ border-top: 1px solid #333; width: 190px; display: inline-block; margin-bottom: 5px; }}
+                    /* পেমেন্ট ও সিগনেচার */
+                    .bottom-area {{ width: 100%; border-collapse: collapse; position: absolute; bottom: 15px; left: 12px; right: 12px; width: calc(100% - 24px); }}
+                    .pay-method-box {{ border: 1.5px solid #0a4da2; border-radius: 3px; padding: 6px; width: 180px; font-size: 8px; font-weight: bold; color: #0a4da2; }}
+                    .pay-title {{ background-color: #0a4da2; color: white; font-weight: bold; padding: 1px 4px; display: inline-block; margin-bottom: 4px; }}
+                    
+                    .signature-area {{ text-align: right; font-size: 8px; font-weight: bold; color: #333; vertical-align: bottom; }}
+                    .sig-line {{ border-top: 1px solid #333; width: 110px; display: inline-block; margin-bottom: 3px; }}
                     
                     @media print {{
-                        body {{ background-color: #fff; padding: 0; }}
-                        .main-pad {{ border: none; padding: 15px; }}
+                        body {{ background-color: #fff; }}
                     }}
                 </style>
             </head>
             <body>
                 <div class="main-pad">
+                    <!-- হেডার অংশ - ডানে লোগো সেট করা হয়েছে -->
                     <table class="header-table">
                         <tr>
-                            <td style="width: 60%;">
+                            <td style="vertical-align: top;">
                                 <p class="logo-main">SM-<span>TECH</span></p>
                                 <p class="sub-title">COMPUTER & IT SOLUTION</p>
                                 <p class="tagline">Smart Technology-Trusted Service</p>
+                                <div class="owner-info-block">
+                                    <span class="owner-name">S.m. Ibrahim</span> (Owner)<br>
+                                    📞 01940-556114, 01810-499166
+                                </div>
                             </td>
-                            <td class="owner-side" style="width: 40%;">
-                                <span class="owner-name">S.m. Ibrahim</span><br>
-                                Owner<br>
-                                📞 01940-556114<br>
-                                📞 01810-499166
+                            <td class="logo-img-container">
+                                <!-- সাদা ব্যাকগ্রাউন্ডে আপনার গোল লোগো ইমেজ -->
+                                <img src="{logo_url}" class="logo-img" alt="Logo">
                             </td>
                         </tr>
                     </table>
                     
+                    <!-- কাস্টমার ও মেমো ইনফো -->
                     <table class="invoice-bar-table">
                         <tr>
                             <td style="width: 55%; vertical-align: top;">
                                 <div class="info-lines">
-                                    <span class="bill-to">Bill To</span> Name: <span class="dot-line" style="width: 260px;">{customer_name}</span><br>
-                                    Address: <span class="dot-line" style="width: 293px;">{customer_address}</span>
+                                    <span class="bill-to">Bill To</span> Name: <span class="dot-line" style="width: 140px;">{customer_name}</span><br>
+                                    Address: <span class="dot-line" style="width: 160px;">{customer_address}</span>
                                 </div>
                             </td>
                             <td style="width: 45%; text-align: right; vertical-align: top;">
-                                <div class="invoice-badge" style="margin-bottom: 10px;">INVOICE</div>
+                                <div class="invoice-badge" style="margin-bottom: 4px;">INVOICE</div>
                                 <div class="info-lines">
-                                    Invoice No: <span class="dot-line" style="width: 150px; text-align: left;">{invoice_no}</span><br>
-                                    Date: <span class="dot-line" style="width: 150px; text-align: left;">{current_date}</span>
+                                    Invoice No: <span class="dot-line" style="width: 80px; text-align: left;">{invoice_no}</span><br>
+                                    Date: <span class="dot-line" style="width: 80px; text-align: left;">{current_date}</span>
                                 </div>
                             </td>
                         </tr>
                     </table>
                     
+                    <!-- ডাইনামিক টেবিল -->
                     <table class="item-table">
                         <thead>
                             <tr>
-                                <th style="width: 8%;">S.L</th>
-                                <th style="width: 52%;">DESCRIPTION</th>
+                                <th style="width: 10%;">S.L</th>
+                                <th style="width: 50%;">DESCRIPTION</th>
                                 <th style="width: 10%;">QTY</th>
                                 <th style="width: 15%;">U.PRICE</th>
                                 <th style="width: 15%;">AMOUNT</th>
@@ -186,10 +221,11 @@ if choice == "📄 Invoice Generator":
                         <tbody>
                             {table_rows_html}
                             
+                            <!-- ডিসকাউন্ট ও সাবটোটাল -->
                             <tr>
                                 <td colspan="3" style="border: none;"></td>
-                                <td style="text-align: right; font-weight: bold; border-top: 2px solid #0a4da2; padding: 8px;">Discount:</td>
-                                <td style="text-align: right; font-weight: bold; color: red; border-top: 2px solid #0a4da2; padding: 8px;">{discount} Tk</td>
+                                <td style="text-align: right; font-weight: bold; border-top: 1.5px solid #0a4da2; padding: 4px; font-size: 8px;">Discount:</td>
+                                <td style="text-align: right; font-weight: bold; color: red; border-top: 1.5px solid #0a4da2; padding: 4px; font-size: 8px;">{discount} Tk</td>
                             </tr>
                             <tr>
                                 <td colspan="3" style="border: none;"></td>
@@ -199,21 +235,22 @@ if choice == "📄 Invoice Generator":
                         </tbody>
                     </table>
                     
+                    <!-- পেমেন্ট এবং সিগনেচার (৭ ইঞ্চি হাইটের নিচে ফিক্সড থাকবে) -->
                     <table class="bottom-area">
                         <tr>
                             <td>
                                 <div class="pay-method-box">
                                     <div class="pay-title">Payment Methods</div><br>
-                                    <input type="checkbox"> Cash &nbsp;&nbsp;
-                                    <input type="checkbox"> Bkash &nbsp;&nbsp;
-                                    <input type="checkbox"> Nagad &nbsp;&nbsp;
+                                    <input type="checkbox"> Cash &nbsp;
+                                    <input type="checkbox"> Bkash &nbsp;
+                                    <input type="checkbox"> Nagad &nbsp;
                                     <input type="checkbox"> Bank
                                 </div>
                             </td>
                             <td class="signature-area">
                                 <div class="sig-line"></div><br>
                                 Authorised Signature<br>
-                                <span style="font-size: 12px; font-weight: normal; color: #666;">SM-TECH Computer & IT Solutions</span>
+                                <span style="font-size: 7px; font-weight: normal; color: #666;">SM-TECH Computer & IT Solutions</span>
                             </td>
                         </tr>
                     </table>
