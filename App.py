@@ -7,14 +7,15 @@ st.set_page_config(page_title="SM-TECH Management", page_icon="💻", layout="wi
 
 # সেশন স্টেট ইনিশিয়ালাইজেশন
 if "stock_data" not in st.session_state:
-    # ডামি ডাটা (অ্যাপ প্রথমবার ওপেন হলে দেখাবে)
     st.session_state["stock_data"] = [
-    
-      
+        {"Date": "17-07-2026", "New Products": "SSD", "Quantity": 6, "Cost Price": 1800, "Sell Rate": 2200},
     ]
 
 if "invoice_items" not in st.session_state:
     st.session_state["invoice_items"] = [{"description": "", "qty": 1, "uprice": 0}]
+
+if "editing_index" not in st.session_state:
+    st.session_state["editing_index"] = None
 
 # সাইডবার মেনু
 st.sidebar.title("💻 SM-TECH")
@@ -244,50 +245,102 @@ if choice == "📄 Invoice Generator":
 elif choice == "📦 Stock Management":
     st.title("📦 স্টক মালের হিসাব")
     
-    st.subheader("➕ নতুন পণ্য স্টক করুন")
-    
-    # নতুন ৪টি কলাম তৈরি করা হলো
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        item_name = st.text_input("New Products (পণ্যের নাম)")
-    with col2:
-        quantity = st.number_input("Quantity (পরিমাণ)", min_value=0, value=0)
-    with col3:
-        cost_price = st.number_input("Cost Price (ক্রয় মূল্য)", min_value=0, value=0)
-    with col4:
-        sell_rate = st.number_input("Sell Rate (বিক্রয় মূল্য)", min_value=0, value=0)
+    # এডিট মোড এক্টিভ কিনা চেক করা
+    if st.session_state["editing_index"] is not None:
+        st.subheader("📝 পণ্য স্টক এডিট করুন")
+        idx = st.session_state["editing_index"]
+        edit_item = st.session_state["stock_data"][idx]
         
-    if st.button("স্টক আপডেট করুন"):
-        if item_name and quantity > 0:
-            # স্বয়ংক্রিয়ভাবে আজকের তারিখ নিয়ে নিবে
-            current_date = datetime.date.today().strftime("%d-%m-%Y")
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            item_name = st.text_input("New Products (পণ্যের নাম)", value=edit_item["New Products"])
+        with col2:
+            quantity = st.number_input("Quantity (পরিমাণ)", min_value=0, value=int(edit_item["Quantity"]))
+        with col3:
+            cost_price = st.number_input("Cost Price (ক্রয় মূল্য)", min_value=0, value=int(edit_item["Cost Price"]))
+        with col4:
+            sell_rate = st.number_input("Sell Rate (বিক্রয় মূল্য)", min_value=0, value=int(edit_item["Sell Rate"]))
             
-            st.session_state["stock_data"].append({
-                "Date": current_date,
-                "New Products": item_name,
-                "Quantity": quantity,
-                "Cost Price": cost_price,
-                "Sell Rate": sell_rate
-            })
-            st.success(f"সফলভাবে '{item_name}' স্টকে যোগ করা হয়েছে!")
-        else:
-            st.error("দয়া করে পণ্যের নাম এবং সঠিক পরিমাণ লিখুন।")
+        btn_col1, btn_col2, _ = st.columns([2, 2, 8])
+        with btn_col1:
+            if st.button("💾 সংরক্ষণ করুন"):
+                st.session_state["stock_data"][idx] = {
+                    "Date": edit_item["Date"],
+                    "New Products": item_name,
+                    "Quantity": quantity,
+                    "Cost Price": cost_price,
+                    "Sell Rate": sell_rate
+                }
+                st.session_state["editing_index"] = None
+                st.success("স্টক সফলভাবে আপডেট করা হয়েছে!")
+                st.rerun()
+        with btn_col2:
+            if st.button("❌ বাতিল"):
+                st.session_state["editing_index"] = None
+                st.rerun()
+                
+    else:
+        st.subheader("➕ নতুন পণ্য স্টক করুন")
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            item_name = st.text_input("New Products (পণ্যের নাম)")
+        with col2:
+            quantity = st.number_input("Quantity (পরিমাণ)", min_value=0, value=0)
+        with col3:
+            cost_price = st.number_input("Cost Price (ক্রয় মূল্য)", min_value=0, value=0)
+        with col4:
+            sell_rate = st.number_input("Sell Rate (বিক্রয় মূল্য)", min_value=0, value=0)
             
+        if st.button("স্টক আপডেট করুন"):
+            if item_name and quantity > 0:
+                current_date = datetime.date.today().strftime("%d-%m-%Y")
+                st.session_state["stock_data"].append({
+                    "Date": current_date,
+                    "New Products": item_name,
+                    "Quantity": quantity,
+                    "Cost Price": cost_price,
+                    "Sell Rate": sell_rate
+                })
+                st.success(f"সফলভাবে '{item_name}' স্টকে যোগ করা হয়েছে!")
+                st.rerun()
+            else:
+                st.error("দয়া করে পণ্যের নাম এবং সঠিক পরিমাণ লিখুন।")
+                
     st.markdown("---")
     st.subheader("📋 বর্তমান স্টক তালিকা")
     
-    # টেবিলে ডাটা দেখানোর জন্য অটোমেটিক Sl. (সিরিয়াল নম্বর) তৈরি
+    # ইন্টারঅ্যাক্টিভ টেবিল তৈরি (Edit/Delete বাটন সহ)
     if st.session_state["stock_data"]:
-        display_data = []
+        # টেবিল হেডার
+        h_sl, h_date, h_name, h_qty, h_cost, h_sell, h_action = st.columns([1, 2, 3, 2, 2, 2, 3])
+        h_sl.markdown("**Sl.**")
+        h_date.markdown("**Date**")
+        h_name.markdown("**New Products**")
+        h_qty.markdown("**Quantity**")
+        h_cost.markdown("**Cost Price**")
+        h_sell.markdown("**Sell Rate**")
+        h_action.markdown("**Actions**")
+        st.markdown("<hr style='margin: 5px 0px;' />", unsafe_allow_html=True)
+        
+        # টেবিল ডাটা রো সমূহ
         for idx, item in enumerate(st.session_state["stock_data"]):
-            display_data.append({
-                "Sl.": idx + 1,
-                "Date": item["Date"],
-                "New Products": item["New Products"],
-                "Quantity": item["Quantity"],
-                "Cost Price": item["Cost Price"],
-                "Sell Rate": item["Sell Rate"]
-            })
-        st.table(display_data)
+            c_sl, c_date, c_name, c_qty, c_cost, c_sell, c_action = st.columns([1, 2, 3, 2, 2, 2, 3])
+            c_sl.write(idx + 1)
+            c_date.write(item["Date"])
+            c_name.write(item["New Products"])
+            c_qty.write(item["Quantity"])
+            c_cost.write(item["Cost Price"])
+            c_sell.write(item["Sell Rate"])
+            
+            # এডিট এবং ডিলিট বাটন পাশাপাশি
+            btn_edit, btn_del = c_action.columns(2)
+            if btn_edit.button("✏️ Edit", key=f"edit_{idx}"):
+                st.session_state["editing_index"] = idx
+                st.rerun()
+            if btn_del.button("🗑️ Delete", key=f"del_{idx}"):
+                st.session_state["stock_data"].pop(idx)
+                st.success("পণ্যটি তালিকা থেকে মুছে ফেলা হয়েছে।")
+                st.rerun()
+            st.markdown("<hr style='margin: 2px 0px; opacity: 0.3;' />", unsafe_allow_html=True)
     else:
         st.info("স্টকে কোনো পণ্য নেই।")
