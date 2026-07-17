@@ -4,12 +4,16 @@ import datetime
 # পেজ কনফিগারেশন
 st.set_page_config(page_title="SM-TECH Management", page_icon="💻", layout="wide")
 
-# সেশন স্টেট ইনিশিয়ালাইজেশন
+# সেশন স্টেট ইনিশিয়ালাইজেশন (স্টকের ডাটা ধরে রাখার জন্য)
 if "stock_data" not in st.session_state:
     st.session_state["stock_data"] = [
-       
-       
+        {"পণ্য": "SSD 120GB", "পরিমাণ": 10, "ক্রয় মূল্য": 1200},
+        {"পণ্য": "RAM 4GB DDR4", "পরিমাণ": 15, "ক্রয় মূল্য": 1500},
     ]
+
+# ইনভয়েসের ডাইনামিক আইটেম লিস্টের জন্য সেশন স্টেট
+if "invoice_items" not in st.session_state:
+    st.session_state["invoice_items"] = [{"description": "", "qty": 1, "uprice": 0}]
 
 # সাইডবার মেনু
 st.sidebar.title("💻 SM-TECH")
@@ -32,31 +36,62 @@ if choice == "📄 Invoice Generator":
     st.markdown("---")
     st.subheader("🛒 বিলের বিবরণ")
     
-    col_c, col_d = st.columns(2)
-    with col_c:
-        service_charge = st.number_input("Service Charge / Repair Bill", min_value=0, value=0)
-        parts_qty = st.number_input("Used Parts QTY (পার্টসের সংখ্যা)", min_value=0, value=0)
-    with col_d:
-        parts_uprice = st.number_input("Used Parts U.PRICE (পার্টসের একক মূল্য)", min_value=0, value=0)
-        discount = st.number_input("DISCOUNT (ডিসকাউন্ট টাকা)", min_value=0, value=0)
+    # ডাইনামিক আইটেম ইনপুট রো তৈরি
+    updated_items = []
+    for i, item in enumerate(st.session_state["invoice_items"]):
+        st.markdown(f"**আইটেম নম্বর: {i+1}**")
+        col_desc, col_qty, col_uprice = st.columns([5, 2, 3])
+        
+        with col_desc:
+            desc = st.text_input(f"DESCRIPTION (কাজের বিবরণ/পণ্যের নাম)", value=item["description"], key=f"desc_{i}")
+        with col_qty:
+            qty = st.number_input(f"QTY (পরিমাণ)", min_value=1, value=item["qty"], key=f"qty_{i}")
+        with col_uprice:
+            uprice = st.number_input(f"U.PRICE (একক মূল্য)", min_value=0, value=item["uprice"], key=f"uprice_{i}")
+            
+        updated_items.append({"description": desc, "qty": qty, "uprice": uprice})
+    
+    st.session_state["invoice_items"] = updated_items
+    
+    # নতুন রো বা কলাম যোগ এবং ডিলিট করার বাটন
+    col_btn1, col_btn2, _ = st.columns([2, 2, 6])
+    with col_btn1:
+        if st.button("➕ নতুন আইটেম যোগ করুন"):
+            st.session_state["invoice_items"].append({"description": "", "qty": 1, "uprice": 0})
+            st.rerun()
+    with col_btn2:
+        if st.button("❌ শেষ আইটেমটি বাদ দিন") and len(st.session_state["invoice_items"]) > 1:
+            st.session_state["invoice_items"].pop()
+            st.rerun()
+            
+    st.markdown("---")
+    discount = st.number_input("DISCOUNT (ডিসকাউন্ট টাকা)", min_value=0, value=0)
     
     if st.button("ইনভয়েস পিডিএফ তৈরি করুন"):
         if customer_name:
-            # সঠিক হিসাব-নিকাশ
-            if parts_qty > 0:
-                actual_parts_uprice = parts_uprice
-                parts_total = parts_qty * parts_uprice
-                display_qty = str(parts_qty)
-            else:
-                actual_parts_uprice = 0
-                parts_total = 0
-                display_qty = "-"
-                
-            sub_total = service_charge + parts_total
+            # সাবটোটাল হিসাব
+            sub_total = 0
+            table_rows_html = ""
+            
+            for index, item in enumerate(st.session_state["invoice_items"]):
+                if item["description"].strip() != "":
+                    amount = item["qty"] * item["uprice"]
+                    sub_total += amount
+                    
+                    table_rows_html += f"""
+                    <tr>
+                        <td style="text-align: center;">{index + 1}</td>
+                        <td>{item["description"]}</td>
+                        <td style="text-align: center;">{item["qty"]}</td>
+                        <td style="text-align: right;">{item["uprice"]} Tk</td>
+                        <td style="text-align: right; font-weight: bold;">{amount} Tk</td>
+                    </tr>
+                    """
+            
             total_bill = sub_total - discount
             current_date = datetime.date.today().strftime("%d-%m-%Y")
             
-            # হেডারের ফন্ট বড় এবং ডানপাশের ফাঁকা অংশ ভরাট করা পরিমার্জিত HTML ডিজাইন
+            # মেমো প্রিন্ট লেআউট HTML
             invoice_html = f"""
             <!DOCTYPE html>
             <html>
@@ -66,7 +101,6 @@ if choice == "📄 Invoice Generator":
                     body {{ font-family: 'Arial', sans-serif; background-color: #f0f0f0; padding: 5px; margin: 0; }}
                     .main-pad {{ max-width: 800px; margin: auto; padding: 30px; border: 2px solid #0a4da2; background-color: #fff; box-sizing: border-box; }}
                     
-                    /* হেডার অংশ - সাইজ ও গ্যাপ ফিক্স */
                     .header-table {{ width: 100%; border-collapse: collapse; margin-bottom: 10px; }}
                     .logo-main {{ font-size: 64px; font-weight: 900; font-style: italic; color: #e63946; margin: 0; line-height: 0.85; font-family: 'Impact', 'Arial Black', sans-serif; letter-spacing: -1px; }}
                     .logo-main span {{ color: #0a4da2; }}
@@ -76,7 +110,6 @@ if choice == "📄 Invoice Generator":
                     .owner-side {{ text-align: right; font-size: 16px; color: #0a4da2; font-weight: bold; line-height: 1.4; vertical-align: top; padding-top: 5px; padding-right: 5px; }}
                     .owner-name {{ font-size: 22px; font-weight: bold; color: #0a4da2; display: inline-block; margin-bottom: 4px; }}
                     
-                    /* ইনভয়েস বার */
                     .invoice-bar-table {{ width: 100%; margin-top: 20px; border-collapse: collapse; }}
                     .bill-to {{ font-size: 15px; font-weight: bold; color: white; background-color: #0a4da2; padding: 4px 10px; border-radius: 2px; }}
                     .invoice-badge {{ background-color: #0a4da2; color: white; font-size: 22px; font-weight: bold; text-align: center; padding: 5px 30px; letter-spacing: 2px; border-radius: 3px; display: inline-block; }}
@@ -84,17 +117,14 @@ if choice == "📄 Invoice Generator":
                     .info-lines {{ font-size: 15px; line-height: 2.2; }}
                     .dot-line {{ border-bottom: 1px dotted #555; display: inline-block; padding-left: 5px; font-weight: bold; color: #000; }}
                     
-                    /* টেবিল ডিজাইন */
                     .item-table {{ width: 100%; border-collapse: collapse; margin-top: 20px; border: 2px solid #0a4da2; }}
                     .item-table th {{ background-color: #0a4da2; color: white; padding: 10px; font-size: 15px; font-weight: bold; border: 1px solid #fff; text-align: center; }}
-                    .item-table td {{ padding: 14px 10px; border-left: 2px solid #0a4da2; border-right: 2px solid #0a4da2; border-bottom: 1px solid #e0e0e0; font-size: 15px; }}
+                    .item-table td {{ padding: 12px 10px; border-left: 2px solid #0a4da2; border-right: 2px solid #0a4da2; border-bottom: 1px solid #e0e0e0; font-size: 15px; }}
                     
-                    /* সাবটোটাল বক্স */
                     .subtotal-title {{ background-color: #0a4da2; color: white; font-weight: bold; padding: 8px; text-align: center; font-size: 15px; }}
                     .subtotal-val {{ text-align: right; font-weight: bold; border: 2px solid #0a4da2; background-color: #f8f9fa; font-size: 16px; color: #0a4da2; padding: 8px 10px; }}
                     
-                    /* পেমেন্ট ও সিগনেচার */
-                    .bottom-area {{ width: 100%; border-collapse: collapse; margin-top: 40px; }}
+                    .bottom-area {{ width: 100%; border-collapse: collapse; margin-top: 45px; }}
                     .pay-method-box {{ border: 2px solid #0a4da2; border-radius: 4px; padding: 12px; width: 310px; font-size: 14px; font-weight: bold; color: #0a4da2; }}
                     .pay-title {{ background-color: #0a4da2; color: white; font-weight: bold; padding: 2px 8px; display: inline-block; margin-bottom: 10px; }}
                     
@@ -109,7 +139,6 @@ if choice == "📄 Invoice Generator":
             </head>
             <body>
                 <div class="main-pad">
-                    <!-- হেডার অংশ (সাইজ বড় ও ফাঁকা কমানো হয়েছে) -->
                     <table class="header-table">
                         <tr>
                             <td style="width: 60%;">
@@ -126,7 +155,6 @@ if choice == "📄 Invoice Generator":
                         </tr>
                     </table>
                     
-                    <!-- কাস্টমার ও মেমো ইনফো -->
                     <table class="invoice-bar-table">
                         <tr>
                             <td style="width: 55%; vertical-align: top;">
@@ -145,7 +173,6 @@ if choice == "📄 Invoice Generator":
                         </tr>
                     </table>
                     
-                    <!-- আইটেম টেবিল -->
                     <table class="item-table">
                         <thead>
                             <tr>
@@ -157,25 +184,8 @@ if choice == "📄 Invoice Generator":
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td style="text-align: center;">1</td>
-                                <td>Service Charge / Repair Bill</td>
-                                <td style="text-align: center;">1</td>
-                                <td style="text-align: right;">{service_charge} Tk</td>
-                                <td style="text-align: right; font-weight: bold;">{service_charge} Tk</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align: center;">2</td>
-                                <td>Used Parts Cost</td>
-                                <td style="text-align: center;">{display_qty}</td>
-                                <td style="text-align: right;">{f"{actual_parts_uprice} Tk" if actual_parts_uprice > 0 else "-"}</td>
-                                <td style="text-align: right; font-weight: bold;">{parts_total} Tk</td>
-                            </tr>
-                            <!-- ডামি রো গ্যাপ ঠিক রাখার জন্য -->
-                            <tr><td style="height:30px;"></td><td></td><td></td><td></td><td></td></tr>
-                            <tr><td style="height:30px;"></td><td></td><td></td><td></td><td></td></tr>
+                            {table_rows_html}
                             
-                            <!-- ডিসকাউন্ট ও সাবটোটাল -->
                             <tr>
                                 <td colspan="3" style="border: none;"></td>
                                 <td style="text-align: right; font-weight: bold; border-top: 2px solid #0a4da2; padding: 8px;">Discount:</td>
@@ -189,7 +199,6 @@ if choice == "📄 Invoice Generator":
                         </tbody>
                     </table>
                     
-                    <!-- পেমেন্ট এবং সিগনেচার -->
                     <table class="bottom-area">
                         <tr>
                             <td>
@@ -209,11 +218,8 @@ if choice == "📄 Invoice Generator":
                         </tr>
                     </table>
                 </div>
-                
                 <script>
-                    window.onload = function() {{
-                        window.print();
-                    }}
+                    window.onload = function() {{ window.print(); }}
                 </script>
             </body>
             </html>
