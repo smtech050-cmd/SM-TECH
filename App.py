@@ -9,8 +9,8 @@ st.set_page_config(page_title="SM-TECH Management", page_icon="💻", layout="wi
 if "stock_data" not in st.session_state:
     # ডামি ডাটা (অ্যাপ প্রথমবার ওপেন হলে দেখাবে)
     st.session_state["stock_data"] = [
-        {"Date": "18-07-2026", "New Products": "SSD 120GB", "Quantity": 10, "Cost Price": 1200, "Sell Rate": 1500},
-        {"Date": "18-07-2026", "New Products": "RAM 4GB DDR4", "Quantity": 15, "Cost Price": 1500, "Sell Rate": 1800},
+    
+      
     ]
 
 if "invoice_items" not in st.session_state:
