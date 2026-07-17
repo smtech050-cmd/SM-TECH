@@ -89,16 +89,48 @@ else:
         if st.button("স্টক আপডেট করুন"):
             st.success("স্টক সফলভাবে আপডেট হয়েছে।")
 
-    # --- 6. INVOICE ---
-    elif choice == "🧾 Invoice":
-        st.title("🧾 ক্যাশ মেমো / ইনভয়েস জেনারেটর")
-        st.text_input("কাস্টমার আইডি/নাম")
-        st.text_input("সার্ভিস চার্জ / বিল")
-        st.text_input("ব্যবহৃত পার্টসের মূল্য")
-        st.number_input("ডিসকাউন্ট (টাকা)", min_value=0)
-        if st.button("ইনভয়েস প্রিন্ট/সেভ করুন"):
-            st.success("ইনভয়েস PDF তৈরি সম্পন্ন হয়েছে! (ডেমো)")
-
+     # 6. INVOICE ---
+    elif choice == "📄 Invoice":
+        st.title("📄 ক্যাশ মেমো / ইনভয়েস জেনারেটর")
+        
+        # ইনপুট ফিল্ড
+        customer_name = st.text_input("কাস্টমার আইডি/নাম")
+        service_charge = st.number_input("সার্ভিস চার্জ / বিল", min_value=0, value=0)
+        parts_cost = st.number_input("ব্যবহৃত পার্টসের মূল্য", min_value=0, value=0)
+        discount = st.number_input("ডিসকাউন্ট (টাকা)", min_value=0, value=0)
+        
+        if st.button("ইনভয়েস প্রিন্ট/সেভ করুন"):
+            if customer_name:
+                # মোট হিসাব
+                total_bill = service_charge + parts_cost - discount
+                
+                # ইনভয়েসের টেক্সট ফরম্যাট তৈরি
+                invoice_text = (
+                    f"===================================\n"
+                    f"     SRISTI COMPUTER REPAIR        \n"
+                    f"===================================\n"
+                    f"কাস্টমার নাম: {customer_name}\n"
+                    f"-----------------------------------\n"
+                    f"সার্ভিস চার্জ: {service_charge} টাকা\n"
+                    f"পার্টসের মূল্য: {parts_cost} টাকা\n"
+                    f"ডিসকাউন্ট: {discount} টাকা\n"
+                    f"-----------------------------------\n"
+                    f"সর্বমোট বিল: {total_bill} টাকা\n"
+                    f"===================================\n"
+                    f"ধন্যবাদ আবার আসবেন!\n"
+                )
+                
+                st.success("ইনভয়েস তৈরি সম্পন্ন হয়েছে!")
+                
+                # সরাসরি ডাউনলোড বাটন
+                st.download_button(
+                    label="📥 Download PDF/Invoice",
+                    data=invoice_text,
+                    file_name=f"Invoice_{customer_name}.txt",
+                    mime="text/plain"
+                )
+            else:
+                st.error("অনুগ্রহ করে কাস্টমারের নাম লিখুন।")
     # --- 7. REPORTS ---
     elif choice == "📈 Reports":
         st.title("📈 রিপোর্ট ও অ্যানালিটিক্স")
