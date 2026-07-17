@@ -4,7 +4,7 @@ import datetime
 # পেজ কনফিগারেশন
 st.set_page_config(page_title="SM-TECH Management", page_icon="💻", layout="wide")
 
-# সেশন স্টেট ইনিশিয়ালাইজেশন (স্টকের ডেটা ধরে রাখার জন্য)
+# সেশন স্টেট ইনিশিয়ালাইজেশন (স্টকের ডাটা ধরে রাখার জন্য)
 if "stock_data" not in st.session_state:
     st.session_state["stock_data"] = [
         {"পণ্য": "SSD 120GB", "পরিমাণ": 10, "ক্রয় মূল্য": 1200},
@@ -28,49 +28,137 @@ if choice == "📄 Invoice Generator":
     parts_cost = st.number_input("ব্যবহৃত পার্টসের মূল্য", min_value=0, value=0)
     discount = st.number_input("ডিসকাউন্ট (টাকা)", min_value=0, value=0)
     
-    if st.button("ইনভয়েস প্রিন্ট/সেভ করুন"):
+    if st.button("ইনভয়েস পিডিএফ তৈরি করুন"):
         if customer_name:
             total_bill = service_charge + parts_cost - discount
             current_date = datetime.date.today().strftime("%d-%m-%Y")
             
-            # আপনার আসল প্যাডের ডিজাইন অনুযায়ী টেক্সট ফরম্যাট
-            invoice_text = (
-                f"=========================================\n"
-                f"               SM-TECH                   \n"
-                f"       COMPUTER & IT SOLUTION            \n"
-                f"   Smart Technology-Trusted Service      \n"
-                f"=========================================\n"
-                f" Owner: S.m. Ibrahim                     \n"
-                f" Phone: 01940-556114, 01810-499166       \n"
-                f"-----------------------------------------\n"
-                f" Bill To: {customer_name}\n"
-                f" Date: {current_date}\n"
-                f"-----------------------------------------\n"
-                f" S.L | DESCRIPTION          | QTY | AMOUNT\n"
-                f"-----------------------------------------\n"
-                f"  1. | Service Charge/Bill  |  1  | {service_charge} Tk\n"
-                f"  2. | Used Parts Cost      |  -  | {parts_cost} Tk\n"
-                f"-----------------------------------------\n"
-                f" DISCOUNT:                        | {discount} Tk\n"
-                f"-----------------------------------------\n"
-                f" SUB TOTAL:                       | {total_bill} Tk\n"
-                f"=========================================\n"
-                f" Payment Methods:                        \n"
-                f" [ ] Cash   [ ] Bkash   [ ] Nagad   [ ] Bank\n"
-                f"-----------------------------------------\n"
-                f" Authorised Signature:                   \n"
-                f" SM-TECH Computer & IT Solutions         \n"
-                f"=========================================\n"
-            )
+            # আপনার আসল প্যাডের ডিজাইন অনুযায়ী প্রফেশনাল HTML/PDF ফরম্যাট
+            invoice_html = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <style>
+                    body {{ font-family: 'Arial', sans-serif; color: #333; padding: 20px; }}
+                    .invoice-box {{ max-width: 600px; margin: auto; padding: 30px; border: 2px solid #0056b3; border-radius: 10px; background-color: #fff; }}
+                    .header-table {{ width: 100%; border-collapse: collapse; margin-bottom: 20px; }}
+                    .logo-title {{ font-size: 32px; font-weight: bold; color: #e63946; margin: 0; line-height: 1; }}
+                    .sub-title {{ font-size: 14px; color: #0056b3; font-weight: bold; margin: 5px 0 0 0; }}
+                    .tagline {{ font-size: 12px; font-style: italic; color: #555; margin: 2px 0 0 0; }}
+                    .owner-info {{ text-align: right; font-size: 13px; line-height: 1.4; }}
+                    .bill-section {{ width: 100%; margin-bottom: 20px; font-size: 14px; border-bottom: 2px dashed #0056b3; padding-bottom: 10px; }}
+                    .invoice-title {{ text-align: center; font-size: 22px; font-weight: bold; color: #fff; background-color: #0056b3; padding: 5px; margin: 10px 0; border-radius: 5px; letter-spacing: 2px; }}
+                    .data-table {{ width: 100%; border-collapse: collapse; margin-top: 10px; }}
+                    .data-table th {{ background-color: #0056b3; color: white; text-align: left; padding: 8px; font-size: 14px; }}
+                    .data-table td {{ padding: 10px 8px; border-bottom: 1px solid #ddd; font-size: 14px; }}
+                    .total-row td {{ font-weight: bold; border-top: 2px solid #0056b3; background-color: #f8f9fa; }}
+                    .payment-methods {{ margin-top: 25px; font-size: 13px; border: 1px solid #0056b3; padding: 10px; border-radius: 5px; display: inline-block; width: 50%; }}
+                    .footer-section {{ margin-top: 50px; width: 100%; font-size: 13px; }}
+                    .signature {{ text-align: right; border-top: 1px solid #333; display: inline-block; float: right; padding-top: 5px; font-weight: bold; }}
+                    @media print {{
+                        body {{ padding: 0; }}
+                        .invoice-box {{ border: none; padding: 0; }}
+                    }}
+                </style>
+            </head>
+            <body>
+                <div class="invoice-box">
+                    <table class="header-table">
+                        <tr>
+                            <td>
+                                <p class="logo-title">SM-TECH</p>
+                                <p class="sub-title">COMPUTER & IT SOLUTION</p>
+                                <p class="tagline">Smart Technology-Trusted Service</p>
+                            </td>
+                            <td class="owner-info">
+                                <strong>S.m. Ibrahim</strong><br>
+                                Owner<br>
+                                📞 01940-556114<br>
+                                📞 01810-499166
+                            </td>
+                        </tr>
+                    </table>
+                    
+                    <div class="invoice-title">INVOICE / CASH MEMO</div>
+                    
+                    <table class="bill-section">
+                        <tr>
+                            <td><strong>Bill To Name:</strong> {customer_name}</td>
+                            <td style="text-align: right;"><strong>Date:</strong> {current_date}</td>
+                        </tr>
+                    </table>
+                    
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 10%;">S.L</th>
+                                <th style="width: 55%;">DESCRIPTION</th>
+                                <th style="width: 15%; text-align: center;">QTY</th>
+                                <th style="width: 20%; text-align: right;">AMOUNT</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Service Charge / Repair Bill</td>
+                                <td style="text-align: center;">1</td>
+                                <td style="text-align: right;">{service_charge} Tk</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Used Parts Cost</td>
+                                <td style="text-align: center;">-</td>
+                                <td style="text-align: right;">{parts_cost} Tk</td>
+                            </tr>
+                            <tr class="total-row">
+                                <td colspan="3" style="text-align: right;">DISCOUNT:</td>
+                                <td style="text-align: right; color: red;">{discount} Tk</td>
+                            </tr>
+                            <tr class="total-row" style="background-color: #e2eafc;">
+                                <td colspan="3" style="text-align: right; font-size: 16px; color: #0056b3;">SUB TOTAL:</td>
+                                <td style="text-align: right; font-size: 16px; color: #0056b3;">{total_bill} Tk</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div style="margin-top: 20px;">
+                        <div class="payment-methods">
+                            <strong>Payment Methods:</strong><br>
+                            <span style="margin-right: 10px;">[ ] Cash</span> 
+                            <span style="margin-right: 10px;">[ ] Bkash</span> 
+                            <span style="margin-right: 10px;">[ ] Nagad</span> 
+                            <span>[ ] Bank</span>
+                        </div>
+                    </div>
+                    
+                    <div class="footer-section">
+                        <div class="signature">
+                            Authorised Signature<br>
+                            <span style="font-size: 11px; color: #555;">SM-TECH Computer & IT Solutions</span>
+                        </div>
+                        <div style="clear: both;"></div>
+                    </div>
+                </div>
+                
+                <!-- স্বয়ংক্রিয়ভাবে প্রিন্ট/পিডিএফ সেভ ডায়ালগ ওপেন করার স্ক্রিপ্ট -->
+                <script>
+                    window.onload = function() {{
+                        window.print();
+                    }}
+                </script>
+            </body>
+            </html>
+            """
             
-            st.success("ইনভয়েস তৈরি সম্পন্ন হয়েছে!")
+            st.success("ইনভয়েস PDF সফলভাবে তৈরি হয়েছে!")
             
-            # ডাউনলোড বাটন
+            # ডাউনলোড বাটন (ডাউনলোড করার সাথে সাথে এটি প্রিন্ট রেডি ডিরেক্ট পিডিএফ ফরম্যাটে নামবে)
             st.download_button(
-                label="📥 Download PDF/Invoice",
-                data=invoice_text,
-                file_name=f"Invoice_{customer_name}.txt",
-                mime="text/plain"
+                label="📥 Download & Print PDF Invoice",
+                data=invoice_html,
+                file_name=f"Invoice_{customer_name}.html",
+                mime="text/html"
             )
         else:
             st.error("অনুগ্রহ করে কাস্টমারের নাম লিখুন।")
@@ -81,7 +169,6 @@ if choice == "📄 Invoice Generator":
 elif choice == "📦 Stock Management":
     st.title("📦 স্টক মালের হিসাব")
     
-    # নতুন স্টক যোগ করার ফর্ম
     st.subheader("➕ নতুন পণ্য স্টক করুন")
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -93,7 +180,6 @@ elif choice == "📦 Stock Management":
         
     if st.button("স্টক আপডেট করুন"):
         if item_name and quantity > 0:
-            # নতুন পণ্য যোগ করা
             st.session_state["stock_data"].append({
                 "পণ্য": item_name,
                 "পরিমাণ": quantity,
@@ -105,10 +191,8 @@ elif choice == "📦 Stock Management":
             
     st.markdown("---")
     
-    # বর্তমান স্টকের তালিকা দেখানো
     st.subheader("📋 বর্তমান স্টক তালিকা")
     if st.session_state["stock_data"]:
-        # টেবিল আকারে সুন্দরভাবে স্টক ডাটা দেখানো
         st.table(st.session_state["stock_data"])
     else:
         st.info("স্টকে কোনো পণ্য নেই।")
