@@ -139,9 +139,9 @@ else:
         st.write("### 📑 কাস্টমার বাকির সংক্ষিপ্ত বিবরণ")
         st.dataframe(pd.DataFrame(st.session_state.customer_dues), use_container_width=True, hide_index=True)
 
-    # --- 🔧 কাস্টমার ও রিপেয়ার (সংশোধিত: বাকির হিসাব) ---
+    # --- 🔧 কাস্টমার বাকির হিসাব) ---
     elif menu_choice == t["menu"][1]:
-        st.title("💸 কাস্টমার বাকির হিসাব ও রিপেয়ার")
+        st.title("💸 কাস্টমার বাকির হিসাব")
         
         with st.form("Add Customer Due"):
             st.write("### ➕ নতুন বাকির হিসাব যুক্ত করুন")
