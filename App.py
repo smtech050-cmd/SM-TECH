@@ -71,15 +71,14 @@ LANG = {
         "pos_title": "🧾 Point of Sale & Invoice Generation",
         "walking": "Walking Customer",
         "total_bill": "Total Amount (BDT)",
-        "btn_inv": "📄 Generate Invoice",
-        "inv_gen": "Invoice Generated: {}"
+        "btn_inv": "📄 Generate Invoice"
     },
     "বাংলা": {
         "nav_title": "⚙️ SM-TECH",
         "go_to": "মেনু সিলেক্ট করুন",
         "menu": ["ড্যাশবোর্ড", "কাস্টমার ও রিপেয়ার", "স্টক / ইনভেন্টরি", "POS ও ইনভয়েস"],
         "dash_title": "🖥️ রিপেয়ার ও POS ড্যাশবোর্ড",
-        "sub_title": "এসএম-টেক কম্পিউটার ও আইটি সリューション",
+        "sub_title": "এসএম-টেক কম্পিউটার ও আইটি সলিউশন",
         "t_repairs": "মোট রিপেয়ার",
         "p_jobs": "চলতি কাজ",
         "t_stock": "মোট স্টক আইটেম",
@@ -103,8 +102,7 @@ LANG = {
         "pos_title": "🧾 পয়েন্ট অব সেল ও ইনভয়েস",
         "walking": "খুচরা কাস্টমার",
         "total_bill": "মোট বিল (টাকা)",
-        "btn_inv": "📄 ইনভয়েস তৈরি করুন",
-        "inv_gen": "ইনভয়েস তৈরি হয়েছে: {}"
+        "btn_inv": "📄 ইনভয়েস তৈরি করুন"
     }
 }
 
@@ -246,20 +244,39 @@ else:
             inv_num = f"{int(datetime.datetime.now().timestamp()) % 100000}"
             current_date = datetime.datetime.now().strftime('%d-%m-%Y')
             
-            # নিখুঁত ক্যাশ মেমো থিম (ক্লিন ও প্রফেশনাল সাদা ব্যাকগ্রাউন্ড)
+            # 💡 এখানে যদি লোগো ইমেজটি আপনার প্রোজেক্ট ফোল্ডারে 'logo.png' নামে থাকে, তবে এটি কাজ করবে।
+            # যদি লোগোটি কোনো অনলাইন লিঙ্কে থাকে, তবে src="এখানে_লিঙ্ক" বসিয়ে দিতে পারেন।
+            logo_path = "logo.png" 
+            
+            # 📐 H 7" এবং W 5" সাইজের নিখুঁত ক্যাশ মেমো থিম
             invoice_html = f"""
-            <div id="print-area" style="border: 4px solid #1e3a8a; padding: 25px; background-color: white; color: black; font-family: 'Arial', sans-serif; max-width: 700px; margin: auto; border-radius: 4px;">
+            <div id="print-area" style="
+                border: 3px solid #1e3a8a; 
+                padding: 15px; 
+                background-color: white; 
+                color: black; 
+                font-family: 'Arial', sans-serif; 
+                width: 5in; 
+                height: 7in; 
+                margin: auto; 
+                border-radius: 4px;
+                box-sizing: border-box;
+                position: relative;
+            ">
                 
-                <!-- টপ ব্র্যান্ডিং হেডার -->
+                <!-- টপ ব্র্যান্ডিং হেডার উইথ লোগো -->
                 <table style="width: 100%; border-collapse: collapse;">
                     <tr>
-                        <td style="width: 60%; vertical-align: top;">
-                            <span style="font-size: 42px; font-weight: 900; color: #1e3a8a; font-family: 'Arial Black', Gadget, sans-serif;">SM-TECH</span><br>
-                            <span style="font-size: 13px; font-weight: bold; color: #059669; letter-spacing: 1px;">COMPUTER & IT SOLUTION</span><br>
-                            <span style="font-size: 11px; font-style: italic; color: #444;">Smart Technology-Trusted Service</span>
+                        <td style="width: 20%; vertical-align: middle; text-align: left;">
+                            <img src="{logo_path}" style="width: 55px; height: 55px; border-radius: 50%; object-fit: cover;" onerror="this.style.display='none';">
                         </td>
-                        <td style="width: 40%; text-align: right; font-size: 12px; line-height: 1.4; vertical-align: top; font-weight: bold; color: #111;">
-                            <span style="font-size: 15px; color: #1e3a8a;">S.m. Ibrahim</span><br>
+                        <td style="width: 45%; vertical-align: top; padding-left: 5px;">
+                            <span style="font-size: 24px; font-weight: 900; color: #1e3a8a; font-family: 'Arial Black', Gadget, sans-serif;">SM-TECH</span><br>
+                            <span style="font-size: 8px; font-weight: bold; color: #059669; letter-spacing: 0.5px; display: block; margin-top: -2px;">COMPUTER & IT SOLUTION</span>
+                            <span style="font-size: 7.5px; font-style: italic; color: #444; display: block; margin-top: 1px;">Smart Technology-Trusted Service</span>
+                        </td>
+                        <td style="width: 35%; text-align: right; font-size: 9px; line-height: 1.3; vertical-align: top; font-weight: bold; color: #111;">
+                            <span style="font-size: 11px; color: #1e3a8a;">S.m. Ibrahim</span><br>
                             Owner<br>
                             01940-556114<br>
                             01810-499166
@@ -267,71 +284,78 @@ else:
                     </tr>
                 </table>
                 
-                <div style="border-top: 2px solid #1e3a8a; margin-top: 10px; margin-bottom: 15px;"></div>
+                <div style="border-top: 2px solid #1e3a8a; margin-top: 6px; margin-bottom: 8px;"></div>
                 
                 <!-- কাস্টমার এবং বিল বিবরণী -->
-                <table style="width: 100%; font-size: 13px; margin-bottom: 15px;">
+                <table style="width: 100%; font-size: 10px; margin-bottom: 8px;">
                     <tr>
-                        <td style="width: 60%; vertical-align: top;">
-                            <span style="background-color: #1e3a8a; color: white; padding: 3px 8px; font-weight: bold; font-size: 12px;">Bill To</span>
-                            <div style="margin-top: 8px;"><b>Name:</b> {cust_name}</div>
-                            <div style="margin-top: 4px;"><b>Address:</b> {cust_address}</div>
+                        <td style="width: 55%; vertical-align: top;">
+                            <span style="background-color: #1e3a8a; color: white; padding: 2px 5px; font-weight: bold; font-size: 9px; border-radius: 2px;">Bill To</span>
+                            <div style="margin-top: 4px;"><b>Name:</b> {cust_name}</div>
+                            <div style="margin-top: 2px;"><b>Address:</b> {cust_address}</div>
                         </td>
-                        <td style="width: 40%; text-align: right; vertical-align: top;">
-                            <span style="background-color: #1e3a8a; color: white; padding: 4px 15px; font-weight: bold; font-size: 14px; letter-spacing: 1px;">INVOICE</span>
-                            <div style="margin-top: 8px;"><b>Invoice No:</b> # {inv_num}</div>
-                            <div style="margin-top: 4px;"><b>Date:</b> {current_date}</div>
+                        <td style="width: 45%; text-align: right; vertical-align: top;">
+                            <span style="background-color: #1e3a8a; color: white; padding: 2px 10px; font-weight: bold; font-size: 10px; letter-spacing: 0.5px; border-radius: 2px;">INVOICE</span>
+                            <div style="margin-top: 4px;"><b>Invoice No:</b> # {inv_num}</div>
+                            <div style="margin-top: 2px;"><b>Date:</b> {current_date}</div>
                         </td>
                     </tr>
                 </table>
                 
-                <!-- মেইন প্রোডাক্ট টেবিল (নীল বর্ডার গ্রিড) -->
-                <table style="width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; border: 1px solid #1e3a8a;">
+                <!-- মেইন প্রোডাক্ট টেবিল (১০টি রো সহ নীল বর্ডার গ্রিড) -->
+                <table style="width: 100%; border-collapse: collapse; font-size: 10px; border: 1px solid #1e3a8a;">
                     <thead>
-                        <tr style="background-color: #1e3a8a; color: white; text-align: center; font-weight: bold;">
-                            <th style="border: 1px solid #1e3a8a; padding: 6px; width: 8%;">S.L</th>
-                            <th style="border: 1px solid #1e3a8a; padding: 6px; width: 52%;">DESCRIPTION</th>
-                            <th style="border: 1px solid #1e3a8a; padding: 6px; width: 10%;">QTY</th>
-                            <th style="border: 1px solid #1e3a8a; padding: 6px; width: 14%;">U.PRICE</th>
-                            <th style="border: 1px solid #1e3a8a; padding: 6px; width: 16%;">AMOUNT</th>
+                        <tr style="background-color: #1e3a8a; color: white; text-align: center; font-weight: bold; font-size: 9px;">
+                            <th style="border: 1px solid #1e3a8a; padding: 4px; width: 8%;">S.L</th>
+                            <th style="border: 1px solid #1e3a8a; padding: 4px; width: 52%;">DESCRIPTION</th>
+                            <th style="border: 1px solid #1e3a8a; padding: 4px; width: 10%;">QTY</th>
+                            <th style="border: 1px solid #1e3a8a; padding: 4px; width: 14%;">U.PRICE</th>
+                            <th style="border: 1px solid #1e3a8a; padding: 4px; width: 16%;">AMOUNT</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr style="text-align: center; height: 35px;">
-                            <td style="border: 1px solid #1e3a8a; padding: 6px;">1</td>
-                            <td style="border: 1px solid #1e3a8a; padding: 6px; text-align: left;">{item_desc}</td>
-                            <td style="border: 1px solid #1e3a8a; padding: 6px;">1</td>
-                            <td style="border: 1px solid #1e3a8a; padding: 6px;">{total_bill}/-</td>
-                            <td style="border: 1px solid #1e3a8a; padding: 6px; font-weight: bold;">{total_bill}/-</td>
+                        <!-- রো ১ (ডেটা রো) -->
+                        <tr style="text-align: center; height: 22px;">
+                            <td style="border: 1px solid #1e3a8a; padding: 2px;">1</td>
+                            <td style="border: 1px solid #1e3a8a; padding: 2px; text-align: left;">{item_desc}</td>
+                            <td style="border: 1px solid #1e3a8a; padding: 2px;">1</td>
+                            <td style="border: 1px solid #1e3a8a; padding: 2px;">{total_bill}/-</td>
+                            <td style="border: 1px solid #1e3a8a; padding: 2px; font-weight: bold;">{total_bill}/-</td>
                         </tr>
-                        <!-- খালি রো মেমোর লুক আনার জন্য -->
-                        <tr style="height: 30px;"><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td></tr>
-                        <tr style="height: 30px;"><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td></tr>
-                        <tr style="height: 30px;"><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td></tr>
+                        <!-- বাকি ৯টি খালি রো (মোট ১০টা রো সম্পূর্ণ করার জন্য) -->
+                        <tr style="height: 20px;"><td style="border: 1px solid #1e3a8a;">2</td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td></tr>
+                        <tr style="height: 20px;"><td style="border: 1px solid #1e3a8a;">3</td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td></tr>
+                        <tr style="height: 20px;"><td style="border: 1px solid #1e3a8a;">4</td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td></tr>
+                        <tr style="height: 20px;"><td style="border: 1px solid #1e3a8a;">5</td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td></tr>
+                        <tr style="height: 20px;"><td style="border: 1px solid #1e3a8a;">6</td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td></tr>
+                        <tr style="height: 20px;"><td style="border: 1px solid #1e3a8a;">7</td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td></tr>
+                        <tr style="height: 20px;"><td style="border: 1px solid #1e3a8a;">8</td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td></tr>
+                        <tr style="height: 20px;"><td style="border: 1px solid #1e3a8a;">9</td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td></tr>
+                        <tr style="height: 20px;"><td style="border: 1px solid #1e3a8a;">10</td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td><td style="border: 1px solid #1e3a8a;"></td></tr>
                         
                         <!-- সাব টোটাল অংশ -->
                         <tr>
                             <td colspan="3" style="border: 1px solid #1e3a8a;"></td>
-                            <td style="border: 1px solid #1e3a8a; padding: 8px; text-align: center; font-weight: bold; background-color: #1e3a8a; color: white;">SUB TOTAL</td>
-                            <td style="border: 1px solid #1e3a8a; padding: 8px; text-align: center; font-weight: bold; background-color: #f3f4f6;">{total_bill} BDT</td>
+                            <td style="border: 1px solid #1e3a8a; padding: 4px; text-align: center; font-weight: bold; background-color: #1e3a8a; color: white; font-size: 9px;">SUB TOTAL</td>
+                            <td style="border: 1px solid #1e3a8a; padding: 4px; text-align: center; font-weight: bold; background-color: #f3f4f6;">{total_bill} BDT</td>
                         </tr>
                     </tbody>
                 </table>
                 
                 <!-- বটম পার্ট: পেমেন্ট মেথড ও সিগনেচার -->
-                <table style="width: 100%; margin-top: 40px; font-size: 12px;">
+                <table style="width: 100%; position: absolute; bottom: 15px; left: 15px; width: calc(100% - 30px); font-size: 9px;">
                     <tr>
                         <td style="width: 50%; vertical-align: bottom;">
-                            <div style="border: 1px solid #1e3a8a; display: inline-block; border-radius: 3px; background-color: white;">
-                                <div style="background-color: #1e3a8a; color: white; padding: 2px 8px; font-weight: bold; font-size: 10px;">Payment Methods</div>
-                                <div style="padding: 4px 8px; font-weight: bold; color: #222;">Cash | Bkash | Nagad | Bank</div>
+                            <div style="border: 1px solid #1e3a8a; display: inline-block; border-radius: 2px; background-color: white;">
+                                <div style="background-color: #1e3a8a; color: white; padding: 1px 5px; font-weight: bold; font-size: 8px;">Payment Methods</div>
+                                <div style="padding: 2px 5px; font-weight: bold; color: #222;">Cash | Bkash | Nagad | Bank</div>
                             </div>
                         </td>
                         <td style="width: 50%; text-align: right; vertical-align: bottom;">
-                            <div style="display: inline-block; text-align: center; width: 170px;">
-                                <div style="border-top: 1px solid #000; margin-bottom: 4px;"></div>
+                            <div style="display: inline-block; text-align: center; width: 140px;">
+                                <div style="border-top: 1px solid #000; margin-bottom: 2px;"></div>
                                 <b>Authorised Signature</b><br>
-                                <span style="font-size: 10px; color: #444;">SM-TECH Computer & IT Solutions</span>
+                                <span style="font-size: 8px; color: #444;">SM-TECH Computer & IT Solutions</span>
                             </div>
                         </td>
                     </tr>
@@ -339,28 +363,27 @@ else:
             </div>
             """
             
-            # অ্যাপের ভেতর শো করবে
+            # অ্যাপ স্ক্রিনে দেখানো
             st.markdown(invoice_html, unsafe_allow_html=True)
             st.write("")
             
-            # 📥 ডাউনলোড পিডিএফ / সরাসরি প্রিন্ট বাটন
+            # 📥 ৫×৭ সাইজ অনুযায়ী নিখুঁত পিডিএফ ডাউনলোড/প্রিন্ট বাটন
             st.components.v1.html(f"""
                 <script>
                 function printInvoice() {{
-                    var printContent = document.getElementById('print-area');
-                    var WinPrint = window.open('', '', 'width=900,height=950');
+                    var WinPrint = window.open('', '', 'width=600,height=800');
                     WinPrint.document.write('<html><head><title>Print Invoice</title>');
-                    WinPrint.document.write('<style>body{{margin:20px;}}</style></head><body>');
+                    WinPrint.document.write('<style>@page {{ size: 5in 7in; margin: 0; }} body {{ margin: 0; }}</style></head><body>');
                     WinPrint.document.write(`{invoice_html}`);
                     WinPrint.document.write('</body></html>');
                     WinPrint.document.close();
                     WinPrint.focus();
-                    WinPrint.print();
+                    setTimeout(function() {{ WinPrint.print(); }}, 500);
                 }}
                 </script>
-                <div style="text-align: center; margin-top: 10px;">
-                    <button onclick="printInvoice()" style="background-color: #059669; color: white; padding: 12px 30px; font-size: 16px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.15); transition: 0.3s;">
-                        📥 Download PDF / Print Invoice
+                <div style="text-align: center; margin-top: 5px;">
+                    <button onclick="printInvoice()" style="background-color: #059669; color: white; padding: 10px 25px; font-size: 14px; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.15);">
+                        📥 Download 5"x7" PDF / Print Invoice
                     </button>
                 </div>
-            """, height=70)
+            """, height=65)
