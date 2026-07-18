@@ -12,6 +12,10 @@ st.set_page_config(page_title="SM-TECH | Admin System", layout="wide")
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
+# মেনু নেভিগেশনের জন্য সেশন স্টেট (ডিফল্ট: Dashboard)
+if "current_menu" not in st.session_state:
+    st.session_state.current_menu = "Dashboard"
+
 # কাস্টমার বাকির হিসাব সেশন স্টেট
 if "customer_dues" not in st.session_state:
     st.session_state.customer_dues = [
@@ -30,10 +34,11 @@ if "invoice_items" not in st.session_state:
     st.session_state.invoice_items = []
 
 # ==========================================
-# 🎨 ডার্ক ব্লু নিয়ন থিম সিএসএস
+# 🎨 গ্লোবাল থিম ও সাইডবার প্রিমিয়াম বাটন CSS
 # ==========================================
-login_css = """
+custom_css = """
 <style>
+    /* মেইন ব্যাকগ্রাউন্ড */
     [data-testid="stAppViewContainer"] {
         background: radial-gradient(circle at center, #001f4d 0%, #000a1a 100%);
         color: white;
@@ -41,6 +46,13 @@ login_css = """
     [data-testid="stHeader"] {
         background: transparent;
     }
+    
+    /* সাইডবার ডিজাইন */
+    [data-testid="stSidebar"] {
+        background-color: #030f26 !important;
+        border-right: 1px solid #002b80;
+    }
+    
     .panel-header {
         font-size: 20px;
         color: #e0e0e0;
@@ -56,31 +68,46 @@ login_css = """
     .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
         color: #ffffff !important;
     }
+    
+    /* স্টাইলিশ বাটন মেনুর সিএসএস */
+    div.stButton > button {
+        background-color: #0b3c95 !important;
+        color: white !important;
+        border: none !important;
+        border-left: 5px solid #00a2ff !important;
+        padding: 15px 20px !important;
+        text-align: left !important;
+        font-size: 16px !important;
+        font-weight: bold !important;
+        border-radius: 8px !important;
+        margin-bottom: 10px !important;
+        width: 100% !important;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+    }
+    
+    /* বাটন হোভার (মাউস আনলে যেমন দেখাবে) */
+    div.stButton > button:hover {
+        background-color: #0044cc !important;
+        border-left: 5px solid #00ffcc !important;
+        box-shadow: 0px 4px 15px rgba(0, 162, 255, 0.4);
+        transform: scale(1.02);
+    }
+    
+    /* একটিভ বাটন (যে পেজে এখন আছেন) */
+    div.stButton > button:focus, div.stButton > button:active {
+        background-color: #0044cc !important;
+        border-left: 5px solid #00ffcc !important;
+    }
 </style>
 """
-
-# ==========================================
-# 🌐 ভাষা ডিকশনারি (সংশোধিত)
-# ==========================================
-LANG = {
-    "বাংলা": {
-        "nav_title": "⚙️ SM-TECH",
-        "go_to": "মেনু সিলেক্ট করুন",
-        "menu": ["ড্যাশবোর্ড", "কাস্টমার ও রিপেয়ার", "স্টক / ইনভেন্টরি", "POS ও ইনভয়েস"],
-        "dash_title": "🖥️ রিপেয়ার ও POS ড্যাশবোর্ড",
-        "sub_title": "এসএম-টেক কম্পিউটার ও আইটি সল্যুশন",
-        "btn_inv": "📄 ইনভয়েস প্রিভিউ দেখুন"
-    }
-}
-
-t = LANG["বাংলা"]
+st.markdown(custom_css, unsafe_allow_html=True)
 
 # ==========================================
 # 🛑 ১. লগইন স্ক্রিন রেন্ডারিং
 # ==========================================
 if not st.session_state.logged_in:
-    st.markdown(login_css, unsafe_allow_html=True)
-    
     _, col_center, _ = st.columns([1, 2, 1])
     
     with col_center:
@@ -114,19 +141,43 @@ if not st.session_state.logged_in:
 # 🔓 ২. মূল ড্যাশবোর্ড স্ক্রিন (লগইন সফল হলে)
 # ==========================================
 else:
-    st.sidebar.title(t["nav_title"])
-    if st.sidebar.button("🔒 Logout / লগআউট"):
-        st.session_state.logged_in = False
-        st.rerun()
+    # --- 🛠️ কাস্টম স্টাইলিশ সাইডবার মেনু তৈরি ---
+    with st.sidebar:
+        st.markdown('''
+            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                <span style="font-size: 32px; margin-right: 10px;">⚙️</span>
+                <span style="font-size: 28px; font-weight: bold; color: white;">SM-TECH</span>
+            </div>
+        ''', unsafe_allow_html=True)
         
-    st.sidebar.write("---")
-    st.sidebar.markdown(f"**{t['go_to']}**")
-    menu_choice = st.sidebar.radio("", t["menu"], label_visibility="collapsed")
+        if st.button("🔒 Logout / লগআউট", key="logout_btn"):
+            st.session_state.logged_in = False
+            st.rerun()
+            
+        st.write("---")
+        st.markdown("<h3 style='color:#a0c0ff; font-size:18px;'>Select Menu</h3>", unsafe_allow_html=True)
+        
+        # আইকন সমৃদ্ধ প্রিমিয়াম স্টাইল বাটনসমূহ
+        if st.button("⬜  Dashboard", use_container_width=True):
+            st.session_state.current_menu = "Dashboard"
+            st.rerun()
+            
+        if st.button("👥  Customer & Repair", use_container_width=True):
+            st.session_state.current_menu = "Customer & Repair"
+            st.rerun()
+            
+        if st.button("📦  Stock product", use_container_width=True):
+            st.session_state.current_menu = "Stock product"
+            st.rerun()
+            
+        if st.button("💵  Sell Invoice", use_container_width=True):
+            st.session_state.current_menu = "Sell Invoice"
+            st.rerun()
 
-    # --- 📊 ড্যাশবোর্ড মডিউল ---
-    if menu_choice == t["menu"][0]:
-        st.title(t["dash_title"])
-        st.subheader(t["sub_title"])
+    # --- 📊 ড্যাশবোর্ড মডিউল (Dashboard) ---
+    if st.session_state.current_menu == "Dashboard":
+        st.title("🖥️ রিপেয়ার ও POS ড্যাশবোর্ড")
+        st.subheader("এসএম-টেক কম্পিউটার ও আইটি সল্যুশন")
         
         col1, col2, col3 = st.columns(3)
         total_due_amount = sum(item.get("বাকি", 0) for item in st.session_state.customer_dues)
@@ -139,8 +190,8 @@ else:
         st.write("### 📑 কাস্টমার বাকির সংক্ষিপ্ত বিবরণ")
         st.dataframe(pd.DataFrame(st.session_state.customer_dues), use_container_width=True, hide_index=True)
 
-    # --- 🔧 কাস্টমার ও রিপেয়ার ---
-    elif menu_choice == t["menu"][1]:
+    # --- 🔧 কাস্টমার ও রিপেয়ার (Customer & Repair) ---
+    elif st.session_state.current_menu == "Customer & Repair":
         st.title("💸 কাস্টমার বাকির হিসাব ও রিপেয়ার")
         
         with st.form("Add Customer Due"):
@@ -164,7 +215,7 @@ else:
                 new_sl = len(st.session_state.customer_dues) + 1 if st.session_state.customer_dues else 1
                 
                 st.session_state.customer_dues.append({
-                    "ক্রমিক নং": new_sl,
+                    "क्रमिक নং": new_sl,
                     "কাস্টমার নাম": c_name,
                     "কাজের বিবরণ": c_desc,
                     "পরিমান": c_qty,
@@ -198,8 +249,8 @@ else:
         else:
             st.info("কোনো বাকির হিসাব পাওয়া যায়নি।")
 
-    # --- 📦 স্টক / ইনভেন্টরি ---
-    elif menu_choice == t["menu"][2]:
+    # --- 📦 স্টক পণ্য (Stock product) ---
+    elif st.session_state.current_menu == "Stock product":
         st.title("📦 দোকানের স্টক পণ্য ম্যানেজমেন্ট")
         
         with st.form("Add Shop Stock"):
@@ -250,8 +301,8 @@ else:
         else:
             st.info("স্টকে কোনো পণ্য নেই।")
 
-    # --- 🧾 POS ও ইনভয়েস মডিউল ---
-    elif menu_choice == t["menu"][3]:
+    # --- 🧾 সেল ইনভয়েস (Sell Invoice) ---
+    elif st.session_state.current_menu == "Sell Invoice":
         st.title("🧾 পয়েন্ট অব সেল ও ইনভয়েস")
         
         uploaded_logo = st.file_uploader("Upload Shop Logo / দোকানের লোগো আপলোড করুন (Optional)", type=["png", "jpg", "jpeg"])
@@ -302,7 +353,7 @@ else:
         
         st.write("---")
         
-        if st.button(t["btn_inv"], type="primary", use_container_width=True):
+        if st.button("📄 ইনভয়েস প্রিভিউ দেখুন", type="primary", use_container_width=True):
             if not st.session_state.invoice_items:
                 st.warning("Please add at least one item first! আগে লিস্টে পণ্য যোগ করুন।")
             else:
