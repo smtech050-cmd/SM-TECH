@@ -1,284 +1,172 @@
 import streamlit as st
+import mysql.connector
 import datetime
+import pandas as pd
 import base64
 
-# পেজ কনফিগারেশন
-st.set_page_config(page_title="SM-TECH Management", page_icon="💻", layout="wide")
+# পেজ কনফিগারেশন এবং মোবাইল ফ্রেন্ডলি রেসপনসিভ লেআউট
+st.set_page_config(page_title="SM-TECH POS & Inventory", page_icon="💻", layout="wide")
 
-# সেশন স্টেট ইনিশিয়ালাইজেশন
-if "stock_data" not in st.session_state:
-    st.session_state["stock_data"] = [
-        {"Date": "17-07-2026", "New Products": "SSD", "Quantity": 6, "Cost Price": 1800, "Sell Rate": 2200},
-    ]
+# ==========================================
+# 🔌 MYSQL ডাটাবেস কানেকশন (আপনার ডাটাবেস তথ্য এখানে দিন)
+# ==========================================
+def get_db_connection():
+    return mysql.connector.connect(
+        host="localhost",       # আপনার হোস্টিং হোস্ট (যেমন: localhost)
+        user="root",            # আপনার ডাটাবেস ইউজারনেম
+        password="",            # আপনার ডাটাবেস পাসওয়ার্ড
+        database="sm_tech_db"   # আপনার ডাটাবেস নাম
+    )
 
+# ==========================================
+# 🔐 লগইন ও সেশন স্টেট ম্যানেজমেন্ট
+# ==========================================
+if "logged_in" not in st.session_state:
+    st.session_state["logged_in"] = False
+if "editing_stock_id" not in st.session_state:
+    st.session_state["editing_stock_id"] = None
 if "invoice_items" not in st.session_state:
     st.session_state["invoice_items"] = [{"description": "", "qty": 1, "uprice": 0}]
 
-if "editing_index" not in st.session_state:
-    st.session_state["editing_index"] = None
+# সিএসএস স্টাইল (মোবাইল ও কম্পিউটারের স্ক্রিন সুন্দর দেখানোর জন্য)
+st.markdown("""
+    <style>
+    .main-title { font-size: 28px; font-weight: bold; color: #0a4da2; text-align: center; margin-bottom: 20px;}
+    .card-box { background-color: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 5px solid #0a4da2; margin-bottom: 15px; }
+    @media (max-width: 768px) {
+        .main-title { font-size: 22px; }
+        .stButton button { width: 100%; }
+    }
+    </style>
+""", unsafe_allow_html=True)
 
-# সাইডবার মেনু
-st.sidebar.title("💻 SM-TECH")
-choice = st.sidebar.radio("মেনু সিলেক্ট করুন:", ["📄 Invoice Generator", "📦 Stock Management"])
-
-# ==========================================
-# ১. ইনভয়েস জেনারেটর (INVOICE GENERATOR)
-# ==========================================
-if choice == "📄 Invoice Generator":
-    st.title("📄 ক্যাশ মেমো / ইনভয়েস জেনারেটর (5\"x7\")")
-    
-    st.subheader("🖼️ মেমোর লোগো সেট করুন")
-    logo_file = st.file_uploader("আপনার গোল লোগোটি এখানে আপলোড করুন (PNG/JPG)", type=["png", "jpg", "jpeg"])
-    
-    st.markdown("---")
-    col_a, col_b = st.columns(2)
-    with col_a:
-        customer_name = st.text_input("Name (কাস্টমারের নাম)")
-        customer_address = st.text_input("Address (ঠিকানা)")
-    with col_b:
-        invoice_no = st.text_input("Invoice No (মেমো নম্বর)", value="SMTECH/2026/01")
-    
-    st.markdown("---")
-    st.subheader("🛒 বিলের বিবরণ")
-    
-    updated_items = []
-    for i, item in enumerate(st.session_state["invoice_items"]):
-        st.markdown(f"**আইটেম নম্বর: {i+1}**")
-        col_desc, col_qty, col_uprice = st.columns([5, 2, 3])
-        
-        with col_desc:
-            desc = st.text_input(f"DESCRIPTION (কাজের বিবরণ/পণ্যের নাম)", value=item["description"], key=f"desc_{i}")
-        with col_qty:
-            qty = st.number_input(f"QTY (পরিমাণ)", min_value=1, value=item["qty"], key=f"qty_{i}")
-        with col_uprice:
-            uprice = st.number_input(f"U.PRICE (একক মূল্য)", min_value=0, value=item["uprice"], key=f"uprice_{i}")
+# লগইন স্ক্রিন
+if not st.session_state["logged_in"]:
+    st.markdown("<h2 class='main-title'>🔐 SM-TECH - Admin Login</h2>", unsafe_allow_html=True)
+    col_l1, col_l2, col_l3 = st.columns([1, 2, 1])
+    with col_l2:
+        with st.form("login_form"):
+            username = st.text_input("Username (ইউজারনেম)")
+            password = st.text_input("Password (পাসওয়ার্ড)", type="password")
+            submit_login = st.form_submit_button("লগইন করুন")
             
-        updated_items.append({"description": desc, "qty": qty, "uprice": uprice})
-    
-    st.session_state["invoice_items"] = updated_items
-    
-    col_btn1, col_btn2, _ = st.columns([2, 2, 6])
-    with col_btn1:
-        if st.button("➕ নতুন আইটেম যোগ করুন"):
-            st.session_state["invoice_items"].append({"description": "", "qty": 1, "uprice": 0})
-            st.rerun()
-    with col_btn2:
-        if st.button("❌ শেষ আইটেমটি বাদ দিন") and len(st.session_state["invoice_items"]) > 1:
-            st.session_state["invoice_items"].pop()
-            st.rerun()
-            
-    st.markdown("---")
-    discount = st.number_input("DISCOUNT (ডিসকাউন্ট টাকা)", min_value=0, value=0)
-    
-    if st.button("ইনভয়েস পিডিএফ তৈরি করুন"):
-        if customer_name:
-            sub_total = 0
-            table_rows_html = ""
-            active_rows_count = 0
-            
-            for index, item in enumerate(st.session_state["invoice_items"]):
-                if item["description"].strip() != "":
-                    amount = item["qty"] * item["uprice"]
-                    sub_total += amount
-                    active_rows_count += 1
+            if submit_login:
+                try:
+                    conn = get_db_connection()
+                    cursor = conn.cursor()
+                    cursor.execute("SELECT * FROM admins WHERE username=%s AND password=%s", (username, password))
+                    user = cursor.fetchone()
+                    cursor.close()
+                    conn.close()
                     
-                    table_rows_html += f"""
-                    <tr>
-                        <td style="text-align: center; padding: 5px; font-size: 11px; height: 18px;">{active_rows_count}</td>
-                        <td style="padding: 5px; font-size: 11px; font-weight: bold;">{item["description"]}</td>
-                        <td style="text-align: center; padding: 5px; font-size: 11px;">{item["qty"]}</td>
-                        <td style="text-align: right; padding: 5px; font-size: 11px;">{item["uprice"]}</td>
-                        <td style="text-align: right; padding: 5px; font-size: 11px; font-weight: bold;">{amount}</td>
-                    </tr>
-                    """
-            
-            total_required_rows = 10
-            blank_rows_to_add = max(0, total_required_rows - active_rows_count)
-            
-            for b in range(blank_rows_to_add):
-                row_num = active_rows_count + b + 1
-                table_rows_html += f"""
-                <tr>
-                    <td style="text-align: center; padding: 5px; font-size: 11px; color: #ccc; height: 18px;">{row_num}</td>
-                    <td style="padding: 5px;"></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                """
-            
-            total_bill = sub_total - discount
-            current_date = datetime.date.today().strftime("%d-%m-%Y")
-            
-            logo_html_tag = '<div class="logo-placeholder">SM</div>'
-            if logo_file is not None:
-                file_bytes = logo_file.read()
-                base64_image = base64.b64encode(file_bytes).decode("utf-8")
-                logo_html_tag = f'<img src="data:image/png;base64,{base64_image}" class="logo-img">'
-            
-            invoice_html = f"""
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="utf-8">
-                <style>
-                    @page {{ size: 5in 7in; margin: 0; }}
-                    body {{ font-family: 'Arial', sans-serif; background-color: #fff; margin: 0; padding: 0; -webkit-print-color-adjust: exact; }}
-                    .main-pad {{ width: 5in; height: 7in; padding: 0.2in 0.2in 0.15in 0.2in; box-sizing: border-box; border: 1px solid #0a4da2; display: flex; flex-direction: column; }}
-                    .header-table {{ width: 100%; border-collapse: collapse; margin-bottom: 3px; }}
-                    .logo-td {{ width: 62px; vertical-align: middle; text-align: left; }}
-                    .logo-img {{ width: 55px; height: 55px; border-radius: 50%; object-fit: cover; border: 1.5px solid #0a4da2; }}
-                    .logo-placeholder {{ width: 55px; height: 55px; border-radius: 50%; background: #0a4da2; color: #fff; text-align: center; line-height: 55px; font-weight: bold; font-size: 18px; }}
-                    .text-td {{ vertical-align: top; padding-left: 6px; }}
-                    .logo-main {{ font-size: 26px; font-weight: 900; font-style: italic; color: #e63946; margin: 0; line-height: 0.9; font-family: 'Impact', Arial, sans-serif; }}
-                    .logo-main span {{ color: #0a4da2; }}
-                    .sub-title {{ font-size: 9.5px; font-weight: bold; color: #2a9d8f; letter-spacing: 0.5px; margin: 3px 0 1px 0; font-family: 'Arial Black', sans-serif; }}
-                    .tagline {{ font-size: 8px; font-weight: bold; color: #555; margin: 0; }}
-                    .owner-td {{ text-align: right; font-size: 8.5px; color: #0a4da2; font-weight: bold; line-height: 1.3; vertical-align: top; width: 105px; padding-top: 2px; }}
-                    .owner-name {{ font-size: 11px; color: #0a4da2; font-weight: bold; }}
-                    .invoice-bar-table {{ width: 100%; margin-top: 5px; border-collapse: collapse; }}
-                    .bill-to {{ font-size: 9.5px; font-weight: bold; color: white; background-color: #0a4da2; padding: 1px 4px; border-radius: 1px; }}
-                    .invoice-badge {{ background-color: #0a4da2; color: white; font-size: 12px; font-weight: bold; text-align: center; padding: 2px 14px; letter-spacing: 1px; border-radius: 2px; display: inline-block; }}
-                    .info-lines {{ font-size: 10px; line-height: 1.8; }}
-                    .dot-line {{ border-bottom: 1px dotted #555; display: inline-block; padding-left: 3px; font-weight: bold; color: #000; }}
-                    .item-table {{ width: 100%; border-collapse: collapse; margin-top: 6px; border: 1.5px solid #0a4da2; }}
-                    .item-table th {{ background-color: #0a4da2; color: white; padding: 4px; font-size: 10px; font-weight: bold; border: 1px solid #fff; text-align: center; }}
-                    .item-table td {{ border-left: 1.5px solid #0a4da2; border-right: 1.5px solid #0a4da2; border-bottom: 1px solid #e0e0e0; }}
-                    .subtotal-title {{ background-color: #0a4da2; color: white; font-weight: bold; padding: 4px; text-align: center; font-size: 10px; }}
-                    .subtotal-val {{ text-align: right; font-weight: bold; border: 1.5px solid #0a4da2; background-color: #f8f9fa; font-size: 11px; color: #0a4da2; padding: 4px; }}
-                    .bottom-area {{ width: 100%; border-collapse: collapse; margin-top: 8px; }}
-                    .pay-method-box {{ border: 1.5px solid #0a4da2; border-radius: 3px; padding: 4px; width: 175px; font-size: 9px; font-weight: bold; color: #0a4da2; line-height: 1.3; }}
-                    .pay-title {{ background-color: #0a4da2; color: white; font-weight: bold; padding: 1px 3px; display: inline-block; margin-bottom: 3px; }}
-                    .signature-area {{ text-align: right; font-size: 9px; font-weight: bold; color: #333; vertical-align: bottom; }}
-                    .sig-line {{ border-top: 1px solid #333; width: 105px; display: inline-block; margin-bottom: 3px; }}
-                    @media print {{ .main-pad {{ border: none; padding: 0.2in 0.2in 0.15in 0.2in; width: 5in; height: 7in; }} }}
-                </style>
-            </head>
-            <body>
-                <div class="main-pad">
-                    <table class="header-table">
-                        <tr>
-                            <td class="logo-td">{logo_html_tag}</td>
-                            <td class="text-td">
-                                <p class="logo-main">SM-<span>TECH</span></p>
-                                <p class="sub-title">COMPUTER & IT SOLUTION</p>
-                                <p class="tagline">Smart Technology-Trusted Service</p>
-                            </td>
-                            <td class="owner-td">
-                                <span class="owner-name">S.m. Ibrahim</span><br>Owner<br>01940-556114<br>01810-499166
-                            </td>
-                        </tr>
-                    </table>
-                    <table class="invoice-bar-table">
-                        <tr>
-                            <td style="width: 55%; vertical-align: top;">
-                                <div class="info-lines">
-                                    <span class="bill-to">Bill To</span> Name: <span class="dot-line" style="width: 130px;">{customer_name}</span><br>
-                                    Address: <span class="dot-line" style="width: 150px;">{customer_address}</span>
-                                </div>
-                            </td>
-                            <td style="width: 45%; text-align: right; vertical-align: top;">
-                                <div class="invoice-badge" style="margin-bottom: 3px;">INVOICE</div>
-                                <div class="info-lines">
-                                    Invoice No: <span class="dot-line" style="width: 85px; text-align: left;">{invoice_no}</span><br>
-                                    Date: <span class="dot-line" style="width: 85px; text-align: left;">{current_date}</span>
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
-                    <table class="item-table">
-                        <thead>
-                            <tr>
-                                <th style="width: 10%;">S.L</th>
-                                <th style="width: 50%;">DESCRIPTION</th>
-                                <th style="width: 10%;">QTY</th>
-                                <th style="width: 15%;">U.PRICE</th>
-                                <th style="width: 15%;">AMOUNT</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {table_rows_html}
-                            <tr>
-                                <td colspan="3" style="border: none;"></td>
-                                <td style="text-align: right; font-weight: bold; border-top: 1.5px solid #0a4da2; padding: 4px; font-size: 10px;">Discount:</td>
-                                <td style="text-align: right; font-weight: bold; color: red; border-top: 1.5px solid #0a4da2; padding: 4px; font-size: 10px;">{discount}</td>
-                            </tr>
-                            <tr>
-                                <td colspan="3" style="border: none;"></td>
-                                <td class="subtotal-title">SUB TOTAL</td>
-                                <td class="subtotal-val">{total_bill}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <table class="bottom-area">
-                        <tr>
-                            <td>
-                                <div class="pay-method-box">
-                                    <div class="pay-title">Payment Methods</div><br>
-                                    <input type="checkbox"> Cash &nbsp; <input type="checkbox"> Bkash &nbsp; <input type="checkbox"> Nagad &nbsp; <input type="checkbox"> Bank
-                                </div>
-                            </td>
-                            <td class="signature-area">
-                                <div class="sig-line"></div><br>Authorised Signature<br><span style="font-size: 8px; font-weight: normal; color: #666;">SM-TECH Computer & IT Solutions</span>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-                <script>window.onload = function() {{ window.print(); }}</script>
-            </body>
-            </html>
-            """
-            
-            st.success("১০টি রো বিশিষ্ট ৫\"x৭\" মেমো সফলভাবে তৈরি হয়েছে!")
-            st.download_button(
-                label="📥 Download & Print PDF Invoice",
-                data=invoice_html,
-                file_name=f"Invoice_{customer_name}.html",
-                mime="text/html"
-            )
-        else:
-            st.error("অনুগ্রহ করে কাস্টমারের নাম লিখুন।")
+                    if user:
+                        st.session_state["logged_in"] = True
+                        st.success("লগইন সফল হয়েছে!")
+                        st.rerun()
+                    else:
+                        st.error("ভুল ইউজারনেম অথবা পাসওয়ার্ড!")
+                except Exception as e:
+                    st.error("ডাটাবেস কানেক্ট করা যায়নি। দয়া করে আপনার MySQL সার্ভার চালু করুন।")
+    st.stop()
 
 # ==========================================
-# ২. স্টক ম্যানেজমেন্ট (STOCK MANAGEMENT)
+# 📱 নেভিগেশন সাইডবার মেনু
 # ==========================================
-elif choice == "📦 Stock Management":
-    st.title("📦 স্টক মালের হিসাব")
+st.sidebar.markdown("### 💻 SM-TECH POS v2.0")
+menu_choice = st.sidebar.radio("মেনু নেভিগেশন:", [
+    "🏠 ড্যাশবোর্ড",
+    "📦 স্টক ম্যানেজমেন্ট",
+    "🔍 পণ্য সার্চ",
+    "🧾 ইনভয়েস তৈরি ও প্রিন্ট",
+    "👤 কাস্টমার ম্যানেজমেন্ট",
+    "📊 বিক্রয় রিপোর্ট",
+    "💰 লাভ-লোকসানের হিসাব"
+])
+
+if st.sidebar.button("🔓 লগআউট"):
+    st.session_state["logged_in"] = False
+    st.rerun()
+
+# ==========================================
+# 🏠 ড্যাশবোর্ড (DASHBOARD)
+# ==========================================
+if menu_choice == "🏠 ড্যাশবোর্ড":
+    st.markdown("<h2 class='main-title'>🏠 বিজনেস ড্যাশবোর্ড</h2>", unsafe_allow_html=True)
+    
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    
+    # মোট বিক্রি ও মোট লাভ হিসাব
+    cursor.execute("SELECT SUM(total_amount) as total_sales, SUM(profit) as total_profit FROM sales")
+    sales_summary = cursor.fetchone()
+    
+    # মোট মালের আইটেম
+    cursor.execute("SELECT COUNT(*) as total_items, SUM(quantity) as total_qty FROM stock")
+    stock_summary = cursor.fetchone()
+    
+    # মোট কাস্টমার
+    cursor.execute("SELECT COUNT(*) as total_cust FROM customers")
+    cust_summary = cursor.fetchone()
+    
+    cursor.close()
+    conn.close()
+    
+    tsales = sales_summary['total_sales'] if sales_summary['total_sales'] else 0
+    tprofit = sales_summary['total_profit'] if sales_summary['total_profit'] else 0
+    titems = stock_summary['total_items'] if stock_summary['total_items'] else 0
+    tqty = stock_summary['total_qty'] if stock_summary['total_qty'] else 0
+    tcust = cust_summary['total_cust'] if cust_summary['total_cust'] else 0
+
+    # ৪টি ড্যাশবোর্ড কার্ড (মোবাইলে রেস্পনসিভ হবে)
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.markdown(f"<div class='card-box'><h4>💰 মোট বিক্রয়</h4><h2>৳ {tsales:,.2f}</h2></div>", unsafe_allow_html=True)
+    with col2:
+        st.markdown(f"<div class='card-box'><h4>📈 মোট লাভ</h4><h2>৳ {tprofit:,.2f}</h2></div>", unsafe_allow_html=True)
+    with col3:
+        st.markdown(f"<div class='card-box'><h4>📦 মোট প্রোডাক্ট আইটেম</h4><h2>{titems} টি ({tqty} পিস)</h2></div>", unsafe_allow_html=True)
+    with col4:
+        st.markdown(f"<div class='card-box'><h4>👤 মোট কাস্টমার</h4><h2>{tcust} জন</h2></div>", unsafe_allow_html=True)
+
+# ==========================================
+# 📦 স্টক ম্যানেজমেন্ট (STOCK MANAGEMENT)
+# ==========================================
+elif menu_choice == "📦 স্টক ম্যানেজমেন্ট":
+    st.markdown("<h2 class='main-title'>📦 স্টক মালের হিসাব</h2>", unsafe_allow_html=True)
+    
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
     
     # এডিট মোড এক্টিভ কিনা চেক করা
-    if st.session_state["editing_index"] is not None:
+    if st.session_state["editing_stock_id"] is not None:
         st.subheader("📝 পণ্য স্টক এডিট করুন")
-        idx = st.session_state["editing_index"]
-        edit_item = st.session_state["stock_data"][idx]
+        prod_id = st.session_state["editing_stock_id"]
+        cursor.execute("SELECT * FROM stock WHERE id=%s", (prod_id,))
+        edit_item = cursor.fetchone()
         
         col1, col2, col3, col4 = st.columns(4)
         with col1:
-            item_name = st.text_input("New Products (পণ্যের নাম)", value=edit_item["New Products"])
+            item_name = st.text_input("Product Name", value=edit_item["product_name"])
         with col2:
-            quantity = st.number_input("Quantity (পরিমাণ)", min_value=0, value=int(edit_item["Quantity"]))
+            quantity = st.number_input("Quantity", min_value=0, value=int(edit_item["quantity"]))
         with col3:
-            cost_price = st.number_input("Cost Price (ক্রয় মূল্য)", min_value=0, value=int(edit_item["Cost Price"]))
+            cost_price = st.number_input("Cost Price", min_value=0.0, value=float(edit_item["cost_price"]))
         with col4:
-            sell_rate = st.number_input("Sell Rate (বিক্রয় মূল্য)", min_value=0, value=int(edit_item["Sell Rate"]))
+            sell_rate = st.number_input("Sell Rate", min_value=0.0, value=float(edit_item["sell_rate"]))
             
-        btn_col1, btn_col2, _ = st.columns([2, 2, 8])
-        with btn_col1:
-            if st.button("💾 সংরক্ষণ করুন"):
-                st.session_state["stock_data"][idx] = {
-                    "Date": edit_item["Date"],
-                    "New Products": item_name,
-                    "Quantity": quantity,
-                    "Cost Price": cost_price,
-                    "Sell Rate": sell_rate
-                }
-                st.session_state["editing_index"] = None
-                st.success("স্টক সফলভাবে আপডেট করা হয়েছে!")
+        btn_c1, btn_c2, _ = st.columns([2, 2, 8])
+        with btn_c1:
+            if st.button("💾 আপডেট সংরক্ষণ করুন"):
+                cursor.execute("UPDATE stock SET product_name=%s, quantity=%s, cost_price=%s, sell_rate=%s WHERE id=%s", 
+                               (item_name, quantity, cost_price, sell_rate, prod_id))
+                conn.commit()
+                st.session_state["editing_stock_id"] = None
+                st.success("স্টক ডাটাবেসে সফলভাবে আপডেট হয়েছে!")
                 st.rerun()
-        with btn_col2:
+        with btn_c2:
             if st.button("❌ বাতিল"):
-                st.session_state["editing_index"] = None
+                st.session_state["editing_stock_id"] = None
                 st.rerun()
-                
     else:
         st.subheader("➕ নতুন পণ্য স্টক করুন")
         col1, col2, col3, col4 = st.columns(4)
@@ -287,60 +175,274 @@ elif choice == "📦 Stock Management":
         with col2:
             quantity = st.number_input("Quantity (পরিমাণ)", min_value=0, value=0)
         with col3:
-            cost_price = st.number_input("Cost Price (ক্রয় মূল্য)", min_value=0, value=0)
+            cost_price = st.number_input("Cost Price (ক্রয় মূল্য)", min_value=0.0, value=0.0)
         with col4:
-            sell_rate = st.number_input("Sell Rate (বিক্রয় মূল্য)", min_value=0, value=0)
+            sell_rate = st.number_input("Sell Rate (বিক্রয় মূল্য)", min_value=0.0, value=0.0)
             
         if st.button("স্টক আপডেট করুন"):
             if item_name and quantity > 0:
                 current_date = datetime.date.today().strftime("%d-%m-%Y")
-                st.session_state["stock_data"].append({
-                    "Date": current_date,
-                    "New Products": item_name,
-                    "Quantity": quantity,
-                    "Cost Price": cost_price,
-                    "Sell Rate": sell_rate
-                })
-                st.success(f"সফলভাবে '{item_name}' স্টকে যোগ করা হয়েছে!")
+                cursor.execute("INSERT INTO stock (date_added, product_name, quantity, cost_price, sell_rate) VALUES (%s, %s, %s, %s, %s)", 
+                               (current_date, item_name, quantity, cost_price, sell_rate))
+                conn.commit()
+                st.success(f"সফলভাবে '{item_name}' ডাটাবেস স্টকে যোগ করা হয়েছে!")
                 st.rerun()
-            else:
-                st.error("দয়া করে পণ্যের নাম এবং সঠিক পরিমাণ লিখুন।")
                 
     st.markdown("---")
     st.subheader("📋 বর্তমান স্টক তালিকা")
+    cursor.execute("SELECT * FROM stock ORDER BY id DESC")
+    stocks = cursor.fetchall()
     
-    # ইন্টারঅ্যাক্টিভ টেবিল তৈরি (Edit/Delete বাটন সহ)
-    if st.session_state["stock_data"]:
-        # টেবিল হেডার
+    if stocks:
         h_sl, h_date, h_name, h_qty, h_cost, h_sell, h_action = st.columns([1, 2, 3, 2, 2, 2, 3])
         h_sl.markdown("**Sl.**")
         h_date.markdown("**Date**")
-        h_name.markdown("**New Products**")
+        h_name.markdown("**Product Name**")
         h_qty.markdown("**Quantity**")
         h_cost.markdown("**Cost Price**")
         h_sell.markdown("**Sell Rate**")
         h_action.markdown("**Actions**")
         st.markdown("<hr style='margin: 5px 0px;' />", unsafe_allow_html=True)
         
-        # টেবিল ডাটা রো সমূহ
-        for idx, item in enumerate(st.session_state["stock_data"]):
+        for idx, item in enumerate(stocks):
             c_sl, c_date, c_name, c_qty, c_cost, c_sell, c_action = st.columns([1, 2, 3, 2, 2, 2, 3])
             c_sl.write(idx + 1)
-            c_date.write(item["Date"])
-            c_name.write(item["New Products"])
-            c_qty.write(item["Quantity"])
-            c_cost.write(item["Cost Price"])
-            c_sell.write(item["Sell Rate"])
+            c_date.write(item["date_added"])
+            c_name.write(item["product_name"])
+            c_qty.write(item["quantity"])
+            c_cost.write(f"৳{item['cost_price']}")
+            c_sell.write(f"৳{item['sell_rate']}")
             
-            # এডিট এবং ডিলিট বাটন পাশাপাশি
             btn_edit, btn_del = c_action.columns(2)
-            if btn_edit.button("✏️ Edit", key=f"edit_{idx}"):
-                st.session_state["editing_index"] = idx
+            if btn_edit.button("✏️ Edit", key=f"edit_{item['id']}"):
+                st.session_state["editing_stock_id"] = item['id']
                 st.rerun()
-            if btn_del.button("🗑️ Delete", key=f"del_{idx}"):
-                st.session_state["stock_data"].pop(idx)
-                st.success("পণ্যটি তালিকা থেকে মুছে ফেলা হয়েছে।")
+            if btn_del.button("🗑️ Delete", key=f"del_{item['id']}"):
+                cursor.execute("DELETE FROM stock WHERE id=%s", (item['id'],))
+                conn.commit()
+                st.success("পণ্যটি সফলভাবে মুছে ফেলা হয়েছে।")
                 st.rerun()
-            st.markdown("<hr style='margin: 2px 0px; opacity: 0.3;' />", unsafe_allow_html=True)
     else:
         st.info("স্টকে কোনো পণ্য নেই।")
+        
+    cursor.close()
+    conn.close()
+
+# ==========================================
+# 🔍 পণ্য সার্চ (PRODUCT SEARCH)
+# ==========================================
+elif menu_choice == "🔍 পণ্য সার্চ":
+    st.markdown("<h2 class='main-title'>🔍 পণ্য সার্চ ও অনুসন্ধান</h2>", unsafe_allow_html=True)
+    search_query = st.text_input("পণ্যের নাম লিখে সার্চ করুন...")
+    
+    if search_query:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM stock WHERE product_name LIKE %s", (f"%{search_query}%",))
+        results = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        
+        if results:
+            df = pd.DataFrame(results)
+            df.columns = ["ID", "তারিখ", "পণ্যের নাম", "পরিমাণ (Stock)", "ক্রয়মূল্য", "বিক্রয়মূল্য"]
+            st.dataframe(df, use_container_width=True)
+        else:
+            st.warning("এই নামে কোনো পণ্য পাওয়া যায়নি।")
+
+# ==========================================
+# 🧾 ইনভয়েস তৈরি ও প্রিন্ট (INVOICE GENERATOR)
+# ==========================================
+elif menu_choice == "🧾 ইনভয়েস তৈরি ও প্রিন্ট":
+    st.markdown("<h2 class='main-title'>🧾 ক্যাশ মেমো / ইনভয়েস জেনারেটর</h2>", unsafe_allow_html=True)
+    
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    
+    # অটো কাস্টমার সাজেস্ট ড্রপডাউন
+    cursor.execute("SELECT name FROM customers")
+    existing_custs = [c['name'] for c in cursor.fetchall()]
+    
+    col_a, col_b = st.columns(2)
+    with col_a:
+        customer_name = st.text_input("Customer Name (কাস্টমারের নাম)")
+        customer_phone = st.text_input("Customer Phone (মোবাইল নম্বর)")
+        customer_address = st.text_input("Address (ঠিকানা)")
+    with col_b:
+        invoice_no = st.text_input("Invoice No", value=f"SM-{datetime.datetime.now().strftime('%d%m%y%H%M%S')}")
+    
+    st.markdown("---")
+    st.subheader("🛒 বিলের বিবরণ")
+    
+    # স্টকের পণ্যের ড্রপডাউন লিস্ট
+    cursor.execute("SELECT id, product_name, sell_rate, cost_price, quantity FROM stock WHERE quantity > 0")
+    available_products = cursor.fetchall()
+    prod_options = {p['product_name']: p for p in available_products}
+    
+    updated_items = []
+    for i, item in enumerate(st.session_state["invoice_items"]):
+        col_desc, col_qty, col_uprice = st.columns([5, 2, 3])
+        
+        with col_desc:
+            selected_prod = st.selectbox(f"পণ্যের নাম সিলেক্ট করুন #{i+1}", [""] + list(prod_options.keys()), key=f"inv_prod_{i}")
+        with col_qty:
+            max_q = prod_options[selected_prod]['quantity'] if selected_prod else 100
+            qty = st.number_input(f"QTY #{i+1}", min_value=1, max_value=max_q, value=1, key=f"inv_qty_{i}")
+        with col_uprice:
+            default_price = float(prod_options[selected_prod]['sell_rate']) if selected_prod else 0.0
+            uprice = st.number_input(f"মূল্য #{i+1}", min_value=0.0, value=default_price, key=f"inv_price_{i}")
+            
+        if selected_prod:
+            updated_items.append({
+                "id": prod_options[selected_prod]['id'],
+                "description": selected_prod, 
+                "qty": qty, 
+                "uprice": uprice,
+                "cost_price": float(prod_options[selected_prod]['cost_price'])
+            })
+            
+    col_btn1, col_btn2, _ = st.columns([2, 2, 6])
+    with col_btn1:
+        if st.button("➕ নতুন রো যোগ করুন"):
+            st.session_state["invoice_items"].append({"description": "", "qty": 1, "uprice": 0})
+            st.rerun()
+    with col_btn2:
+        if st.button("❌ শেষ রো বাদ দিন") and len(st.session_state["invoice_items"]) > 1:
+            st.session_state["invoice_items"].pop()
+            st.rerun()
+            
+    discount = st.number_input("DISCOUNT (ডিসকাউন্ট টাকা)", min_value=0.0, value=0.0)
+    
+    if st.button("🛒 সেল সম্পন্ন ও ইনভয়েস প্রিন্ট করুন"):
+        if customer_name and updated_items:
+            sub_total = 0
+            total_cost = 0
+            table_rows_html = ""
+            
+            # কাস্টমার সেভ বা অটো আপডেট
+            if customer_name not in existing_custs:
+                cursor.execute("INSERT INTO customers (name, phone, address) VALUES (%s, %s, %s)", (customer_name, customer_phone, customer_address))
+            
+            for index, item in enumerate(updated_items):
+                amount = item["qty"] * item["uprice"]
+                sub_total += amount
+                total_cost += (item["qty"] * item["cost_price"])
+                
+                # স্টক থেকে পরিমাণ মাইনাস বা আপডেট করা
+                cursor.execute("UPDATE stock SET quantity = quantity - %s WHERE id = %s", (item["qty"], item["id"]))
+                
+                table_rows_html += f"""
+                <tr>
+                    <td style='text-align:center;'>{index+1}</td>
+                    <td>{item['description']}</td>
+                    <td style='text-align:center;'>{item['qty']}</td>
+                    <td style='text-align:right;'>{item['uprice']}</td>
+                    <td style='text-align:right;'>{amount}</td>
+                </tr>
+                """
+            
+            total_bill = sub_total - discount
+            total_profit = total_bill - total_cost
+            current_date = datetime.date.today().strftime("%d-%m-%Y")
+            
+            # সেলস রিপোর্টে ডাটা সেভ করা
+            cursor.execute("INSERT INTO sales (invoice_no, customer_name, customer_phone, sale_date, total_amount, discount, profit) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                           (invoice_no, customer_name, customer_phone, current_date, total_bill, discount, total_profit))
+            conn.commit()
+            
+            # ৫x৭ ইঞ্চি ক্যাশ মেমো প্রিন্ট টেমপ্লেট
+            invoice_html = f"""
+            <html><head><style>
+                @page {{ size: 5in 7in; margin: 0; }}
+                body {{ font-family: Arial; padding: 15px; }}
+                .header {{ text-align: center; color: #0a4da2; }}
+                .table {{ width: 100%; border-collapse: collapse; margin-top: 10px; }}
+                .table th, .table td {{ border: 1px solid #0a4da2; padding: 5px; font-size: 11px; }}
+                .table th {{ background: #0a4da2; color: white; }}
+            </style></head>
+            <body>
+                <div class="header">
+                    <h2>SM-TECH</h2>
+                    <p style="font-size:9px; margin:-10px 0 10px 0;">COMPUTER & IT SOLUTION</p>
+                </div>
+                <p style="font-size:11px;"><b>Memo:</b> {invoice_no} | <b>Date:</b> {current_date}<br>
+                <b>Client:</b> {customer_name} ({customer_phone})</p>
+                <table class="table">
+                    <thead><tr><th>SL</th><th>Description</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead>
+                    <tbody>{table_rows_html}</tbody>
+                </table>
+                <h4 style="text-align:right;">Grand Total: ৳{total_bill}</h4>
+                <script>window.onload = function() {{ window.print(); }}</script>
+            </body></html>
+            """
+            st.success("বিক্রয় সফল হয়েছে এবং স্টক আপডেট করা হয়েছে!")
+            st.download_button("📥 মেমো ডাউনলোড ও প্রিন্ট", data=invoice_html, file_name=f"Invoice_{invoice_no}.html", mime="text/html")
+        else:
+            st.error("কাস্টমারের নাম এবং কমপক্ষে ১টি প্রোডাক্ট সিলেক্ট করুন।")
+            
+    cursor.close()
+    conn.close()
+
+# ==========================================
+# 👤 কাস্টমার ম্যানেজমেন্ট (CUSTOMER MANAGEMENT)
+# ==========================================
+elif menu_choice == "👤 কাস্টমার ম্যানেজমেন্ট":
+    st.markdown("<h2 class='main-title'>👤 কাস্টমার ম্যানেজমেন্ট</h2>", unsafe_allow_html=True)
+    
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM customers ORDER BY id DESC")
+    cust_data = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    
+    if cust_data:
+        df_cust = pd.DataFrame(cust_data)
+        df_cust.columns = ["ID", "কাস্টমারের নাম", "মোবাইল নম্বর", "ঠিকানা"]
+        st.dataframe(df_cust, use_container_width=True)
+    else:
+        st.info("এখনো কোনো কাস্টমার রেজিস্টার্ড হয়নি।")
+
+# ==========================================
+# 📊 বিক্রয় রিপোর্ট (SALES REPORT)
+# ==========================================
+elif menu_choice == "📊 বিক্রয় রিপোর্ট":
+    st.markdown("<h2 class='main-title'>📊 বিক্রয় রিপোর্ট তালিকা</h2>", unsafe_allow_html=True)
+    
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT invoice_no, customer_name, sale_date, total_amount, discount FROM sales ORDER BY id DESC")
+    sales_data = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    
+    if sales_data:
+        df_sales = pd.DataFrame(sales_data)
+        df_sales.columns = ["ইনভয়েস নম্বর", "কাস্টমার নাম", "তারিখ", "মোট বিল (৳)", "ডিসকাউন্ট (৳)"]
+        st.dataframe(df_sales, use_container_width=True)
+    else:
+        st.info("কোনো বিক্রয়ের রেকর্ড পাওয়া যায়নি।")
+
+# ==========================================
+# 💰 লাভ-লোকসানের হিসাব (PROFIT LOSS LOSS)
+# ==========================================
+elif menu_choice == "💰 লাভ-লোকসানের হিসাব":
+    st.markdown("<h2 class='main-title'>💰 লাভ-লোকসানের নিখুঁত হিসাব</h2>", unsafe_allow_html=True)
+    
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT sale_date, SUM(total_amount) as sales, SUM(profit) as profits FROM sales GROUP BY sale_date ORDER BY id DESC")
+    profit_data = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    
+    if profit_data:
+        df_p = pd.DataFrame(profit_data)
+        df_p.columns = ["তারিখ", "মোট বিক্রি (৳)", "নীট লাভ (৳)"]
+        st.dataframe(df_p, use_container_width=True)
+        
+        # গ্রাফ চার্ট
+        st.markdown("### 📈 বিক্রয় বনাম লাভ গ্রাফ চিত্র")
+        st.line_chart(df_p.set_index("তারিখ"))
+    else:
+        st.info("হিসাব দেখানোর জন্য পর্যাপ্ত বিক্রয় ডাটা নেই।")
