@@ -16,7 +16,7 @@ if "logged_in" not in st.session_state:
 if "customer_dues" not in st.session_state:
     st.session_state.customer_dues = [
         {"ক্রমিক নং": 1, "কাস্টমার নাম": "Abir Rahman", "কাজের বিবরণ": "Windows Setup & Cleaning", "পরিমান": 1, "দর": 500, "মোট টাকা": 500, "আদায়": 300, "বাকি": 200},
-        {"क्रमिक नং": 2, "কাস্টমার নাম": "Sristi", "কাজের বিবরণ": "Asus Motherboard Repair", "পরিমান": 1, "দর": 2500, "মোট টাকা": 2500, "আদায়": 1500, "বাকি": 1000}
+        {"ক্রমিক নং": 2, "কাস্টমার নাম": "Sristi", "কাজের বিবরণ": "Asus Motherboard Repair", "পরিমান": 1, "দর": 2500, "মোট টাকা": 2500, "আদায়": 1500, "বাকি": 1000}
     ]
 
 # স্টক পণ্যের হিসাব সেশন স্টেট
@@ -132,7 +132,7 @@ else:
         total_due_amount = sum(item.get("বাকি", 0) for item in st.session_state.customer_dues)
         total_stock_value = sum(item.get("মোট টাকা", 0) for item in st.session_state.shop_stock)
         
-        col1.metric("কুল বাকির হিসাব (কাস্টমার)", f"{len(st.session_state.customer_dues)} জন")
+        col1.metric("कुल বাকির হিসাব (কাস্টমার)", f"{len(st.session_state.customer_dues)} জন")
         col2.metric("মোট বাকি টাকা", f"{total_due_amount} BDT")
         col3.metric("স্টক পণ্যের মোট মূল্য", f"{total_stock_value} BDT")
         
@@ -143,7 +143,6 @@ else:
     elif menu_choice == t["menu"][1]:
         st.title("💸 কাস্টমার বাকির হিসাব ও রিপেয়ার")
         
-        # নতুন বাকি হিসাব এড করার ফর্ম
         with st.form("Add Customer Due"):
             st.write("### ➕ নতুন বাকির হিসাব যুক্ত করুন")
             c_name = st.text_input("কাস্টমার নাম")
@@ -182,7 +181,6 @@ else:
             df_dues = pd.DataFrame(st.session_state.customer_dues)
             st.dataframe(df_dues, use_container_width=True, hide_index=True)
             
-            # নিরাপদ ডিলিট সেকশন
             st.write("### 🗑️ এন্ট্রি ডিলিট করুন")
             col_del1, col_del2 = st.columns([2, 1])
             with col_del1:
@@ -192,15 +190,9 @@ else:
                 delete_btn = st.button("❌ এন্ট্রি মুছুন", type="primary", use_container_width=True)
             
             if delete_btn:
-                # নিরাপদ ফিল্টারিং (ইনডেক্স ব্যবহার করে)
-                initial_len = len(st.session_state.customer_dues)
                 st.session_state.customer_dues = [item for idx, item in enumerate(st.session_state.customer_dues) if (idx + 1) != delete_id]
-                
-                # ক্রমিক নং পুনরায় রিসেট
                 for idx, item in enumerate(st.session_state.customer_dues):
-                    # সব কী-কে অভিন্ন করতে পুনরায় ডিকশনারি বিল্ড
                     item["ক্রমিক নং"] = idx + 1
-                
                 st.toast("তালিকা সফলভাবে আপডেট করা হয়েছে।")
                 st.rerun()
         else:
@@ -241,7 +233,6 @@ else:
             df_stock = pd.DataFrame(st.session_state.shop_stock)
             st.dataframe(df_stock, use_container_width=True, hide_index=True)
             
-            # নিরাপদ স্টক ডিলিট সেকশন
             st.write("### 🗑️ স্টক পণ্য ডিলিট করুন")
             col_sdel1, col_sdel2 = st.columns([2, 1])
             with col_sdel1:
@@ -252,11 +243,8 @@ else:
             
             if delete_stock_btn:
                 st.session_state.shop_stock = [item for idx, item in enumerate(st.session_state.shop_stock) if (idx + 1) != delete_stock_id]
-                
-                # ক্রমিক নং পুনরায় সাজানো
                 for idx, item in enumerate(st.session_state.shop_stock):
-                    item["ক্রমিক নং"] = idx + 1
-                
+                    item["क्रमिक নং"] = idx + 1
                 st.toast("পণ্যটি স্টক থেকে মুছে ফেলা হয়েছে।")
                 st.rerun()
         else:
@@ -273,10 +261,13 @@ else:
             logo_base64 = f"data:image/png;base64,{base64.b64encode(bytes_data).decode()}"
         
         st.markdown("### 👤 Customer Info")
-        col_in1, col_in2 = st.columns(2)
+        col_in1, col_in2, col_in3 = st.columns([1.5, 2, 2])
         with col_in1:
-            cust_name = st.text_input("কাস্টমারের নাম", value="খুচরা কাস্টমার")
+            # ম্যানুয়াল ইনভয়েস নম্বর বসানোর ইনপুট বক্স
+            inv_custom_num = st.text_input("Invoice No (ইনভয়েস নং)", value="1001")
         with col_in2:
+            cust_name = st.text_input("কাস্টমারের নাম", value="খুচরা কাস্টমার")
+        with col_in3:
             cust_address = st.text_input("Address (ঠিকানা)", value="Dhaka, Bangladesh")
             
         st.write("---")
@@ -316,7 +307,6 @@ else:
             if not st.session_state.invoice_items:
                 st.warning("Please add at least one item first! আগে লিস্টে পণ্য যোগ করুন।")
             else:
-                inv_num = f"{int(datetime.datetime.now().timestamp()) % 100000}"
                 current_date = datetime.datetime.now().strftime('%d-%m-%Y')
                 
                 rows_html = ""
@@ -392,7 +382,7 @@ else:
                             </td>
                             <td style="width: 45%; text-align: right; vertical-align: top;">
                                 <span style="background-color: #1e3a8a; color: white; padding: 3px 12px; font-weight: bold; font-size: 10.5px; letter-spacing: 0.5px; border-radius: 2px; display: inline-block; margin-bottom: 4px;">INVOICE</span>
-                                <div style="margin-top: 4px;"><b>Invoice No:</b> # {inv_num}</div>
+                                <div style="margin-top: 4px;"><b>Invoice No:</b> # {inv_custom_num}</div>
                                 <div style="margin-top: 2px;"><b>Date:</b> {current_date}</div>
                             </td>
                         </tr>
@@ -439,8 +429,9 @@ else:
                 </div>
                 """
                 
+                # ফিক্সড: এখানে unsafe_allow_html=True যোগ করা হয়েছে, যাতে কোড না এসে সরাসরি ভিজ্যুয়াল মেমো আসে
                 st.markdown(invoice_html, unsafe_allow_html=True)
                 
                 b64_invoice = base64.b64encode(invoice_html.encode()).decode()
-                href = f'<a href="data:text/html;base64,{b64_invoice}" download="Invoice_{inv_num}.html" style="display: block; text-align: center; background-color: #059669; color: white; padding: 12px; font-weight: bold; text-decoration: none; border-radius: 6px; margin-top: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">📥 Download 5"x7" Invoice File</a>'
+                href = f'<a href="data:text/html;base64,{b64_invoice}" download="Invoice_{inv_custom_num}.html" style="display: block; text-align: center; background-color: #059669; color: white; padding: 12px; font-weight: bold; text-decoration: none; border-radius: 6px; margin-top: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">📥 Download 5"x7" Invoice File</a>'
                 st.markdown(href, unsafe_allow_html=True)
