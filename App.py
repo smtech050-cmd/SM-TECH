@@ -1,252 +1,117 @@
-import os
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, render_template_string
-from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+import streamlit as st
+import pandas as pd
+import datetime
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'sristi_repair_secret_key_123'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# পেজ কনফিগারেশন
+st.set_page_config(page_title="Sristi Computer Repair & POS", layout="wide")
 
-db = SQLAlchemy(app)
+# ডামি ডাটাবেজ সেশন (ডাটা ধরে রাখার জন্য)
+if "repairs" not in st.session_state:
+    st.session_state.repairs = [
+        {"ID": 1, "Customer": "Abir Rahman", "Device": "HP Laptop", "Status": "In Progress", "Cost (BDT)": 1200},
+        {"ID": 2, "Customer": "Sristi", "Device": "Asus Motherboard", "Status": "Ready", "Cost (BDT)": 2500}
+    ]
 
-# ==========================================
-# 🗄️ ডাটাবেজ মডেলস (Database Models)
-# ==========================================
+if "stock" not in st.session_state:
+    st.session_state.stock = [
+        {"ID": 1, "Item": "512GB NVMe SSD", "Qty": 15, "Price (BDT)": 4200},
+        {"ID": 2, "Item": "DDR4 8GB RAM", "Qty": 22, "Price (BDT)": 2400}
+    ]
 
-class Customer(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    phone = db.Column(db.String(20), nullable=False)
-    email = db.Column(db.String(100))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    repairs = db.relationship('Repair', backref='customer', lazy=True)
-
-class Repair(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    device_name = db.Column(db.String(150), nullable=False)
-    problem_description = db.Column(db.Text, nullable=False)
-    status = db.Column(db.String(50), default='Pending') # Pending, In Progress, Ready, Delivered
-    estimated_cost = db.Column(db.Float, default=0.0)
-    customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-class Stock(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    item_name = db.Column(db.String(150), nullable=False)
-    quantity = db.Column(db.Integer, default=0)
-    price = db.Column(db.Float, default=0.0)
-
-class Invoice(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    invoice_number = db.Column(db.String(50), unique=True, nullable=False)
-    customer_name = db.Column(db.String(100), nullable=False)
-    total_amount = db.Column(db.Float, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
+# সাইডবার নেভিগেশন (Sidebar)
+st.sidebar.title("⚙️ Navigation")
+menu = st.sidebar.radio("Go to", ["Dashboard", "Customer & Repair", "Stock / Inventory", "POS & Invoice"])
 
 # ==========================================
-# 🔗 অ্যাপ্লিকেশন রাউটস (Routes / Endpoints)
+# 📊 1. DASHBOARD
 # ==========================================
-
-# ১. ড্যাশবোর্ড (Dashboard)
-@app.route('/')
-@app.route('/dashboard')
-def dashboard():
-    total_customers = Customer.query.count()
-    total_repairs = Repair.query.count()
-    pending_repairs = Repair.query.filter(Repair.status != 'Delivered').count()
-    low_stock = Stock.query.filter(Stock.quantity < 5).count()
+if menu == "Dashboard":
+    st.title("🖥️ Repair & POS Dashboard")
+    st.subheader("Sristi Computer Repair")
     
-    return jsonify({
-        "status": "success",
-        "module": "Dashboard",
-        "summary": {
-            "total_customers": total_customers,
-            "total_repairs": total_repairs,
-            "pending_repairs": pending_repairs,
-            "low_stock_items": low_stock
-        }
-    })
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Total Repairs", len(st.session_state.repairs))
+    col2.metric("Pending Jobs", len([r for r in st.session_state.repairs if r["Status"] != "Ready"]))
+    col3.metric("Total Stock Items", len(st.session_state.stock))
+    
+    st.write("### Quick Overview")
+    st.dataframe(pd.DataFrame(st.session_state.repairs), use_container_width=True)
 
-# ২. কাস্টমার ম্যানেজমেন্ট (Customer)
-@app.route('/customers', methods=['GET', 'POST'])
-def manage_customers():
-    if request.method == 'POST':
-        data = request.get_json() or request.form
-        new_customer = Customer(
-            name=data.get('name'),
-            phone=data.get('phone'),
-            email=data.get('email')
-        )
-        db.session.add(new_customer)
-        db.session.commit()
-        return jsonify({"message": "Customer added successfully!", "id": new_customer.id}), 201
+# ==========================================
+# 🔧 2. CUSTOMER & REPAIR
+# ==========================================
+elif menu == "Customer & Repair":
+    st.title("🔧 Repair Job Management")
+    
+    # নতুন রিপেয়ার ইনপুট ফর্ম
+    with st.form("Add Repair Job"):
+        st.write("### Log New Repair")
+        cust_name = st.text_input("Customer Name")
+        device = st.text_input("Device Name")
+        cost = st.number_input("Estimated Cost (BDT)", min_value=0, step=100)
+        submitted = st.form_submit_with_button_kwargs(label="Add Job")
         
-    customers = Customer.query.all()
-    return jsonify([{"id": c.id, "name": c.name, "phone": c.phone, "email": c.email} for c in customers])
+        if submitted and cust_name and device:
+            new_id = len(st.session_state.repairs) + 1
+            st.session_state.repairs.append({
+                "ID": new_id, "Customer": cust_name, "Device": device, "Status": "Pending", "Cost (BDT)": cost
+            })
+            st.success(f"Successfully logged job for {cust_name}!")
+            st.rerun()
 
-# ৩. রিপেয়ার ট্র্যাকিং (Repair)
-@app.route('/repairs', methods=['GET', 'POST'])
-def manage_repairs():
-    if request.method == 'POST':
-        data = request.get_json() or request.form
-        new_repair = Repair(
-            device_name=data.get('device_name'),
-            problem_description=data.get('problem_description'),
-            estimated_cost=float(data.get('estimated_cost', 0)),
-            customer_id=int(data.get('customer_id')),
-            status='Pending'
-        )
-        db.session.add(new_repair)
-        db.session.commit()
-        return jsonify({"message": "Repair job logged successfully!", "repair_id": new_repair.id}), 201
+    st.write("### Current Repair Jobs")
+    st.dataframe(pd.DataFrame(st.session_state.repairs), use_container_width=True)
 
-    repairs = Repair.query.all()
-    return jsonify([{
-        "id": r.id, 
-        "device": r.device_name, 
-        "status": r.status, 
-        "cost": r.estimated_cost,
-        "customer_id": r.customer_id
-    } for r in repairs])
-
-# 🛠️ রিপেয়ার স্ট্যাটাস আপডেট (Update Status)
-@app.route('/repairs/<int:id>/status', methods=['PUT', 'POST'])
-def update_repair_status(id):
-    data = request.get_json() or request.form
-    repair = Repair.query.get_or_4004(id)
-    if repair:
-        repair.status = data.get('status', repair.status)
-        db.session.commit()
-        return jsonify({"message": f"Repair status updated to {repair.status}"})
-    return jsonify({"error": "Repair job not found"}), 404
-
-# ৪. স্টক ইনভেন্টরি (Stock)
-@app.route('/stock', methods=['GET', 'POST'])
-def manage_stock():
-    if request.method == 'POST':
-        data = request.get_json() or request.form
-        new_item = Stock(
-            item_name=data.get('item_name'),
-            quantity=int(data.get('quantity', 0)),
-            price=float(data.get('price', 0.0))
-        )
-        db.session.add(new_item)
-        db.session.commit()
-        return jsonify({"message": "Stock item added/updated!", "item_id": new_item.id}), 201
-
-    stock_items = Stock.query.all()
-    return jsonify([{"id": s.id, "item": s.item_name, "qty": s.quantity, "price": s.price} for s in stock_items])
-
-# ৫. পিওএস ও ইনভয়েস জেনারেশন (POS & Invoice)
-@app.route('/pos/checkout', methods=['POST'])
-def pos_checkout():
-    data = request.get_json()
-    # এখানে রিয়েল-টাইম কার্ট ক্যালকুলেশন হবে
-    inv_num = f"INV-{int(datetime.utcnow().timestamp())}"
+# ==========================================
+# 📦 3. STOCK / INVENTORY
+# ==========================================
+elif menu == "Stock / Inventory":
+    st.title("📦 Stock & Inventory Control")
     
-    new_invoice = Invoice(
-        invoice_number=inv_num,
-        customer_name=data.get('customer_name', 'Walking Customer'),
-        total_amount=float(data.get('total_amount', 0.0))
-    )
-    db.session.add(new_invoice)
-    db.session.commit()
-    
-    return jsonify({
-        "message": "Transaction complete!",
-        "invoice_number": inv_num,
-        "download_url": f"/invoice/{inv_num}/print"
-    }), 201
+    with st.form("Add Stock Item"):
+        item_name = st.text_input("Item Name")
+        qty = st.number_input("Quantity", min_value=0, step=1)
+        price = st.number_input("Price per Unit (BDT)", min_value=0, step=50)
+        submitted = st.form_submit_with_button_kwargs(label="Add Item")
+        
+        if submitted and item_name:
+            new_id = len(st.session_state.stock) + 1
+            st.session_state.stock.append({
+                "ID": new_id, "Item": item_name, "Qty": qty, "Price (BDT)": price
+            })
+            st.success(f"Added {item_name} to inventory!")
+            st.rerun()
 
-# 🖨️ ইনভয়েস ডাউনলোড ও প্রিন্ট ভিউ (Print View HTML)
-@app.route('/invoice/<string:inv_num>/print')
-def print_invoice(inv_num):
-    invoice = Invoice.query.filter_by(invoice_number=inv_num).first_or_404()
+    st.write("### Available Inventory")
+    st.dataframe(pd.DataFrame(st.session_state.stock), use_container_width=True)
+
+# ==========================================
+# 🧾 4. POS & INVOICE
+# ==========================================
+elif menu == "POS & Invoice":
+    st.title("🧾 Point of Sale & Invoice Generation")
     
-    # একটি সিম্পল ও প্রফেশনাল প্রিন্ট রেডি HTML টেমপ্লেট
-    html_template = """
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Print Invoice - {{ inv.invoice_number }}</title>
-        <style>
-            body { font-family: Arial, sans-serif; margin: 30px; color: #333; }
-            .invoice-box { max-width: 800px; margin: auto; border: 1px solid #eee; padding: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.05); }
-            .header { display: flex; justify-content: space-between; border-bottom: 2px solid #333; padding-bottom: 10px; }
-            .details { margin-top: 20px; margin-bottom: 20px; }
-            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-            th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-            th { background-color: #f2f2f2; }
-            .total { text-align: right; font-weight: bold; font-size: 1.2em; margin-top: 20px; }
-            .btn-print { background: #28a745; color: white; padding: 10px 20px; border: none; cursor: pointer; font-size: 16px; }
-            @media print { .btn-print { display: none; } }
-        </style>
-    </head>
-    <body>
-        <div class="invoice-box">
-            <div class="header">
-                <div>
-                    <h2>SRISTI COMPUTER REPAIR</h2>
-                    <p>Fast & Reliable Device Servicing</p>
-                </div>
-                <div>
-                    <h3>INVOICE</h3>
-                    <p><b>Invoice #:</b> {{ inv.invoice_number }}</p>
-                    <p><b>Date:</b> {{ inv.created_at.strftime('%d-%m-%Y') }}</p>
-                </div>
-            </div>
-            
-            <div class="details">
-                <p><b>Customer Name:</b> {{ inv.customer_name }}</p>
-            </div>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>Description</th>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Computer Parts / Repair Services Rendered</td>
-                        <td>{{ inv.total_amount }} BDT</td>
-                    </tr>
-                </tbody>
+    cust_select = st.text_input("Customer Name", value="Walking Customer")
+    total_bill = st.number_input("Total Amount (BDT)", min_value=0)
+    
+    if st.button("Generate & Print Invoice"):
+        inv_num = f"INV-{int(datetime.datetime.now().timestamp())}"
+        st.success(f"Invoice Generated: {inv_num}")
+        
+        # প্রিন্ট রেডি ইনভয়েস ভিউ
+        st.markdown(f"""
+        <div style="border:1px solid #ddd; padding:20px; border-radius:10px; background-color:#fafafa; color: #333;">
+            <h2>SRISTI COMPUTER REPAIR</h2>
+            <hr>
+            <p><b>Invoice No:</b> {inv_num}</p>
+            <p><b>Date:</b> {datetime.datetime.now().strftime('%d-%m-%Y')}</p>
+            <p><b>Customer:</b> {cust_select}</p>
+            <table style="width:100%; border-collapse: collapse; margin-top:10px;">
+                <tr style="background-color:#eee;"><th style="padding:8px; text-align:left;">Description</th><th style="padding:8px; text-align:right;">Total</th></tr>
+                <tr><td style="padding:8px;">Computer Repair Services / Parts</td><td style="padding:8px; text-align:right;">{total_bill} BDT</td></tr>
             </table>
-            
-            <div class="total">
-                Total Paid: {{ inv.total_amount }} BDT
-            </div>
-            
-            <br><br>
-            <button class="btn-print" onclick="window.print()">Print / Download PDF</button>
+            <h3 style="text-align:right; margin-top:15px;">Total Paid: {total_bill} BDT</h3>
         </div>
-    </body>
-    </html>
-    """
-    return render_template_string(html_template, inv=invoice)
-
-# ৬. ডাটাবেজ ব্যাকআপ (Backup Utility)
-@app.route('/settings/backup')
-def database_backup():
-    try:
-        # সহজ ব্যাকআপ লজিক: মূল ডাটাবেজ ফাইলটিকে কপি করে ব্যাকআপ ফোল্ডারে রাখা
-        if os.path.exists('instance/database.db'):
-            backup_name = f"backup-{int(datetime.utcnow().timestamp())}.db"
-            # আপনি চাইলে এখানে ফাইল কপি করার লজিক দিতে পারেন
-            return jsonify({"status": "success", "message": f"Backup created successfully as {backup_name}"})
-        return jsonify({"status": "error", "message": "Database not initialized yet"}), 400
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
-
-# ==========================================
-# 🚀 অ্যাপ্লিকেশন রানার
-# ==========================================
-if __name__ == '__main__':
-    # প্রথমবার রান করার সময় ডাটাবেজ টেবিলগুলো অটোমেটিক তৈরি হবে
-    with app.app_context():
-        db.create_all()
-    app.run(debug=True, port=5000)
+        """, unsafe_allowed_html=True)
+        
+        st.info("💡 Tip: Use your browser's Print shortcut (Ctrl+P / Cmd+P) to save this as a PDF or Print.")
