@@ -7,16 +7,30 @@ import base64
 st.set_page_config(page_title="SM-TECH | Admin System", layout="wide")
 
 # ==========================================
-# 🔐 লগইন ও ইনভয়েস সেশন স্টেট ইনিশিয়ালাইজেশন
+# 🔐 লগইন ও সেশন স্টেট ইনিশিয়ালাইজেশন
 # ==========================================
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
+
+# কাস্টমার বাকির হিসাব সেশন স্টেট
+if "customer_dues" not in st.session_state:
+    st.session_state.customer_dues = [
+        {"ক্রমিক নং": 1, "কাস্টমার নাম": "Abir Rahman", "কাজের বিবরণ": "Windows Setup & Cleaning", "পরিমান": 1, "দর": 500, "মোট টাকা": 500, "আদায়": 300, "বাকি": 200},
+        {"ক্রমিক নং": 2, "কাস্টমার নাম": "Sristi", "কাজের বিবরণ": "Asus Motherboard Repair", "পরিমান": 1, "দর": 2500, "মোট টাকা": 2500, "আদায়": 1500, "বাকি": 1000}
+    ]
+
+# স্টক পণ্যের হিসাব সেশন স্টেট
+if "shop_stock" not in st.session_state:
+    st.session_state.shop_stock = [
+        {"ক্রমিক নং": 1, "পণ্যের বিবরণ": "512GB NVMe SSD", "পরিমান": 10, "দর": 4200, "মোট টাকা": 42000},
+        {"ক্রমিক নং": 2, "পণ্যের বিবরণ": "DDR4 8GB RAM", "পরিমান": 15, "দর": 2400, "মোট টাকা": 36000}
+    ]
 
 if "invoice_items" not in st.session_state:
     st.session_state.invoice_items = []
 
 # ==========================================
-# 🎨 ডার্ক ব্লু নিয়ন থিম সিএসএস (লগইন ও ব্যাকগ্রাউন্ড)
+# 🎨 ডার্ক ব্লু নিয়ন থিম সিএসএস
 # ==========================================
 login_css = """
 <style>
@@ -39,6 +53,9 @@ login_css = """
         color: #a0c0ff !important;
         font-weight: bold;
     }
+    .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
+        color: #ffffff !important;
+    }
 </style>
 """
 
@@ -46,69 +63,17 @@ login_css = """
 # 🌐 ভাষা ডিকশনারি
 # ==========================================
 LANG = {
-    "English": {
-        "nav_title": "⚙️ SM-TECH",
-        "go_to": "Go to",
-        "menu": ["Dashboard", "Customer & Repair", "Stock / Inventory", "POS & Invoice"],
-        "dash_title": "🖥️ Repair & POS Dashboard",
-        "sub_title": "SM-TECH Computer & IT Solution",
-        "t_repairs": "Total Repairs",
-        "p_jobs": "Pending Jobs",
-        "t_stock": "Total Stock Items",
-        "quick_ov": "### Quick Overview",
-        "rep_title": "🔧 Repair Job Management",
-        "log_new": "### Log New Repair",
-        "c_name": "Customer Name",
-        "d_name": "Device Name",
-        "est_cost": "Estimated Cost (BDT)",
-        "btn_add": "Add Job",
-        "succ_job": "Successfully logged job for {}!",
-        "curr_job": "### Current Repair Jobs",
-        "stock_title": "📦 Stock & Inventory Control",
-        "add_stock": "Add Stock Item",
-        "item_name": "Item Name",
-        "qty": "Quantity",
-        "price": "Price per Unit (BDT)",
-        "btn_item": "Add Item",
-        "succ_stock": "Added {} to inventory!",
-        "avail_stock": "### Available Inventory",
-        "pos_title": "🧾 Point of Sale & Invoice Generation",
-        "walking": "Walking Customer",
-        "total_bill": "Total Amount (BDT)",
-        "btn_inv": "📄 Preview Invoice"
-    },
     "বাংলা": {
         "nav_title": "⚙️ SM-TECH",
         "go_to": "মেনু সিলেক্ট করুন",
         "menu": ["ড্যাশবোর্ড", "কাস্টমার ও রিপেয়ার", "স্টক / ইনভেন্টরি", "POS ও ইনভয়েস"],
         "dash_title": "🖥️ রিপেয়ার ও POS ড্যাশবোর্ড",
         "sub_title": "এসএম-টেক কম্পিউটার ও আইটি সリューション",
-        "t_repairs": "মোট রিপেয়ার",
-        "p_jobs": "চলতি কাজ",
-        "t_stock": "মোট স্টক আইটেম",
-        "quick_ov": "### সংক্ষিপ্ত বিবরণ",
-        "rep_title": "🔧 রিপেয়ার জব ম্যানেজমেন্ট",
-        "log_new": "### নতুন রিপেয়ার এন্ট্রি",
-        "c_name": "কাস্টমারের নাম",
-        "d_name": "ডিভাইসের নাম",
-        "est_cost": "আনুমানিক খরচ (টাকা)",
-        "btn_add": "জব যুক্ত করুন",
-        "succ_job": "সফলভাবে {} এর জন্য জব যুক্ত হয়েছে!",
-        "curr_job": "### বর্তমান রিপেয়ার লিস্ট",
-        "stock_title": "📦 স্টক ও ইনভেন্টরি কন্ট্রোল",
-        "add_stock": "নতুন স্টক আইটেম",
-        "item_name": "আইটেমের নাম",
-        "qty": "পরিমাণ",
-        "price": "গায়ের দাম (টাকা)",
-        "btn_item": "আইটেম যুক্ত করুন",
-        "succ_stock": "স্টকে {} যুক্ত হয়েছে!",
-        "avail_stock": "### বর্তমানে মজুদ মালামাল",
-        "pos_title": "🧾 পয়েন্ট অব সেল ও ইনভয়েস",
-        "walking": "খুচরা কাস্টমার",
-        "total_bill": "মোট বিল (টাকা)",
         "btn_inv": "📄 ইনভয়েস প্রিভিউ দেখুন"
     }
 }
+
+t = LANG["বাংলা"]
 
 # ==========================================
 # 🛑 ১. লগইন স্ক্রিন রেন্ডারিং
@@ -149,29 +114,12 @@ if not st.session_state.logged_in:
 # 🔓 ২. মূল ড্যাশবোর্ড স্ক্রিন (লগইন সফল হলে)
 # ==========================================
 else:
-    if "repairs" not in st.session_state:
-        st.session_state.repairs = [
-            {"ID": 1, "Customer": "Abir Rahman", "Device": "HP Laptop", "Status": "In Progress", "Cost (BDT)": 1200},
-            {"ID": 2, "Customer": "Sristi", "Device": "Asus Motherboard", "Status": "Ready", "Cost (BDT)": 2500}
-        ]
-
-    if "stock" not in st.session_state:
-        st.session_state.stock = [
-            {"ID": 1, "Item": "512GB NVMe SSD", "Qty": 15, "Price (BDT)": 4200},
-            {"ID": 2, "Item": "DDR4 8GB RAM", "Qty": 22, "Price (BDT)": 2400}
-        ]
-
-    # ⚙️ সাইডবার নেভিগেশন
-    st.sidebar.title(LANG["English"]["nav_title"])
-    
+    st.sidebar.title(t["nav_title"])
     if st.sidebar.button("🔒 Logout / লগআউট"):
         st.session_state.logged_in = False
         st.rerun()
         
     st.sidebar.write("---")
-    selected_lang = st.sidebar.selectbox("Language / ভাষা", ["English", "বাংলা"], index=0)
-    t = LANG[selected_lang]
-
     st.sidebar.markdown(f"**{t['go_to']}**")
     menu_choice = st.sidebar.radio("", t["menu"], label_visibility="collapsed")
 
@@ -181,60 +129,131 @@ else:
         st.subheader(t["sub_title"])
         
         col1, col2, col3 = st.columns(3)
-        col1.metric(t["t_repairs"], len(st.session_state.repairs))
-        col2.metric(t["p_jobs"], len([r for r in st.session_state.repairs if r["Status"] != "Ready"]))
-        col3.metric(t["t_stock"], len(st.session_state.stock))
+        total_due_amount = sum(item["বাকি"] for item in st.session_state.customer_dues)
+        total_stock_value = sum(item["মোট টাকা"] for item in st.session_state.shop_stock)
         
-        st.write(t["quick_ov"])
-        st.dataframe(pd.DataFrame(st.session_state.repairs), use_container_width=True)
+        col1.metric("कुल বাকির হিসাব (কাস্টমার)", f"{len(st.session_state.customer_dues)} জন")
+        col2.metric("মোট বাকি টাকা", f"{total_due_amount} BDT")
+        col3.metric("স্টক পণ্যের মোট মূল্য", f"{total_stock_value} BDT")
+        
+        st.write("### 📑 কাস্টমার বাকির সংক্ষিপ্ত বিবরণ")
+        st.dataframe(pd.DataFrame(st.session_state.customer_dues), use_container_width=True, hide_index=True)
 
-    # --- 🔧 রিপেয়ার মডিউল ---
+    # --- 🔧 কাস্টমার ও রিপেয়ার (সংশোধিত: বাকির হিসাব) ---
     elif menu_choice == t["menu"][1]:
-        st.title(t["rep_title"])
-        with st.form("Add Repair Job"):
-            st.write(t["log_new"])
-            cust_name = st.text_input(t["c_name"])
-            device = st.text_input(t["d_name"])
-            cost = st.number_input(t["est_cost"], min_value=0, step=100)
-            submitted = st.form_submit_button(label=t["btn_add"])
-            
-            if submitted and cust_name and device:
-                new_id = len(st.session_state.repairs) + 1
-                st.session_state.repairs.append({
-                    "ID": new_id, "Customer": cust_name, "Device": device, "Status": "Pending", "Cost (BDT)": cost
-                })
-                st.success(t["succ_job"].format(cust_name))
-                st.rerun()
-
-        st.write(t["curr_job"])
-        st.dataframe(pd.DataFrame(st.session_state.repairs), use_container_width=True)
-
-    # --- 📦 স্টক মডিউল ---
-    elif menu_choice == t["menu"][2]:
-        st.title(t["stock_title"])
-        with st.form("Add Stock Item"):
-            st.write(t["add_stock"])
-            item_name = st.text_input(t["item_name"])
-            qty = st.number_input(t["qty"], min_value=0, step=1)
-            price = st.number_input(t["price"], min_value=0, step=50)
-            submitted = st.form_submit_button(label=t["btn_item"])
-            
-            if submitted and item_name:
-                new_id = len(st.session_state.stock) + 1
-                st.session_state.stock.append({
-                    "ID": new_id, "Item": item_name, "Qty": qty, "Price (BDT)": price
-                })
-                st.success(t["succ_stock"].format(item_name))
-                st.rerun()
-
-        st.write(t["avail_stock"])
-        st.dataframe(pd.DataFrame(st.session_state.stock), use_container_width=True)
-
-    # --- 🧾 POS ও ইনভয়েস মডিউল (আপডেটেড ও ফিক্সড) ---
-    elif menu_choice == t["menu"][3]:
-        st.title(t["pos_title"])
+        st.title("💸 কাস্টমার বাকির হিসাব ও রিপেয়ার")
         
-        # 📂 লোগো আপলোড অপশন
+        # নতুন বাকি হিসাব এড করার ফর্ম
+        with st.form("Add Customer Due"):
+            st.write("### ➕ নতুন বাকির হিসাব যুক্ত করুন")
+            c_name = st.text_input("কাস্টমার নাম")
+            c_desc = st.text_input("কাজের বিবরণ")
+            
+            col_c1, col_c2, col_c3 = st.columns(3)
+            with col_c1:
+                c_qty = st.number_input("পরিমান", min_value=1, value=1, step=1)
+            with col_c2:
+                c_price = st.number_input("দর (টাকা)", min_value=0, value=0, step=50)
+            with col_c3:
+                c_paid = st.number_input("আদায় (টাকা)", min_value=0, value=0, step=50)
+                
+            submitted = st.form_submit_button(label="💾 লিস্টে যুক্ত করুন")
+            
+            if submitted and c_name and c_desc:
+                total_amt = c_qty * c_price
+                due_amt = total_amt - c_paid
+                new_sl = len(st.session_state.customer_dues) + 1 if st.session_state.customer_dues else 1
+                
+                st.session_state.customer_dues.append({
+                    "ক্রমিক নং": new_sl,
+                    "কাস্টমার নাম": c_name,
+                    "কাজের বিবরণ": c_desc,
+                    "পরিমান": c_qty,
+                    "দর": c_price,
+                    "মোট টাকা": total_amt,
+                    "আদায়": c_paid,
+                    "বাকি": due_amt
+                })
+                st.success(f"সফলভাবে {c_name} এর বাকির হিসাব যুক্ত হয়েছে!")
+                st.rerun()
+
+        st.write("### 📋 বর্তমান কাস্টমার বাকির তালিকা")
+        if st.session_state.customer_dues:
+            # টেবিল ডিসপ্লে
+            df_dues = pd.DataFrame(st.session_state.customer_dues)
+            st.dataframe(df_dues, use_container_width=True, hide_index=True)
+            
+            # ডিলিট সেকশন
+            st.write("### 🗑️ এন্ট্রি ডিলিট করুন")
+            delete_list = [f"{item['ক্রমिक নং']}. {item['কাস্টমার নাম']} ({item['কাজের বিবরণ']})" for item in st.session_state.customer_dues]
+            selected_delete = st.selectbox("ডিলিট করার জন্য এন্ট্রি সিলেক্ট করুন:", delete_list)
+            
+            if st.button("❌ সিলেক্টেড এন্ট্রি মুছুন", type="primary"):
+                sl_to_delete = int(selected_delete.split(".")[0])
+                st.session_state.customer_dues = [item for item in st.session_state.customer_dues if item["ক্রমিক নং"] != sl_to_delete]
+                # ক্রমিক নং পুনরায় সাজানো
+                for idx, item in enumerate(st.session_state.customer_dues):
+                    item["ক্রমিক নং"] = idx + 1
+                st.toast("এন্ট্রিটি সফলভাবে মুছে ফেলা হয়েছে।")
+                st.rerun()
+        else:
+            st.info("কোনো বাকির হিসাব পাওয়া যায়নি।")
+
+    # --- 📦 স্টক / ইনভেন্টরি (সংশোধিত: দোকানের স্টক পণ্য) ---
+    elif menu_choice == t["menu"][2]:
+        st.title("📦 দোকানের স্টক পণ্য ম্যানেজমেন্ট")
+        
+        with st.form("Add Shop Stock"):
+            st.write("### ➕ নতুন স্টক পণ্য যুক্ত করুন")
+            s_desc = st.text_input("পণ্যের বিবরণ / নাম")
+            
+            col_s1, col_s2 = st.columns(2)
+            with col_s1:
+                s_qty = st.number_input("পরিমান", min_value=1, value=1, step=1)
+            with col_s2:
+                s_price = st.number_input("দর (টাকা)", min_value=0, value=0, step=50)
+                
+            submitted_stock = st.form_submit_button(label="📥 স্টকে যুক্ত করুন")
+            
+            if submitted_stock and s_desc:
+                total_stock_amt = s_qty * s_price
+                new_sl_stock = len(st.session_state.shop_stock) + 1 if st.session_state.shop_stock else 1
+                
+                st.session_state.shop_stock.append({
+                    "ক্রমিক নং": new_sl_stock,
+                    "পণ্যের বিবরণ": s_desc,
+                    "পরিমান": s_qty,
+                    "দর": s_price,
+                    "মোট টাকা": total_stock_amt
+                })
+                st.success(f"স্টকে সফলভাবে {s_desc} যুক্ত হয়েছে!")
+                st.rerun()
+
+        st.write("### 📋 বর্তমানে মজুদ মালামালের তালিকা")
+        if st.session_state.shop_stock:
+            df_stock = pd.DataFrame(st.session_state.shop_stock)
+            st.dataframe(df_stock, use_container_width=True, hide_index=True)
+            
+            # ডিলিট সেকশন
+            st.write("### 🗑️ স্টক পণ্য ডিলিট করুন")
+            delete_stock_list = [f"{item['ক্রমিক নং']}. {item['পণ্যের বিবরণ']}" for item in st.session_state.shop_stock]
+            selected_stock_delete = st.selectbox("ডিলিট করার জন্য পণ্য সিলেক্ট করুন:", delete_stock_list)
+            
+            if st.button("❌ সিলেক্টেড পণ্য মুছুন", type="primary"):
+                sl_stock_delete = int(selected_stock_delete.split(".")[0])
+                st.session_state.shop_stock = [item for item in st.session_state.shop_stock if item["ক্রমিক নং"] != sl_stock_delete]
+                # ক্রমিক নং পুনরায় সাজানো
+                for idx, item in enumerate(st.session_state.shop_stock):
+                    item["ক্রমিক নং"] = idx + 1
+                st.toast("পণ্যটি স্টক থেকে মুছে ফেলা হয়েছে।")
+                st.rerun()
+        else:
+            st.info("স্টকে কোনো পণ্য নেই।")
+
+    # --- 🧾 POS ও ইনভয়েস মডিউল ---
+    elif menu_choice == t["menu"][3]:
+        st.title("🧾 পয়েন্ট অব সেল ও ইনভয়েস")
+        
         uploaded_logo = st.file_uploader("Upload Shop Logo / দোকানের লোগো আপলোড করুন (Optional)", type=["png", "jpg", "jpeg"])
         logo_base64 = ""
         if uploaded_logo is not None:
@@ -244,7 +263,7 @@ else:
         st.markdown("### 👤 Customer Info")
         col_in1, col_in2 = st.columns(2)
         with col_in1:
-            cust_name = st.text_input(t["c_name"], value=t["walking"])
+            cust_name = st.text_input("কাস্টমারের নাম", value="খুচরা কাস্টমার")
         with col_in2:
             cust_address = st.text_input("Address (ঠিকানা)", value="Dhaka, Bangladesh")
             
@@ -271,7 +290,6 @@ else:
             else:
                 st.error("Please enter item description first.")
                 
-        # কারেন্ট আইটেম লিস্ট প্রদর্শন ও ক্লিয়ার বাটন
         if st.session_state.invoice_items:
             st.write("#### Added Items Summary:")
             df_invoice = pd.DataFrame(st.session_state.invoice_items)
@@ -289,7 +307,6 @@ else:
                 inv_num = f"{int(datetime.datetime.now().timestamp()) % 100000}"
                 current_date = datetime.datetime.now().strftime('%d-%m-%Y')
                 
-                # টেবিল রো ডায়নামিক জেনারেশন
                 rows_html = ""
                 total_calculated = 0
                 for index, item in enumerate(st.session_state.invoice_items):
@@ -305,7 +322,6 @@ else:
                     </tr>
                     """
                 
-                # মোট ১০টি রো পূর্ণ করার জন্য অবশিষ্ট খালি রো যোগ করা
                 remaining_rows = 10 - len(st.session_state.invoice_items)
                 for i in range(max(0, remaining_rows)):
                     sl_blank = len(st.session_state.invoice_items) + i + 1
@@ -319,7 +335,6 @@ else:
                     </tr>
                     """
                 
-                # 📐 ৫×৭ ক্যাশ মেমোর কমপ্লিট HTML ডিজাইন
                 invoice_html = f"""
                 <div style="background-color: #f0f2f5; padding: 20px; display: flex; justify-content: center;">
                 <div id="print-area" style="
@@ -335,7 +350,6 @@ else:
                     position: relative;
                     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
                 ">
-                    <!-- টপ ব্র্যান্ডিং হেডার উইথ লোগো -->
                     <table style="width: 100%; border-collapse: collapse; margin-bottom: 5px;">
                         <tr>
                             <td style="width: 20%; vertical-align: middle; text-align: left;">
@@ -357,7 +371,6 @@ else:
                     
                     <div style="border-top: 2.5px solid #1e3a8a; margin-top: 8px; margin-bottom: 12px;"></div>
                     
-                    <!-- কাস্টমার এবং বিল বিবরণী -->
                     <table style="width: 100%; font-size: 11px; margin-bottom: 12px; line-height: 1.4;">
                         <tr>
                             <td style="width: 55%; vertical-align: top;">
@@ -373,7 +386,6 @@ else:
                         </tr>
                     </table>
                     
-                    <!-- মেইন প্রোডাক্ট টেবিল -->
                     <table style="width: 100%; border-collapse: collapse; font-size: 11px; border: 1px solid #1e3a8a;">
                         <thead>
                             <tr style="background-color: #1e3a8a; color: white; text-align: center; font-weight: bold; font-size: 10px;">
@@ -386,7 +398,6 @@ else:
                         </thead>
                         <tbody>
                             {rows_html}
-                            <!-- সাব টোটাল অংশ -->
                             <tr>
                                 <td colspan="3" style="border: 1px solid #1e3a8a;"></td>
                                 <td style="border: 1px solid #1e3a8a; padding: 6px; text-align: center; font-weight: bold; background-color: #1e3a8a; color: white; font-size: 10px;">SUB TOTAL</td>
@@ -395,7 +406,6 @@ else:
                         </tbody>
                     </table>
                     
-                    <!--底部: পেমেন্ট মেথড ও সিগনেচার -->
                     <table style="width: 100%; position: absolute; bottom: 18px; left: 18px; width: calc(100% - 36px); font-size: 10px;">
                         <tr>
                             <td style="width: 50%; vertical-align: bottom;">
@@ -417,10 +427,8 @@ else:
                 </div>
                 """
                 
-                # স্ক্রিনে প্রিভিউ দেখান
                 st.markdown(invoice_html, unsafe_allow_html=True)
                 
-                # 📥 আসল ডাউনলোড সমাধান: HTML কোডকে সরাসরি ডাউনলোডেবল ব্রাউজার ফাইলে রূপান্তর
                 b64_invoice = base64.b64encode(invoice_html.encode()).decode()
-                href = f'<a href="data:text/html;base64,{b64_invoice}" download="Invoice_{inv_num}.html" style="display: block; text-align: center; background-color: #059669; color: white; padding: 12px; font-weight: bold; text-decoration: none; border-radius: 6px; margin-top: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">📥 Download 5"x7" Invoice File (মোবাইলের জন্য শতভাগ নিরাপদ)</a>'
+                href = f'<a href="data:text/html;base64,{b64_invoice}" download="Invoice_{inv_num}.html" style="display: block; text-align: center; background-color: #059669; color: white; padding: 12px; font-weight: bold; text-decoration: none; border-radius: 6px; margin-top: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">📥 Download 5"x7" Invoice File</a>'
                 st.markdown(href, unsafe_allow_html=True)
