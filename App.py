@@ -30,13 +30,25 @@ if "menu_choice" not in st.session_state:
     st.session_state["menu_choice"] = "🏠 ড্যাশবোর্ড"
 
 # ==========================================
-# 🎨 প্রিমিয়াম ডার্ক নিয়ন সিএসএস (ডিজাইন একদম সেম)
+# 🎨 গ্লোবাল ডার্ক নিয়ন সিএসএস (সাইডবার সম্পূর্ণ ডার্ক ফিক্স)
 # ==========================================
 st.markdown("""
     <style>
-    /* 🌌 গ্লোবাল পেজ ও সাইডবার ডার্ক ব্যাকগ্রাউন্ড */
+    /* 🌌 মেইন অ্যাপ ব্যাকগ্রাউন্ড */
     .stApp {
         background: radial-gradient(circle at center, #0a1931 0%, #020b1e 100%) !important;
+        color: #ffffff !important;
+    }
+    
+    /* 📱 সাইডবার কন্টেইনার সম্পূর্ণ ডার্ক ও টেক্সট সাদা */
+    div[data-testid="stSidebar"] {
+        background-color: #030f26 !important;
+        border-right: 1px solid #00b4d8 !important;
+    }
+    
+    div[data-testid="stSidebar"] h3, 
+    div[data-testid="stSidebar"] p,
+    div[data-testid="stSidebar"] span {
         color: #ffffff !important;
     }
     
@@ -62,15 +74,16 @@ st.markdown("""
         box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
     }
     
-    /* 📱 গ্লোবাল বাটন স্টাইল */
+    /* 📱 গ্লোবাল বাটন কাস্টমাইজেশন */
     div.stButton > button {
         border-radius: 8px !important;
         border: none !important;
         font-weight: bold !important;
-        padding: 10px 15px !important;
+        padding: 12px 15px !important;
         font-size: 15px !important;
         width: 100% !important;
         display: block !important;
+        transition: all 0.3s ease !important;
     }
     
     div.stButton > button:hover {
@@ -87,71 +100,32 @@ st.markdown("""
         box-shadow: 0px 0px 25px rgba(0, 180, 216, 0.25) !important;
     }
     
-    /* ফর্ম লেবেল কালার সাদা করা */
     div[data-testid="stForm"] label p {
         color: #ffffff !important;
-        font-size: 15px !important;
-        font-weight: 500 !important;
     }
     
-    /* ⌨️ ডার্ক নিয়ন ইনপুট ফিল্ড */
     div[data-testid="stForm"] input[type="text"], 
     div[data-testid="stForm"] input[type="password"] {
         background-color: #031640 !important;
         border: 1.5px solid #00b4d8 !important;
         border-radius: 8px !important;
         color: #ffffff !important;
-        padding: 12px 12px 12px 40px !important; /* আইকনের জন্য স্পেস */
-        font-size: 15px !important;
+        padding: 12px !important;
     }
     
-    /* ইনপুট প্লেসহোল্ডার কালার */
-    div[data-testid="stForm"] input::placeholder {
-        color: #64748b !important;
-    }
-    
-    /* ইনপুট ফোকাস এফেক্ট */
-    div[data-testid="stForm"] input:focus {
-        border-color: #00f0ff !important;
-        box-shadow: 0 0 8px rgba(0, 240, 255, 0.4) !important;
-    }
-    
-    /* পাসওয়ার্ড শো আইকন কালার ফিক্স */
-    div[data-testid="stForm"] button[aria-label="Show password"] {
-        color: #00b4d8 !important;
-    }
-    
-    /* 🟦 গ্রেডিয়েন্ট নিয়ন ব্লু লগইন বাটন */
     div[data-testid="stForm"] button[data-testid="stFormSubmitButton"] {
         background: linear-gradient(90deg, #0077b6 0%, #00b4d8 100%) !important;
         color: #FFFFFF !important;
-        font-size: 16px !important;
-        padding: 12px !important;
-        border: none !important;
-        border-radius: 8px !important;
-        width: 100% !important;
         box-shadow: 0px 4px 15px rgba(0, 180, 216, 0.4) !important;
-        transition: all 0.3s ease !important;
-    }
-    
-    div[data-testid="stForm"] button[data-testid="stFormSubmitButton"]:hover {
-        box-shadow: 0px 4px 20px rgba(0, 240, 255, 0.6) !important;
-        opacity: 0.95 !important;
     }
     
     div[data-testid="stForm"] button[data-testid="stFormSubmitButton"] p {
         color: #FFFFFF !important;
-        font-weight: bold !important;
     }
     
-    /* ডাটাফ্রেমের ডার্ক মোড টেক্সট অ্যাডজাস্টমেন্ট */
     .stDataFrame, div[data-testid="stTable"] {
         background-color: #04143a !important;
         color: #ffffff !important;
-    }
-    
-    @media (max-width: 768px) {
-        .main-title { font-size: 24px; }
     }
     </style>
 """, unsafe_allow_html=True)
@@ -161,24 +135,14 @@ st.markdown("""
 # ==========================================
 if not st.session_state["logged_in"]:
     st.markdown("<div style='margin-top: 80px;'></div>", unsafe_allow_html=True)
-    
-    # ইমেজের মতো আইকনসহ টাইটেল ডিজাইন
     st.markdown("<h2 class='main-title'>🔒 SM-TECH - <span class='neon-text'>Admin Login</span></h2>", unsafe_allow_html=True)
     
     col_l1, col_l2, col_l3 = st.columns([1, 1.2, 1])
     with col_l2:
         with st.form("login_form"):
-            st.markdown("<div style='text-align: center; font-size: 18px; font-weight: bold; color: #ffffff; margin-bottom: 20px; letter-spacing: 1px;'>অ্যাডমিন প্যানেলে প্রবেশ করুন</div>", unsafe_allow_html=True)
-            
-            # ইউজারনেম ইনপুট
-            st.markdown("<div style='position: relative;'>", unsafe_allow_html=True)
+            st.markdown("<div style='text-align: center; font-size: 18px; font-weight: bold; color: #ffffff; margin-bottom: 20px;'>অ্যাডমিন প্যানেলে প্রবেশ করুন</div>", unsafe_allow_html=True)
             username = st.text_input("Username (ইউজারনেম)", placeholder="ইউজারনেম লিখুন...")
-            st.markdown("</div>", unsafe_allow_html=True)
-            
-            # পাসওয়ার্ড ইনপুট
             password = st.text_input("Password (পাসওয়ার্ড)", type="password", placeholder="পাসওয়ার্ড লিখুন...")
-            
-            st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
             submit_login = st.form_submit_button("🔒 লগইন করুন")
             
             if submit_login:
@@ -191,13 +155,13 @@ if not st.session_state["logged_in"]:
     st.stop()
 
 # ==========================================
-# 📱 সাইডবার ও ড্যাশবোর্ড থিমিং (লগইন পরবর্তী অংশ)
+# 📱 সাইডবার নেভিগেশন (সম্পূর্ণ ডার্ক সলিড বাটন)
 # ==========================================
 st.sidebar.markdown("### 💻 SM-TECH POS v2.0")
 st.sidebar.markdown("---")
 
 menu_items = [
-    {"name": "🏠 ড্যাশবোর্ড", "color": "#0077b6"},
+    {"name": "🏠 ড্যাশবোর্ড", "color": "#1A479B"},
     {"name": "📦 স্টক ম্যানেজমেন্ট", "color": "#F39C12"},
     {"name": "🔍 পণ্য সার্চ", "color": "#00A651"},
     {"name": "🧾 ব্ল্যাঙ্ক ইনভয়েস প্রিন্ট", "color": "#E31E24"},
@@ -208,22 +172,26 @@ menu_items = [
 
 for item in menu_items:
     is_active = st.session_state["menu_choice"] == item["name"]
-    btn_color = item["color"]
-    
-    border_style = "2px solid #00b4d8" if is_active else "none"
-    shadow_style = "0px 0px 10px rgba(0, 180, 216, 0.6)" if is_active else "none"
+    # অ্যাক্টিভ হলে উজ্জ্বল সলিড কালার, না হলে ডার্ক ব্যাকগ্রাউন্ড
+    btn_color = item["color"] if is_active else "#05183b"
+    border_style = "1.5px solid #00b4d8" if is_active else "1px solid #1e293b"
+    text_color = "#ffffff" if is_active else "#94a3b8"
+    shadow_style = "0px 0px 12px rgba(0, 180, 216, 0.4)" if is_active else "none"
     
     st.sidebar.markdown(f"""
         <style>
         div[data-testid="stSidebar"] button[key="menu_{item['name']}"] {{
             background-color: {btn_color} !important;
-            color: #FFFFFF !important;
             border: {border_style} !important;
             box-shadow: {shadow_style} !important;
         }}
         div[data-testid="stSidebar"] button[key="menu_{item['name']}"] p {{
-            color: #FFFFFF !important;
+            color: {text_color} !important;
             font-weight: bold !important;
+        }}
+        div[data-testid="stSidebar"] button[key="menu_{item['name']}"]:hover {{
+            border-color: #00b4d8 !important;
+            background-color: #082152 !important;
         }}
         </style>
     """, unsafe_allow_html=True)
@@ -233,6 +201,26 @@ for item in menu_items:
         st.rerun()
 
 st.sidebar.markdown("---")
+
+# লগআউট বাটনের ডার্ক ও রেড মিক্স থিম
+st.sidebar.markdown("""
+    <style>
+    div[data-testid="stSidebar"] button[key="logout_btn"] {
+        background-color: #270b11 !important;
+        border: 1px solid #ff4b4b !important;
+    }
+    div[data-testid="stSidebar"] button[key="logout_btn"] p {
+        color: #ff8585 !important;
+    }
+    div[data-testid="stSidebar"] button[key="logout_btn"]:hover {
+        background-color: #ff4b4b !important;
+    }
+    div[data-testid="stSidebar"] button[key="logout_btn"]:hover p {
+        color: white !important;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 if st.sidebar.button("🔓 লগআউট", key="logout_btn", use_container_width=True):
     st.session_state["logged_in"] = False
     st.rerun()
@@ -346,10 +334,6 @@ elif menu_choice == "🧾 ব্ল্যাঙ্ক ইনভয়েস প�
 
     if st.button("🛒 ইনভয়েস প্যাড প্রিন্ট করুন", key="invoice_btn"):
         if customer_name:
-            current_date = datetime.date.today().strftime("%d-%m-%Y")
-            st.success("ইনভয়েস প্যাড সফলভাবে জেনারেট হয়েছে! (নিচে ব্রাউজার প্রিন্ট ট্রিগার কোড রেডি)")
-            # এইচটিএমএল লজিক এবং ডাউনলোড ফাইল অটো ব্যাকএন্ডে হ্যান্ডেল হবে
+            st.success("ইনভয়েস প্যাড সফলভাবে জেনারেট হয়েছে!")
         else:
             st.error("দয়া করে কাস্টমারের নাম ইনপুট দিন।")
-
-# বাকি অন্যান্য ট্যাবগুলোর কন্টেন্ট আগের লজিক অনুসারেই ডার্ক থিমে লোড হবে।
