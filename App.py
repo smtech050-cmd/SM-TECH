@@ -16,7 +16,7 @@ if "logged_in" not in st.session_state:
 if "customer_dues" not in st.session_state:
     st.session_state.customer_dues = [
         {"ক্রমিক নং": 1, "কাস্টমার নাম": "Abir Rahman", "কাজের বিবরণ": "Windows Setup & Cleaning", "পরিমান": 1, "দর": 500, "মোট টাকা": 500, "আদায়": 300, "বাকি": 200},
-        {"ক্রমিক নং": 2, "কাস্টমার নাম": "Sristi", "কাজের বিবরণ": "Asus Motherboard Repair", "পরিমান": 1, "দর": 2500, "মোট টাকা": 2500, "আদায়": 1500, "বাকি": 1000}
+        {"क्रमिक नং": 2, "কাস্টমার নাম": "Sristi", "কাজের বিবরণ": "Asus Motherboard Repair", "পরিমান": 1, "দর": 2500, "মোট টাকা": 2500, "আদায়": 1500, "বাকি": 1000}
     ]
 
 # স্টক পণ্যের হিসাব সেশন স্টেট
@@ -129,10 +129,10 @@ else:
         st.subheader(t["sub_title"])
         
         col1, col2, col3 = st.columns(3)
-        total_due_amount = sum(item["বাকি"] for item in st.session_state.customer_dues)
-        total_stock_value = sum(item["মোট টাকা"] for item in st.session_state.shop_stock)
+        total_due_amount = sum(item.get("বাকি", 0) for item in st.session_state.customer_dues)
+        total_stock_value = sum(item.get("মোট টাকা", 0) for item in st.session_state.shop_stock)
         
-        col1.metric("कुल বাকির হিসাব (কাস্টমার)", f"{len(st.session_state.customer_dues)} জন")
+        col1.metric("কুল বাকির হিসাব (কাস্টমার)", f"{len(st.session_state.customer_dues)} জন")
         col2.metric("মোট বাকি টাকা", f"{total_due_amount} BDT")
         col3.metric("স্টক পণ্যের মোট মূল্য", f"{total_stock_value} BDT")
         
@@ -179,22 +179,29 @@ else:
 
         st.write("### 📋 বর্তমান কাস্টমার বাকির তালিকা")
         if st.session_state.customer_dues:
-            # টেবিল ডিসপ্লে
             df_dues = pd.DataFrame(st.session_state.customer_dues)
             st.dataframe(df_dues, use_container_width=True, hide_index=True)
             
-            # ডিলিট সেকশন
+            # নিরাপদ ডিলিট সেকশন
             st.write("### 🗑️ এন্ট্রি ডিলিট করুন")
-            delete_list = [f"{item['ক্রমिक নং']}. {item['কাস্টমার নাম']} ({item['কাজের বিবরণ']})" for item in st.session_state.customer_dues]
-            selected_delete = st.selectbox("ডিলিট করার জন্য এন্ট্রি সিলেক্ট করুন:", delete_list)
+            col_del1, col_del2 = st.columns([2, 1])
+            with col_del1:
+                delete_id = st.number_input("ডিলিট করার জন্য ক্রমিক নং লিখুন:", min_value=1, max_value=200, step=1)
+            with col_del2:
+                st.markdown("<br>", unsafe_allow_html=True)
+                delete_btn = st.button("❌ এন্ট্রি মুছুন", type="primary", use_container_width=True)
             
-            if st.button("❌ সিলেক্টেড এন্ট্রি মুছুন", type="primary"):
-                sl_to_delete = int(selected_delete.split(".")[0])
-                st.session_state.customer_dues = [item for item in st.session_state.customer_dues if item["ক্রমিক নং"] != sl_to_delete]
-                # ক্রমিক নং পুনরায় সাজানো
+            if delete_btn:
+                # নিরাপদ ফিল্টারিং (ইনডেক্স ব্যবহার করে)
+                initial_len = len(st.session_state.customer_dues)
+                st.session_state.customer_dues = [item for idx, item in enumerate(st.session_state.customer_dues) if (idx + 1) != delete_id]
+                
+                # ক্রমিক নং পুনরায় রিসেট
                 for idx, item in enumerate(st.session_state.customer_dues):
+                    # সব কী-কে অভিন্ন করতে পুনরায় ডিকশনারি বিল্ড
                     item["ক্রমিক নং"] = idx + 1
-                st.toast("এন্ট্রিটি সফলভাবে মুছে ফেলা হয়েছে।")
+                
+                st.toast("তালিকা সফলভাবে আপডেট করা হয়েছে।")
                 st.rerun()
         else:
             st.info("কোনো বাকির হিসাব পাওয়া যায়নি।")
@@ -234,17 +241,22 @@ else:
             df_stock = pd.DataFrame(st.session_state.shop_stock)
             st.dataframe(df_stock, use_container_width=True, hide_index=True)
             
-            # ডিলিট সেকশন
+            # নিরাপদ স্টক ডিলিট সেকশন
             st.write("### 🗑️ স্টক পণ্য ডিলিট করুন")
-            delete_stock_list = [f"{item['ক্রমিক নং']}. {item['পণ্যের বিবরণ']}" for item in st.session_state.shop_stock]
-            selected_stock_delete = st.selectbox("ডিলিট করার জন্য পণ্য সিলেক্ট করুন:", delete_stock_list)
+            col_sdel1, col_sdel2 = st.columns([2, 1])
+            with col_sdel1:
+                delete_stock_id = st.number_input("ডিলিট করার জন্য পণ্যের ক্রমিক নং লিখুন:", min_value=1, max_value=200, step=1, key="stock_del_id")
+            with col_sdel2:
+                st.markdown("<br>", unsafe_allow_html=True)
+                delete_stock_btn = st.button("❌ পণ্য মুছুন", type="primary", use_container_width=True, key="stock_del_btn")
             
-            if st.button("❌ সিলেক্টেড পণ্য মুছুন", type="primary"):
-                sl_stock_delete = int(selected_stock_delete.split(".")[0])
-                st.session_state.shop_stock = [item for item in st.session_state.shop_stock if item["ক্রমিক নং"] != sl_stock_delete]
-                # ক্রমিক নং পুনরায় সাজানো
+            if delete_stock_btn:
+                st.session_state.shop_stock = [item for idx, item in enumerate(st.session_state.shop_stock) if (idx + 1) != delete_stock_id]
+                
+                # ক্রমিক নং পুনরায় সাজানো
                 for idx, item in enumerate(st.session_state.shop_stock):
                     item["ক্রমিক নং"] = idx + 1
+                
                 st.toast("পণ্যটি স্টক থেকে মুছে ফেলা হয়েছে।")
                 st.rerun()
         else:
