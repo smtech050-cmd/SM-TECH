@@ -2,11 +2,11 @@ import streamlit as st
 import datetime
 import pandas as pd
 
-# পেজ কনফিগারেশন এবং রেসপনসিভ লেআউট (মোবাইল ও কম্পিউটার ফ্রেন্ডলি)
+# পেজ কনফিগারেশন এবং রেসপনসিভ লেআউট
 st.set_page_config(page_title="SM-TECH POS & Inventory", page_icon="💻", layout="wide")
 
 # ==========================================
-# 💾 সেশন স্টেট ইনিশিয়ালাইজেশন (ডাটাবেস বিকল্প)
+# 💾 সেশন স্টেট ইনিশিয়ালাইজেশন
 # ==========================================
 if "logged_in" not in st.session_state:
     st.session_state["logged_in"] = False
@@ -30,25 +30,22 @@ if "menu_choice" not in st.session_state:
     st.session_state["menu_choice"] = "🏠 ড্যাশবোর্ড"
 
 # ==========================================
-# 🎨 সম্পূর্ণ কাস্টম সিএসএস (লগইন ও মেনু কালার বক্স)
+# 🎨 শক্তিশালী কাস্টম সিএসএস (লগইন বক্স ও বাটন সম্পূর্ণ রঙিন)
 # ==========================================
 st.markdown("""
     <style>
     .main-title { font-size: 28px; font-weight: bold; color: #1A479B; text-align: center; margin-bottom: 20px;}
     .card-box { background-color: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 5px solid #1A479B; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
     
-    /* স্ট্রীমলিট বাটনগুলোকে সলিড কালার বক্স করা */
+    /* 📱 গ্লোবাল বাটন স্টাইল */
     div.stButton > button {
         border-radius: 8px !important;
         border: none !important;
-        color: white !important;
         font-weight: bold !important;
         padding: 10px 15px !important;
-        transition: all 0.2s ease-in-out !important;
-    }
-    
-    div[data-testid="stSidebar"] div.stButton > button {
-        color: white !important;
+        font-size: 15px !important;
+        width: 100% !important;
+        display: block !important;
     }
     
     div.stButton > button:hover {
@@ -56,22 +53,47 @@ st.markdown("""
         transform: scale(0.98);
     }
     
-    /* 🔐 লগইন ইনপুট বক্সগুলোর কাস্টম কালার স্টাইল */
-    div[data-testid="stForm"] div[data-testid="stTextInput"] input {
-        background-color: #F0F4F8 !important;
+    /* 🔐 লগইন ফর্ম এবং ইনপুট বক্সের ব্যাকগ্রাউন্ড ও বর্ডার কালার ফিক্স */
+    div[data-testid="stForm"] {
         border: 2px solid #1A479B !important;
-        border-radius: 8px !important;
-        color: #333 !important;
-        padding: 10px !important;
-        font-weight: 500 !important;
+        border-radius: 12px !important;
+        padding: 25px !important;
+        background-color: #FFFFFF !important;
+        box-shadow: 0px 4px 15px rgba(0,0,0,0.05) !important;
     }
     
-    /* লগইন ফরমের সাবমিট বাটনের সলিড কালার */
-    div[data-testid="stForm"] div.stButton > button {
+    /* ইনপুট ফিল্ডের ভেতরের সাধারণ ছাই কালার চেঞ্জ করে সুন্দর লাইট ব্লু করা */
+    div[data-testid="stForm"] div[data-testid="stBaseTextInput"] aria-label,
+    div[data-testid="stForm"] input[type="text"], 
+    div[data-testid="stForm"] input[type="password"] {
+        background-color: #EBF2FA !important;
+        border: 2px solid #1A479B !important;
+        border-radius: 8px !important;
+        color: #1A479B !important;
+        font-weight: bold !important;
+        padding: 12px !important;
+    }
+    
+    /* ইনপুট বক্সের কন্টেইনার ব্যাকগ্রাউন্ড ফিক্স */
+    div[data-testid="stForm"] div[data-testid="stTextInput"] > div {
+        background-color: transparent !important;
+        border: none !important;
+    }
+    
+    /* 🟦 লগইন সাবমিট বাটনটিকে সম্পূর্ণ সলিড গাঢ় নীল করা */
+    div[data-testid="stForm"] button[data-testid="stFormSubmitButton"] {
         background-color: #1A479B !important;
-        width: 100% !important;
+        color: #FFFFFF !important;
         font-size: 16px !important;
         padding: 12px !important;
+        border: none !important;
+        width: 100% !important;
+        box-shadow: 0px 4px 8px rgba(26, 71, 155, 0.3) !important;
+    }
+    
+    div[data-testid="stForm"] button[data-testid="stFormSubmitButton"] p {
+        color: #FFFFFF !important;
+        font-weight: bold !important;
     }
     
     @media (max-width: 768px) {
@@ -81,18 +103,18 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 🔐 লগইন স্ক্রিন (ADMIN LOGIN) - কালার বক্স ডিজাইনসহ
+# 🔐 লগইন স্ক্রিন (ADMIN LOGIN)
 # ==========================================
 if not st.session_state["logged_in"]:
-    st.markdown("<div style='margin-top: 50px;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-top: 60px;'></div>", unsafe_allow_html=True)
     st.markdown("<h2 class='main-title'>🔐 SM-TECH - Admin Login</h2>", unsafe_allow_html=True)
-    col_l1, col_l2, col_l3 = st.columns([1, 1.5, 1])
+    col_l1, col_l2, col_l3 = st.columns([1, 1.3, 1])
     with col_l2:
         with st.form("login_form"):
-            st.markdown("<div style='text-align: center; font-weight: bold; color: #1A479B; margin-bottom: 10px;'>অ্যাডমিন প্যানেলে প্রবেশ করুন</div>", unsafe_allow_html=True)
+            st.markdown("<div style='text-align: center; font-size: 18px; font-weight: bold; color: #1A479B; margin-bottom: 15px;'>অ্যাডমিন প্যানেলে প্রবেশ করুন</div>", unsafe_allow_html=True)
             username = st.text_input("Username (ইউজারনেম)", placeholder="ইউজারনেম লিখুন...")
             password = st.text_input("Password (পাসওয়ার্ড)", type="password", placeholder="পাসওয়ার্ড লিখুন...")
-            st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
+            st.markdown("<div style='margin-top: 10px;'></div>", unsafe_allow_html=True)
             submit_login = st.form_submit_button("লগইন করুন")
             
             if submit_login:
@@ -101,7 +123,7 @@ if not st.session_state["logged_in"]:
                     st.success("লগইন সফল হয়েছে!")
                     st.rerun()
                 else:
-                    st.error("ভুল ইউজারনেম অথবা পাসওয়ার্ড! (Default: admin / admin123)")
+                    st.error("ভুল ইউজারনেম অথবা পাসওয়ার্ড!")
     st.stop()
 
 # ==========================================
@@ -110,7 +132,6 @@ if not st.session_state["logged_in"]:
 st.sidebar.markdown("### 💻 SM-TECH POS v2.0")
 st.sidebar.markdown("---")
 
-# মেনু আইটেম ও তাদের কালার কোড
 menu_items = [
     {"name": "🏠 ড্যাশবোর্ড", "color": "#1A479B"},
     {"name": "📦 স্টক ম্যানেজমেন্ট", "color": "#F39C12"},
@@ -121,20 +142,25 @@ menu_items = [
     {"name": "💰 লাভ-লোকসানের হিসাব", "color": "#8E44AD"}
 ]
 
-# বাটন জেনারেট ও সিএসএস ইনজেকশন
 for item in menu_items:
     is_active = st.session_state["menu_choice"] == item["name"]
-    
     btn_color = item["color"]
-    border_style = "2px solid #FFF" if is_active else "none"
-    shadow_style = "0px 0px 8px rgba(0,0,0,0.3)" if is_active else "none"
+    
+    border_style = "2px solid #FFFFFF" if is_active else "none"
+    shadow_style = "0px 4px 10px rgba(0,0,0,0.3)" if is_active else "none"
     
     st.sidebar.markdown(f"""
         <style>
-        div[data-testid="stSidebar"] div.stElementContainer:has(button[key="menu_{item['name']}"]) button {{
+        div[data-testid="stSidebar"] div.element-container:has(button[key="menu_{item['name']}"]) button,
+        div[data-testid="stSidebar"] button[key="menu_{item['name']}"] {{
             background-color: {btn_color} !important;
+            color: #FFFFFF !important;
             border: {border_style} !important;
             box-shadow: {shadow_style} !important;
+        }}
+        div[data-testid="stSidebar"] button[key="menu_{item['name']}"] p {{
+            color: #FFFFFF !important;
+            font-weight: bold !important;
         }}
         </style>
     """, unsafe_allow_html=True)
@@ -149,11 +175,14 @@ for item in menu_items:
 
 st.sidebar.markdown("---")
 
-# লগআউট বাটনের জন্য লাল কালার কাস্টমাইজেশন
 st.sidebar.markdown("""
     <style>
-    div[data-testid="stSidebar"] div.stElementContainer:has(button[key="logout_btn"]) button {
+    div[data-testid="stSidebar"] button[key="logout_btn"] {
         background-color: #FF4B4B !important;
+        color: white !important;
+    }
+    div[data-testid="stSidebar"] button[key="logout_btn"] p {
+        color: white !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -218,7 +247,8 @@ elif menu_choice == "📦 স্টক ম্যানেজমেন্ট":
                 
             btn_c1, btn_c2, _ = st.columns([2, 2, 8])
             with btn_c1:
-                if st.button("💾 আপডেট সংরক্ষণ করুন"):
+                st.markdown("""<style>button[key="save_update_btn"] { background-color: #1A479B !important; color: white !important; }</style>""", unsafe_allow_html=True)
+                if st.button("💾 আপডেট সংরক্ষণ করুন", key="save_update_btn"):
                     st.session_state["stock_data"][edit_idx] = {
                         "id": prod_id,
                         "Date": edit_item["Date"],
@@ -231,7 +261,8 @@ elif menu_choice == "📦 স্টক ম্যানেজমেন্ট":
                     st.success("স্টক সফলভাবে আপডেট হয়েছে!")
                     st.rerun()
             with btn_c2:
-                if st.button("❌ বাতিল"):
+                st.markdown("""<style>button[key="cancel_btn"] { background-color: #7F8C8D !important; color: white !important; }</style>""", unsafe_allow_html=True)
+                if st.button("❌ বাতিল", key="cancel_btn"):
                     st.session_state["editing_stock_id"] = None
                     st.rerun()
     else:
@@ -248,11 +279,11 @@ elif menu_choice == "📦 স্টক ম্যানেজমেন্ট":
             
         st.markdown("""
             <style>
-            div.stMain div.stButton > button { background-color: #1A479B !important; }
+            button[key="add_stock_btn"] { background-color: #1A479B !important; color: white !important; }
             </style>
         """, unsafe_allow_html=True)
         
-        if st.button("স্টক আপডেট করুন"):
+        if st.button("স্টক আপডেট করুন", key="add_stock_btn"):
             if item_name and quantity > 0:
                 current_date = datetime.date.today().strftime("%d-%m-%Y")
                 new_id = max([i["id"] for i in st.session_state["stock_data"]], default=0) + 1
@@ -296,8 +327,8 @@ elif menu_choice == "📦 স্টক ম্যানেজমেন্ট":
             
             st.markdown(f"""
                 <style>
-                button[key="edit_{item['id']}"] {{ background-color: #2980B9 !important; }}
-                button[key="del_{item['id']}"] {{ background-color: #C0392B !important; }}
+                button[key="edit_{item['id']}"] {{ background-color: #2980B9 !important; color: white !important; }}
+                button[key="del_{item['id']}"] {{ background-color: #C0392B !important; color: white !important; }}
                 </style>
             """, unsafe_allow_html=True)
             
@@ -312,7 +343,9 @@ elif menu_choice == "📦 স্টক ম্যানেজমেন্ট":
     else:
         st.info("স্টকে কোনো পণ্য নেই।")
 
-# ... (বাকি সার্চ, ইনভয়েস, কাস্টমার, বিক্রয় ও লাভ-লোকসান রিপোর্ট সেকশন আগের মতোই কাজ করবে)
+# ==========================================
+# 🔍 পণ্য সার্চ ও অনুসন্ধান
+# ==========================================
 elif menu_choice == "🔍 পণ্য সার্চ":
     st.markdown("<h2 class='main-title'>🔍 পণ্য সার্চ ও অনুসন্ধান</h2>", unsafe_allow_html=True)
     search_query = st.text_input("পণ্যের নাম লিখে সার্চ করুন...")
@@ -325,6 +358,9 @@ elif menu_choice == "🔍 পণ্য সার্চ":
         else:
             st.warning("এই নামে কোনো পণ্য পাওয়া যায়নি।")
 
+# ==========================================
+# 🧾 ব্ল্যাঙ্ক ইনভয়েস প্রিন্ট
+# ==========================================
 elif menu_choice == "🧾 ব্ল্যাঙ্ক ইনভয়েস প্রিন্ট":
     st.markdown("<h2 class='main-title'>🧾 ক্যাশ মেমো (হাতে লেখার জন্য খালি প্যাড)</h2>", unsafe_allow_html=True)
     col_a, col_b = st.columns(2)
@@ -336,7 +372,8 @@ elif menu_choice == "🧾 ব্ল্যাঙ্ক ইনভয়েস প�
         invoice_no = st.text_input("Invoice No", value=f"SM-{datetime.datetime.now().strftime('%d%m%y%H%M%S')}")
         total_bill_input = st.number_input("Total Amount (মোট টাকার পরিমাণ - অপশনাল)", min_value=0.0, value=0.0)
 
-    if st.button("🛒 ইনভয়েস প্যাড জেনারেট ও প্রিন্ট করুন"):
+    st.markdown("""<style>button[key="invoice_btn"] { background-color: #1A479B !important; color: white !important; }</style>""", unsafe_allow_html=True)
+    if st.button("🛒 ইনভয়েস প্যাড জেনারেট ও প্রিন্ট করুন", key="invoice_btn"):
         if customer_name:
             current_date = datetime.date.today().strftime("%d-%m-%Y")
             if not any(c['phone'] == customer_phone for c in st.session_state["customers_data"]):
@@ -407,6 +444,9 @@ elif menu_choice == "🧾 ব্ল্যাঙ্ক ইনভয়েস প�
         else:
             st.error("দয়া করে কাস্টমারের নাম ইনপুট দিন।")
 
+# ==========================================
+# 👤 কাস্টমার ম্যানেজমেন্ট
+# ==========================================
 elif menu_choice == "👤 কাস্টমার ম্যানেজমেন্ট":
     st.markdown("<h2 class='main-title'>👤 কাস্টমার ম্যানেজমেন্ট</h2>", unsafe_allow_html=True)
     if st.session_state["customers_data"]:
@@ -416,6 +456,9 @@ elif menu_choice == "👤 কাস্টমার ম্যানেজমে�
     else:
         st.info("এখনো কোনো কাস্টমার রেজিস্টার্ড হয়নি।")
 
+# ==========================================
+# 📊 বিক্রয় রিপোর্ট
+# ==========================================
 elif menu_choice == "📊 বিক্রয় রিপোর্ট":
     st.markdown("<h2 class='main-title'>📊 বিক্রয় রিপোর্ট তালিকা</h2>", unsafe_allow_html=True)
     if st.session_state["sales_data"]:
@@ -425,6 +468,9 @@ elif menu_choice == "📊 বিক্রয় রিপোর্ট":
     else:
         st.info("কোনো বিক্রয়ের রেকর্ড পাওয়া যায়নি।")
 
+# ==========================================
+# 💰 লাভ-লোকসানের হিসাব
+# ==========================================
 elif menu_choice == "💰 লাভ-লোকসানের হিসাব":
     st.markdown("<h2 class='main-title'>💰 লাভ-লোকসানের হিসাব</h2>", unsafe_allow_html=True)
     if st.session_state["sales_data"]:
