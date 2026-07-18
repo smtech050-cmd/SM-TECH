@@ -1,83 +1,108 @@
-import tkinter as tk
-from tkinter import ttk
+import streamlit as st
 
-# মূল উইন্ডো সেটআপ
-root = tk.Tk()
-root.title("SM-TECH POS v2.0")
-root.geometry("1000x600")
-root.configure(bg="#F0F2F5") # হালকা ব্যাকগ্রাউন্ড (বাম পাশের সাইডবারের জন্য)
+# ১. পেজ কনফিগারেশন এবং ডার্ক থিম স্টাইল
+st.set_page_config(page_title="SM-TECH POS v2.0", layout="wide")
 
-# --- বাম পাশের সাইডবার (Sidebar) ---
-sidebar = tk.Frame(root, bg="#F0F2F5", width=280)
-sidebar.pack(side="left", fill="y", padx=10, pady=10)
-sidebar.pack_propagate(False)
+# স্ক্রিনশটের মতো ডার্ক ব্লু ড্যাশবোর্ড এবং সাদা সাইডবারের জন্য কাস্টম CSS
+st.markdown("""
+    <style>
+        /* মূল ব্যাকগ্রাউন্ড ডার্ক নেভি ব্লু করা */
+        .stApp {
+            background-color: #0A192F;
+            color: white;
+        }
+        /* সাইডবারের স্টাইল (হালকা ব্যাকগ্রাউন্ড) */
+        [data-testid="stSidebar"] {
+            background-color: #F0F2F5;
+        }
+        [data-testid="stSidebar"] * {
+            color: #1E293B !important;
+        }
+        /* ড্যাশবোর্ড কার্ডের কাস্টম ডিজাইন */
+        .dashboard-card {
+            background-color: #112240;
+            border-left: 5px solid #00BCD4; /* সায়ান বর্ডার */
+            padding: 20px;
+            border-radius: 8px;
+            margin: 10px 0;
+            min-height: 160px;
+        }
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #FFFFFF;
+            margin-bottom: 5px;
+        }
+        .card-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #FFFFFF;
+            margin-top: 15px;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
-# সাইডবার টাইটেল
-title_label = tk.Label(sidebar, text="💻 SM-TECH POS v2.0", font=("Arial", 14, "bold"), bg="#F0F2F5", fg="#1E293B")
-title_label.pack(anchor="w", pady=(10, 20), padx=10)
-
-# মেনু বাটনের তালিকা (আপনার স্ক্রিনশট অনুযায়ী)
-menus = [
-    ("🏠 ড্যাশবোর্ড", True), # এটিকে সিলেক্টেড বা অ্যাক্টিভ হিসেবে দেখানোর জন্য
-    ("📦 স্টক ম্যানেজমেন্ট", False),
-    ("🔍 পণ্য সার্চ", False),
-    ("🧾 ব্ল্যাঙ্ক ইনভয়েস প্রিন্ট", False),
-    ("👤 কাস্টমার ম্যানেজমেন্ট", False),
-    ("📊 বিক্রয় রিপোর্ট", False),
-    ("💰 লাভ-লোকসানের হিসাব", False)
-]
-
-for text, is_active in menus:
-    # অ্যাক্টিভ মেনুর জন্য একটু আলাদা স্টাইল বা ব্যাকগ্রাউন্ড দেওয়া যেতে পারে
-    btn_bg = "#FFFFFF"
-    btn = tk.Button(sidebar, text=text, font=("Arial", 11), bg=btn_bg, fg="#1E293B",
-                    bd=0, relief="flat", height=2, anchor="w", padx=20)
-    btn.pack(fill="x", pady=5)
-
-# লগআউট বাটন (নিচের দিকে)
-logout_btn = tk.Button(sidebar, text="🔓 লগআউট", font=("Arial", 11), bg="#FFFFFF", fg="#1E293B",
-                       bd=0, relief="flat", height=2, anchor="w", padx=20)
-logout_btn.pack(side="bottom", fill="x", pady=20)
-
-
-# --- ডান পাশের ড্যাশবোর্ড এরিয়া (Dashboard Area) ---
-# স্ক্রিনশটের ডান পাশের মতো ডার্ক ব্লু/নেভি ব্লু ব্যাকগ্রাউন্ড
-dashboard_frame = tk.Frame(root, bg="#0A192F") 
-dashboard_frame.pack(side="right", fill="both", expand=True)
-
-# ড্যাশবোর্ড টাইটেল বা হেডার
-header_label = tk.Label(dashboard_frame, text="ড্যাশবোর্ড ওভারভিউ", font=("Arial", 18, "bold"), bg="#0A192F", fg="#FFFFFF")
-header_label.pack(anchor="w", padx=30, pady=20)
-
-# কন্টেইনার ফ্রেম (কার্ডগুলো সাজানোর জন্য)
-cards_container = tk.Frame(dashboard_frame, bg="#0A192F")
-cards_container.pack(fill="both", expand=True, padx=20, pady=10)
-
-
-# --- স্টাইলিশ কার্ড তৈরির ফাংশন ---
-def create_card(parent, title, value, icon, border_color):
-    # কার্ডের মূল ফ্রেম (ডার্ক ব্যাকগ্রাউন্ডের ওপর কিছুটা উজ্জ্বল কালার)
-    card = tk.Frame(parent, bg="#112240", highlightbackground=border_color, highlightthickness=2, bd=0)
-    card.pack(side="left", padx=15, pady=15, width=220, height=180)
-    card.pack_propagate(False)
+# --- ২. বাম পাশের সাইডবার (Sidebar Menu) ---
+with st.sidebar:
+    st.subheader("💻 SM-TECH POS v2.0")
+    st.write("---")
     
-    # আইকন এবং টাইটেল
-    icon_label = tk.Label(card, text=icon, font=("Arial", 24), bg="#112240")
-    icon_label.pack(anchor="nw", padx=15, pady=(15, 5))
+    # মেনু বাটনসমূহ (রেডিও বাটন দিলে সিলেক্টেড মেনু বোঝা সহজ হয়)
+    menu_options = [
+        "🏠 ড্যাশবোর্ড", 
+        "📦 স্টক ম্যানেজমেন্ট", 
+        "🔍 পণ্য সার্চ", 
+        "🧾 ব্ল্যাঙ্ক ইনভয়েস প্রিন্ট", 
+        "👤 কাস্টমার ম্যানেজমেন্ট", 
+        "📊 বিক্রয় রিপোর্ট", 
+        "💰 লাভ-লোকসানের হিসাব"
+    ]
     
-    title_label = tk.Label(card, text=title, font=("Arial", 14, "bold"), bg="#112240", fg="#FFFFFF", justify="left")
-    title_label.pack(anchor="nw", padx=15)
+    selected_menu = st.radio("", menu_options, label_visibility="collapsed")
     
-    # টাকা বা মান (বড় ও স্পষ্ট করে)
-    value_label = tk.Label(card, text=value, font=("Arial", 22, "bold"), bg="#112240", fg="#FFFFFF")
-    value_label.pack(anchor="sw", padx=15, pady=(20, 15))
+    # নিচের দিকে লগআউট বাটন
+    st.write("---")
+    if st.button("🔓 লগআউট", use_container_width=True):
+        st.info("লগআউট করা হচ্ছে...")
 
-# --- কার্ডসমূহ যোগ করা ---
-# ১. মোট বিক্রয় কার্ড (আপনার স্ক্রিনশটের ডিজাইনের মতো সায়ান/ব্লু বর্ডার)
-create_card(cards_container, "মোট\nবিক্রয়", "৳ 0.00", "💰", "#00BCD4")
+# --- ৩. ডান পাশের ড্যাশবোর্ড এরিয়া (Main Content) ---
+if "ড্যাশবোর্ড" in selected_menu:
+    st.title("ড্যাশবোর্ড ওভারভিউ")
+    
+    # ৩টি কলামে কার্ডগুলো সাজানো (স্ক্রিনশটের ডানের অংশের মতো)
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        # মোট বিক্রয় কার্ড (আপনার স্ক্রিনশটের হুবহু লুক)
+        st.markdown("""
+            <div class="dashboard-card">
+                <div style="font-size: 30px;">💰</div>
+                <div class="card-title">মোট<br>বিক্রয়</div>
+                <div class="card-value">৳ 0.00</div>
+            </div>
+        """, unsafe_allow_html=True)
+        
+    with col2:
+        # মোট ক্রয় কার্ড
+        st.markdown("""
+            <div class="dashboard-card" style="border-left-color: #FF9800;">
+                <div style="font-size: 30px;">🛒</div>
+                <div class="card-title">মোট<br>ক্রয়</div>
+                <div class="card-value">৳ 0.00</div>
+            </div>
+        """, unsafe_allow_html=True)
+        
+    with col3:
+        # মোট লাভ কার্ড
+        st.markdown("""
+            <div class="dashboard-card" style="border-left-color: #4CAF50;">
+                <div style="font-size: 30px;">📈</div>
+                <div class="card-title">মোট<br>লাভ</div>
+                <div class="card-value">৳ 0.00</div>
+            </div>
+        """, unsafe_allow_html=True)
 
-# উদাহরণ হিসেবে আরও দুটি কার্ড যুক্ত করা হলো:
-create_card(cards_container, "মোট\nক্রয়", "৳ 0.00", "🛒", "#FF9800")
-create_card(cards_container, "মোট\nলাভ", "৳ 0.00", "📈", "#4CAF50")
-
-root.mainloop()
+else:
+    # অন্যান্য মেনুর জন্য ফাঁকা পেজ
+    st.title(selected_menu)
+    st.write(f"এখানে {selected_menu} এর কন্টেন্ট থাকবে।")
