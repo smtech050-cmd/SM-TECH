@@ -3,9 +3,93 @@ import pandas as pd
 import datetime
 
 # পেজ কনফিগারেশন
-st.set_page_config(page_title="Sristi Computer Repair & POS", layout="wide")
+st.set_page_config(page_title="SM-TECH | Repair & POS", layout="wide")
 
-# ডামি ডাটাবেজ সেশন (ডাটা ধরে রাখার জন্য)
+# ==========================================
+# 🌐 ভাষা ডিকশনারি (English & Bengali translation)
+# ==========================================
+LANG = {
+    "English": {
+        "nav_title": "⚙️ SM-TECH",
+        "lang_select": "Select Language / ভাষা সিলেক্ট করুন",
+        "go_to": "Go to",
+        "menu": ["Dashboard", "Customer & Repair", "Stock / Inventory", "POS & Invoice"],
+        "dash_title": "🖥️ Repair & POS Dashboard",
+        "sub_title": "Sristi Computer Repair",
+        "t_repairs": "Total Repairs",
+        "p_jobs": "Pending Jobs",
+        "t_stock": "Total Stock Items",
+        "quick_ov": "### Quick Overview",
+        "rep_title": "🔧 Repair Job Management",
+        "log_new": "### Log New Repair",
+        "c_name": "Customer Name",
+        "d_name": "Device Name",
+        "est_cost": "Estimated Cost (BDT)",
+        "btn_add": "Add Job",
+        "succ_job": "Successfully logged job for {}!",
+        "curr_job": "### Current Repair Jobs",
+        "stock_title": "📦 Stock & Inventory Control",
+        "add_stock": "Add Stock Item",
+        "item_name": "Item Name",
+        "qty": "Quantity",
+        "price": "Price per Unit (BDT)",
+        "btn_item": "Add Item",
+        "succ_stock": "Added {} to inventory!",
+        "avail_stock": "### Available Inventory",
+        "pos_title": "🧾 Point of Sale & Invoice Generation",
+        "walking": "Walking Customer",
+        "total_bill": "Total Amount (BDT)",
+        "btn_inv": "Generate & Print Invoice",
+        "inv_gen": "Invoice Generated: {}",
+        "desc": "Description",
+        "total": "Total",
+        "service_desc": "Computer Repair Services / Parts",
+        "total_paid": "Total Paid: {} BDT",
+        "tip": "💡 Tip: Use your browser's Print shortcut (Ctrl+P / Cmd+P) to save this as a PDF or Print."
+    },
+    "বাংলা": {
+        "nav_title": "⚙️ SM-TECH",
+        "lang_select": "Select Language / ভাষা সিলেক্ট করুন",
+        "go_to": "মেনু সিলেক্ট করুন",
+        "menu": ["ড্যাশবোর্ড", "কাস্টমার ও রিপেয়ার", "স্টক / ইনভেন্টরি", "POS ও ইনভয়েস"],
+        "dash_title": "🖥️ রিপেয়ার ও POS ড্যাশবোর্ড",
+        "sub_title": "সৃষ্টি কম্পিউটার রিপেয়ার",
+        "t_repairs": "মোট রিপেয়ার",
+        "p_jobs": "চলতি কাজ",
+        "t_stock": "মোট স্টক আইটেম",
+        "quick_ov": "### সংক্ষিপ্ত বিবরণ",
+        "rep_title": "🔧 রিপেয়ার জব ম্যানেজমেন্ট",
+        "log_new": "### নতুন রিপেয়ার এন্ট্রি",
+        "c_name": "কাস্টমারের নাম",
+        "d_name": "ডিভাইসের নাম",
+        "est_cost": "আনুমানিক খরচ (টাকা)",
+        "btn_add": "জব যুক্ত করুন",
+        "succ_job": "সফলভাবে {} এর জন্য জব যুক্ত হয়েছে!",
+        "curr_job": "### বর্তমান রিপেয়ার লিস্ট",
+        "stock_title": "📦 স্টক ও ইনভেন্টরি কন্ট্রোল",
+        "add_stock": "নতুন স্টক আইটেম",
+        "item_name": "আইটেমের নাম",
+        "qty": "পরিমাণ",
+        "price": "গায়ের দাম (টাকা)",
+        "btn_item": "আইটেম যুক্ত করুন",
+        "succ_stock": "স্টকে {} যুক্ত হয়েছে!",
+        "avail_stock": "### বর্তমানে মজুদ মালামাল",
+        "pos_title": "🧾 পয়েন্ট অব সেল ও ইনভয়েস",
+        "walking": "খুচরা কাস্টমার",
+        "total_bill": "মোট বিল (টাকা)",
+        "btn_inv": "ইনভয়েস তৈরি ও প্রিন্ট করুন",
+        "inv_gen": "ইনভয়েস তৈরি হয়েছে: {}",
+        "desc": "বিবরণ",
+        "total": "মোট",
+        "service_desc": "কম্পিউটার মেরামত সার্ভিস / পার্টস বাবদ",
+        "total_paid": "সর্বমোট পরিশোধ: {} টাকা",
+        "tip": "💡 টিপস: এই ইনভয়েসটি PDF সেভ বা প্রিন্ট করতে কিবোর্ড থেকে Ctrl+P (অথবা মোবাইলের শেয়ার অপশন থেকে প্রিন্ট) চাপুন।"
+    }
+}
+
+# ==========================================
+# 🗄️ ডামি ডাটাবেজ সেশন (ডাটা ধরে রাখার জন্য)
+# ==========================================
 if "repairs" not in st.session_state:
     st.session_state.repairs = [
         {"ID": 1, "Customer": "Abir Rahman", "Device": "HP Laptop", "Status": "In Progress", "Cost (BDT)": 1200},
@@ -18,100 +102,119 @@ if "stock" not in st.session_state:
         {"ID": 2, "Item": "DDR4 8GB RAM", "Qty": 22, "Price (BDT)": 2400}
     ]
 
-# সাইডবার নেভিগেশন (Sidebar)
-st.sidebar.title("⚙️ Navigation")
-menu = st.sidebar.radio("Go to", ["Dashboard", "Customer & Repair", "Stock / Inventory", "POS & Invoice"])
+# ==========================================
+# ⚙️ সাইডবার নেভিগেশন (SM-TECH & Language Selection)
+# ==========================================
+st.sidebar.title(LANG["English"]["nav_title"])
+
+# ভাষা পরিবর্তন করার ড্রপডাউন
+selected_lang = st.sidebar.selectbox("", ["English", "বাংলা"], index=0, label_visibility="collapsed")
+t = LANG[selected_lang] # নির্বাচিত ভাষার ডিকশনারি লোড করা হলো
+
+st.sidebar.markdown(f"**{t['go_to']}**")
+# মেনু ম্যাপিং
+menu_choice = st.sidebar.radio(
+    "", 
+    t["menu"],
+    label_visibility="collapsed"
+)
 
 # ==========================================
 # 📊 1. DASHBOARD
 # ==========================================
-if menu == "Dashboard":
-    st.title("🖥️ Repair & POS Dashboard")
-    st.subheader("Sristi Computer Repair")
+if menu_choice in [t["menu"][0]]:
+    st.title(t["dash_title"])
+    st.subheader(t["sub_title"])
     
     col1, col2, col3 = st.columns(3)
-    col1.metric("Total Repairs", len(st.session_state.repairs))
-    col2.metric("Pending Jobs", len([r for r in st.session_state.repairs if r["Status"] != "Ready"]))
-    col3.metric("Total Stock Items", len(st.session_state.stock))
+    col1.metric(t["t_repairs"], len(st.session_state.repairs))
+    col2.metric(t["p_jobs"], len([r for r in st.session_state.repairs if r["Status"] != "Ready"]))
+    col3.metric(t["t_stock"], len(st.session_state.stock))
     
-    st.write("### Quick Overview")
+    st.write(t["quick_ov"])
     st.dataframe(pd.DataFrame(st.session_state.repairs), use_container_width=True)
 
 # ==========================================
 # 🔧 2. CUSTOMER & REPAIR
 # ==========================================
-elif menu == "Customer & Repair":
-    st.title("🔧 Repair Job Management")
+elif menu_choice in [t["menu"][1]]:
+    st.title(t["rep_title"])
     
-    # নতুন রিপেয়ার ইনপুট ফর্ম
     with st.form("Add Repair Job"):
-        st.write("### Log New Repair")
-        cust_name = st.text_input("Customer Name")
-        device = st.text_input("Device Name")
-        cost = st.number_input("Estimated Cost (BDT)", min_value=0, step=100)
-        submitted = st.form_submit_with_button_kwargs(label="Add Job")
+        st.write(t["log_new"])
+        cust_name = st.text_input(t["c_name"])
+        device = st.text_input(t["d_name"])
+        cost = st.number_input(t["est_cost"], min_value=0, step=100)
+        submitted = st.form_submit_button(label=t["btn_add"])
         
         if submitted and cust_name and device:
             new_id = len(st.session_state.repairs) + 1
             st.session_state.repairs.append({
                 "ID": new_id, "Customer": cust_name, "Device": device, "Status": "Pending", "Cost (BDT)": cost
             })
-            st.success(f"Successfully logged job for {cust_name}!")
+            st.success(t["succ_job"].format(cust_name))
             st.rerun()
 
-    st.write("### Current Repair Jobs")
+    st.write(t["curr_job"])
     st.dataframe(pd.DataFrame(st.session_state.repairs), use_container_width=True)
 
 # ==========================================
 # 📦 3. STOCK / INVENTORY
 # ==========================================
-elif menu == "Stock / Inventory":
-    st.title("📦 Stock & Inventory Control")
+elif menu_choice in [t["menu"][2]]:
+    st.title(t["stock_title"])
     
     with st.form("Add Stock Item"):
-        item_name = st.text_input("Item Name")
-        qty = st.number_input("Quantity", min_value=0, step=1)
-        price = st.number_input("Price per Unit (BDT)", min_value=0, step=50)
-        submitted = st.form_submit_with_button_kwargs(label="Add Item")
+        st.write(t["add_stock"])
+        item_name = st.text_input(t["item_name"])
+        qty = st.number_input(t["qty"], min_value=0, step=1)
+        price = st.number_input(t["price"], min_value=0, step=50)
+        submitted = st.form_submit_button(label=t["btn_item"])
         
         if submitted and item_name:
             new_id = len(st.session_state.stock) + 1
             st.session_state.stock.append({
                 "ID": new_id, "Item": item_name, "Qty": qty, "Price (BDT)": price
             })
-            st.success(f"Added {item_name} to inventory!")
+            st.success(t["succ_stock"].format(item_name))
             st.rerun()
 
-    st.write("### Available Inventory")
+    st.write(t["avail_stock"])
     st.dataframe(pd.DataFrame(st.session_state.stock), use_container_width=True)
 
 # ==========================================
 # 🧾 4. POS & INVOICE
 # ==========================================
-elif menu == "POS & Invoice":
-    st.title("🧾 Point of Sale & Invoice Generation")
+elif menu_choice in [t["menu"][3]]:
+    st.title(t["pos_title"])
     
-    cust_select = st.text_input("Customer Name", value="Walking Customer")
-    total_bill = st.number_input("Total Amount (BDT)", min_value=0)
+    cust_select = st.text_input(t["c_name"], value=t["walking"])
+    total_bill = st.number_input(t["total_bill"], min_value=0)
     
-    if st.button("Generate & Print Invoice"):
+    if st.button(t["btn_inv"]):
         inv_num = f"INV-{int(datetime.datetime.now().timestamp())}"
-        st.success(f"Invoice Generated: {inv_num}")
+        st.success(t["inv_gen"].format(inv_num))
         
-        # প্রিন্ট রেডি ইনভয়েস ভিউ
+        # প্রিন্ট রেডি ইনভয়েস ডিজাইন
         st.markdown(f"""
         <div style="border:1px solid #ddd; padding:20px; border-radius:10px; background-color:#fafafa; color: #333;">
             <h2>SRISTI COMPUTER REPAIR</h2>
             <hr>
-            <p><b>Invoice No:</b> {inv_num}</p>
-            <p><b>Date:</b> {datetime.datetime.now().strftime('%d-%m-%Y')}</p>
-            <p><b>Customer:</b> {cust_select}</p>
+            <p><b>Invoice No / ইনভয়েস নং:</b> {inv_num}</p>
+            <p><b>Date / তারিখ:</b> {datetime.datetime.now().strftime('%d-%m-%Y')}</p>
+            <p><b>Customer / ক্রেতা:</b> {cust_select}</p>
             <table style="width:100%; border-collapse: collapse; margin-top:10px;">
-                <tr style="background-color:#eee;"><th style="padding:8px; text-align:left;">Description</th><th style="padding:8px; text-align:right;">Total</th></tr>
-                <tr><td style="padding:8px;">Computer Repair Services / Parts</td><td style="padding:8px; text-align:right;">{total_bill} BDT</td></tr>
+                <tr style="background-color:#eee;">
+                    <th style="padding:8px; text-align:left;">{t['desc']}</th>
+                    <th style="padding:8px; text-align:right;">{t['total']}</th>
+                </tr>
+                <tr>
+                    <td style="padding:8px;">{t['service_desc']}</td>
+                    <td style="padding:8px; text-align:right;">{total_bill} BDT</td>
+                </tr>
             </table>
-            <h3 style="text-align:right; margin-top:15px;">Total Paid: {total_bill} BDT</h3>
+            <h3 style="text-align:right; margin-top:15px;">{t['total_paid'].format(total_bill)}</h3>
         </div>
         """, unsafe_allowed_html=True)
         
-        st.info("💡 Tip: Use your browser's Print shortcut (Ctrl+P / Cmd+P) to save this as a PDF or Print.")
+        st.info(t["tip"])
