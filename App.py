@@ -24,37 +24,14 @@ login_css = """
     [data-testid="stHeader"] {
         background: transparent;
     }
-    /* লগইন বক্সের মেইন কন্টেইনার */
-    .login-box {
-        background-color: rgba(0, 15, 38, 0.85);
-        border: 2px solid #0055ff;
-        box-shadow: 0px 0px 25px rgba(0, 85, 255, 0.4);
-        border-radius: 15px;
-        padding: 40px;
-        max-width: 500px;
-        margin: auto;
-        text-align: center;
-    }
-    .login-title {
-        font-size: 28px;
-        font-weight: bold;
-        color: white;
-        margin-bottom: 5px;
-    }
-    .login-subtitle {
-        font-size: 32px;
-        font-weight: bold;
-        color: #00a2ff;
-        margin-bottom: 25px;
-    }
     .panel-header {
         font-size: 20px;
         color: #e0e0e0;
+        text-align: center;
         margin-bottom: 20px;
         border-bottom: 1px solid #0055ff;
         padding-bottom: 10px;
     }
-    /* ইনপুট লেবেল কালার */
     .stTextInput label {
         color: #a0c0ff !important;
         font-weight: bold;
@@ -106,7 +83,7 @@ LANG = {
     "বাংলা": {
         "nav_title": "⚙️ SM-TECH",
         "go_to": "মেনু সিলেক্ট করুন",
-        "menu": ["ড্যাশবোর্ড", "কাস্টমার ও রিপেয়ার", "স্টক / ইনভেন্টরি", "POS ও ইনভয়েস"],
+        "menu": ["ড্যাশবোর্ড", "কাস্টমার ও উল্লেখ্য রিপেয়ার", "স্টক / ইনভেন্টরি", "POS ও ইনভয়েস"],
         "dash_title": "🖥️ রিপেয়ার ও POS ড্যাশবোর্ড",
         "sub_title": "সৃষ্টি কম্পিউটার রিপেয়ার",
         "t_repairs": "মোট রিপেয়ার",
@@ -128,7 +105,7 @@ LANG = {
         "price": "গায়ের দাম (টাকা)",
         "btn_item": "আইটেম যুক্ত করুন",
         "succ_stock": "স্টকে {} যুক্ত হয়েছে!",
-        "avail_stock": "### balconies মজুদ মালামাল",
+        "avail_stock": "### বর্তমানে মজুদ মালামাল",
         "pos_title": "🧾 পয়েন্ট অব সেল ও ইনভয়েস",
         "walking": "খুচরা কাস্টমার",
         "total_bill": "মোট বিল (টাকা)",
@@ -143,35 +120,34 @@ LANG = {
 }
 
 # ==========================================
-# 🛑 ১. লগইন স্ক্রিন রেন্ডারিং (যদি লগইন না থাকে)
+# 🛑 ১. লগইন স্ক্রিন রেন্ডারিং
 # ==========================================
 if not st.session_state.logged_in:
-    st.markdown(login_css, unsafe_allowed_html=True)
+    # এখানে ভুল প্যারামিটারটি ফিক্স করা হয়েছে (unsafe_allow_html=True)
+    st.markdown(login_css, unsafe_allow_html=True)
     
-    # পেজের মাঝে আনার জন্য কলাম লেআউট
     _, col_center, _ = st.columns([1, 2, 1])
     
     with col_center:
-        st.markdown('<br><br>', unsafe_allowed_html=True)
+        st.markdown('<br><br>', unsafe_allow_html=True)
         st.markdown('''
             <div style="text-align: center; margin-bottom: 20px;">
                 <span style="font-size: 50px;">🔒</span>
                 <span style="font-size: 36px; font-weight: bold; color: white;">SM-TECH - </span>
                 <span style="font-size: 36px; font-weight: bold; color: #00a2ff;">Admin Login</span>
             </div>
-        ''', unsafe_allowed_html=True)
+        ''', unsafe_allow_html=True)
         
         with st.container(border=True):
-            st.markdown('<div class="panel-header">অ্যাডমিন প্যানেল প্রবেশ করুন</div>', unsafe_allowed_html=True)
+            st.markdown('<div class="panel-header">অ্যাডমিন প্যানেল প্রবেশ করুন</div>', unsafe_allow_html=True)
             
             username = st.text_input("Username (ইউজারনেম)", placeholder="ইউজারনেম লিখুন...")
             password = st.text_input("Password (পাসওয়ার্ড)", type="password", placeholder="পাসওয়ার্ড লিখুন...")
             
-            st.markdown('<br>', unsafe_allowed_html=True)
+            st.markdown('<br>', unsafe_allow_html=True)
             login_btn = st.button("🔓 লগইন করুন", use_container_width=True)
             
             if login_btn:
-                # 📢 এখানে আপনার নিজের ইউজারনেম ও পাসওয়ার্ড সেট করতে পারেন
                 if username == "admin" and password == "1234":
                     st.session_state.logged_in = True
                     st.success("লগইন সফল হয়েছে!")
@@ -183,7 +159,6 @@ if not st.session_state.logged_in:
 # 🔓 ২. মূল ড্যাশবোর্ড স্ক্রিন (লগইন সফল হলে)
 # ==========================================
 else:
-    # ডাটাবেজ সেশন
     if "repairs" not in st.session_state:
         st.session_state.repairs = [
             {"ID": 1, "Customer": "Abir Rahman", "Device": "HP Laptop", "Status": "In Progress", "Cost (BDT)": 1200},
@@ -199,7 +174,6 @@ else:
     # ⚙️ সাইডবার নেভিগেশন
     st.sidebar.title(LANG["English"]["nav_title"])
     
-    # লগআউট বাটন
     if st.sidebar.button("🔒 Logout / লগআউট"):
         st.session_state.logged_in = False
         st.rerun()
@@ -288,5 +262,5 @@ else:
                 </table>
                 <h3 style="text-align:right; margin-top:15px;">{t['total_paid'].format(total_bill)}</h3>
             </div>
-            """, unsafe_allowed_html=True)
+            """, unsafe_allow_html=True)
             st.info(t["tip"])
