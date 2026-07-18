@@ -29,41 +29,70 @@ if "editing_stock_id" not in st.session_state:
 if "menu_choice" not in st.session_state:
     st.session_state["menu_choice"] = "🏠 ড্যাশবোর্ড"
 
-# সিএসএস স্টাইল (মেনু বক্স এবং ড্যাশবোর্ড বক্সের জন্য)
+# ==========================================
+# 🎨 সম্পূর্ণ কাস্টম সিএসএস (লগইন ও মেনু কালার বক্স)
+# ==========================================
 st.markdown("""
     <style>
     .main-title { font-size: 28px; font-weight: bold; color: #1A479B; text-align: center; margin-bottom: 20px;}
     .card-box { background-color: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 5px solid #1A479B; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
     
-    /* সাইডবার রঙিন বক্স বোতামগুলোর নিজস্ব স্টাইল */
-    .menu-btn {
-        display: block;
-        padding: 12px 15px;
-        margin-bottom: 10px;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: bold;
-        color: #333;
-        transition: all 0.3s ease;
-        border: 1px solid #e0e0e0;
+    /* স্ট্রীমলিট বাটনগুলোকে সলিড কালার বক্স করা */
+    div.stButton > button {
+        border-radius: 8px !important;
+        border: none !important;
+        color: white !important;
+        font-weight: bold !important;
+        padding: 10px 15px !important;
+        transition: all 0.2s ease-in-out !important;
     }
+    
+    div[data-testid="stSidebar"] div.stButton > button {
+        color: white !important;
+    }
+    
+    div.stButton > button:hover {
+        opacity: 0.9 !important;
+        transform: scale(0.98);
+    }
+    
+    /* 🔐 লগইন ইনপুট বক্সগুলোর কাস্টম কালার স্টাইল */
+    div[data-testid="stForm"] div[data-testid="stTextInput"] input {
+        background-color: #F0F4F8 !important;
+        border: 2px solid #1A479B !important;
+        border-radius: 8px !important;
+        color: #333 !important;
+        padding: 10px !important;
+        font-weight: 500 !important;
+    }
+    
+    /* লগইন ফরমের সাবমিট বাটনের সলিড কালার */
+    div[data-testid="stForm"] div.stButton > button {
+        background-color: #1A479B !important;
+        width: 100% !important;
+        font-size: 16px !important;
+        padding: 12px !important;
+    }
+    
     @media (max-width: 768px) {
         .main-title { font-size: 22px; }
-        .stButton button { width: 100%; }
     }
     </style>
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 🔐 লগইন স্ক্রিন (ADMIN LOGIN)
+# 🔐 লগইন স্ক্রিন (ADMIN LOGIN) - কালার বক্স ডিজাইনসহ
 # ==========================================
 if not st.session_state["logged_in"]:
+    st.markdown("<div style='margin-top: 50px;'></div>", unsafe_allow_html=True)
     st.markdown("<h2 class='main-title'>🔐 SM-TECH - Admin Login</h2>", unsafe_allow_html=True)
-    col_l1, col_l2, col_l3 = st.columns([1, 2, 1])
+    col_l1, col_l2, col_l3 = st.columns([1, 1.5, 1])
     with col_l2:
         with st.form("login_form"):
-            username = st.text_input("Username (ইউজারনেম)")
-            password = st.text_input("Password (পাসওয়ার্ড)", type="password")
+            st.markdown("<div style='text-align: center; font-weight: bold; color: #1A479B; margin-bottom: 10px;'>অ্যাডমিন প্যানেলে প্রবেশ করুন</div>", unsafe_allow_html=True)
+            username = st.text_input("Username (ইউজারনেম)", placeholder="ইউজারনেম লিখুন...")
+            password = st.text_input("Password (পাসওয়ার্ড)", type="password", placeholder="পাসওয়ার্ড লিখুন...")
+            st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
             submit_login = st.form_submit_button("লগইন করুন")
             
             if submit_login:
@@ -76,40 +105,60 @@ if not st.session_state["logged_in"]:
     st.stop()
 
 # ==========================================
-# 📱 নেভিগেশন সাইডবার (রঙিন কাস্টম বক্স বোতাম)
+# 📱 নেভিগেশন সাইডবার (রঙিন সলিড বক্স বোতাম)
 # ==========================================
 st.sidebar.markdown("### 💻 SM-TECH POS v2.0")
 st.sidebar.markdown("---")
 
-# মেনু আইটেমের তালিকা ও তাদের জন্য নির্দিষ্ট বর্ডার কালার এবং ব্যাকগ্রাউন্ড
+# মেনু আইটেম ও তাদের কালার কোড
 menu_items = [
-    {"name": "🏠 ড্যাশবোর্ড", "bg": "#E8F0FE", "border": "#1A479B"},
-    {"name": "📦 স্টক ম্যানেজমেন্ট", "bg": "#FEF3E2", "border": "#F39C12"},
-    {"name": "🔍 পণ্য সার্চ", "bg": "#E6F9FF", "border": "#00A651"},
-    {"name": "🧾 ব্ল্যাঙ্ক ইনভয়েস প্রিন্ট", "bg": "#FCE4D6", "border": "#E31E24"},
-    {"name": "👤 কাস্টমার ম্যানেজমেন্ট", "bg": "#EBF5FB", "border": "#2980B9"},
-    {"name": "📊 বিক্রয় রিপোর্ট", "bg": "#E8F8F5", "border": "#16A085"},
-    {"name": "💰 লাভ-লোকসানের হিসাব", "bg": "#F9EBEA", "border": "#C0392B"}
+    {"name": "🏠 ড্যাশবোর্ড", "color": "#1A479B"},
+    {"name": "📦 স্টক ম্যানেজমেন্ট", "color": "#F39C12"},
+    {"name": "🔍 পণ্য সার্চ", "color": "#00A651"},
+    {"name": "🧾 ব্ল্যাঙ্ক ইনভয়েস প্রিন্ট", "color": "#E31E24"},
+    {"name": "👤 কাস্টমার ম্যানেজমেন্ট", "color": "#2980B9"},
+    {"name": "📊 বিক্রয় রিপোর্ট", "color": "#16A085"},
+    {"name": "💰 লাভ-লোকসানের হিসাব", "color": "#8E44AD"}
 ]
 
-# বাটন ক্লিকের মাধ্যমে সেশন স্টেট আপডেট ও নেভিগেশন পরিচালনা
+# বাটন জেনারেট ও সিএসএস ইনজেকশন
 for item in menu_items:
     is_active = st.session_state["menu_choice"] == item["name"]
-    # এক্টিভ থাকলে ব্যাকগ্রাউন্ড আরও উজ্জ্বল হবে এবং বর্ডার মোটা হবে
-    bg_color = item["bg"] if not is_active else "#D5F5E3"
-    border_style = f"4px solid {item['border']}" if is_active else f"1px solid {item['border']}"
+    
+    btn_color = item["color"]
+    border_style = "2px solid #FFF" if is_active else "none"
+    shadow_style = "0px 0px 8px rgba(0,0,0,0.3)" if is_active else "none"
+    
+    st.sidebar.markdown(f"""
+        <style>
+        div[data-testid="stSidebar"] div.stElementContainer:has(button[key="menu_{item['name']}"]) button {{
+            background-color: {btn_color} !important;
+            border: {border_style} !important;
+            box-shadow: {shadow_style} !important;
+        }}
+        </style>
+    """, unsafe_allow_html=True)
     
     if st.sidebar.button(
         item["name"], 
         key=f"menu_{item['name']}",
-        use_container_width=True,
-        help=f"Go to {item['name']}"
+        use_container_width=True
     ):
         st.session_state["menu_choice"] = item["name"]
         st.rerun()
 
 st.sidebar.markdown("---")
-if st.sidebar.button("🔓 লগআউট", type="primary", use_container_width=True):
+
+# লগআউট বাটনের জন্য লাল কালার কাস্টমাইজেশন
+st.sidebar.markdown("""
+    <style>
+    div[data-testid="stSidebar"] div.stElementContainer:has(button[key="logout_btn"]) button {
+        background-color: #FF4B4B !important;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+if st.sidebar.button("🔓 লগআউট", key="logout_btn", use_container_width=True):
     st.session_state["logged_in"] = False
     st.rerun()
 
@@ -197,6 +246,12 @@ elif menu_choice == "📦 স্টক ম্যানেজমেন্ট":
         with col4:
             sell_rate = st.number_input("Sell Rate (বিক্রয় মূল্য)", min_value=0.0, value=0.0)
             
+        st.markdown("""
+            <style>
+            div.stMain div.stButton > button { background-color: #1A479B !important; }
+            </style>
+        """, unsafe_allow_html=True)
+        
         if st.button("স্টক আপডেট করুন"):
             if item_name and quantity > 0:
                 current_date = datetime.date.today().strftime("%d-%m-%Y")
@@ -238,6 +293,14 @@ elif menu_choice == "📦 স্টক ম্যানেজমেন্ট":
             c_sell.write(f"৳{item['Sell Rate']}")
             
             btn_edit, btn_del = c_action.columns(2)
+            
+            st.markdown(f"""
+                <style>
+                button[key="edit_{item['id']}"] {{ background-color: #2980B9 !important; }}
+                button[key="del_{item['id']}"] {{ background-color: #C0392B !important; }}
+                </style>
+            """, unsafe_allow_html=True)
+            
             if btn_edit.button("✏️ Edit", key=f"edit_{item['id']}"):
                 st.session_state["editing_stock_id"] = item['id']
                 st.rerun()
@@ -249,13 +312,10 @@ elif menu_choice == "📦 স্টক ম্যানেজমেন্ট":
     else:
         st.info("স্টকে কোনো পণ্য নেই।")
 
-# ==========================================
-# 🔍 পণ্য সার্চ (PRODUCT SEARCH)
-# ==========================================
+# ... (বাকি সার্চ, ইনভয়েস, কাস্টমার, বিক্রয় ও লাভ-লোকসান রিপোর্ট সেকশন আগের মতোই কাজ করবে)
 elif menu_choice == "🔍 পণ্য সার্চ":
     st.markdown("<h2 class='main-title'>🔍 পণ্য সার্চ ও অনুসন্ধান</h2>", unsafe_allow_html=True)
     search_query = st.text_input("পণ্যের নাম লিখে সার্চ করুন...")
-    
     if search_query:
         results = [i for i in st.session_state["stock_data"] if search_query.lower() in i["New Products"].lower()]
         if results:
@@ -265,12 +325,8 @@ elif menu_choice == "🔍 পণ্য সার্চ":
         else:
             st.warning("এই নামে কোনো পণ্য পাওয়া যায়নি।")
 
-# ==========================================
-# 🧾 ইনভয়েস তৈরি ও প্রিন্ট (BLANK INVOICE PRINT)
-# ==========================================
 elif menu_choice == "🧾 ব্ল্যাঙ্ক ইনভয়েস প্রিন্ট":
     st.markdown("<h2 class='main-title'>🧾 ক্যাশ মেমো (হাতে লেখার জন্য খালি প্যাড)</h2>", unsafe_allow_html=True)
-    
     col_a, col_b = st.columns(2)
     with col_a:
         customer_name = st.text_input("Customer Name (কাস্টমারের নাম)")
@@ -283,192 +339,76 @@ elif menu_choice == "🧾 ব্ল্যাঙ্ক ইনভয়েস প�
     if st.button("🛒 ইনভয়েস প্যাড জেনারেট ও প্রিন্ট করুন"):
         if customer_name:
             current_date = datetime.date.today().strftime("%d-%m-%Y")
-            
             if not any(c['phone'] == customer_phone for c in st.session_state["customers_data"]):
                 st.session_state["customers_data"].append({"name": customer_name, "phone": customer_phone, "address": customer_address})
-            
             if total_bill_input > 0:
-                st.session_state["sales_data"].append({
-                    "invoice_no": invoice_no,
-                    "customer": customer_name,
-                    "date": current_date,
-                    "total": total_bill_input,
-                    "profit": total_bill_input * 0.15,
-                    "discount": 0.0
-                })
+                st.session_state["sales_data"].append({"invoice_no": invoice_no, "customer": customer_name, "date": current_date, "total": total_bill_input, "profit": total_bill_input * 0.15, "discount": 0.0})
             
-            table_rows_html = ""
-            for i in range(1, 9):
-                table_rows_html += f"""
-                <tr style="height: 26px;">
-                    <td style='text-align:center; color:#dcdcdc;'>{i}</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                </tr>
-                """
-                
+            table_rows_html = "".join([f"<tr style='height: 26px;'><td style='text-align:center; color:#dcdcdc;'>{i}</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>" for i in range(1, 9)])
             amount_display = f"{total_bill_input:.2f}" if total_bill_input > 0 else ""
             
             invoice_html = f"""
-            <html>
-            <head>
-            <meta charset="UTF-8">
-            <style>
+            <html><head><meta charset="UTF-8"><style>
                 @page {{ size: 5in 7in; margin: 0.15in; }}
                 body {{ font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; padding: 0; color: #000; background-color: #fff; }}
-                
                 .outer-border {{ border: 2px solid #1A479B; padding: 8px; border-radius: 4px; box-sizing: border-box; height: 6.7in; position: relative; }}
-                
                 .header-container {{ display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; }}
-                .logo-section {{ text-align: left; }}
                 .logo-main {{ font-size: 24px; font-weight: 900; margin: 0; line-height: 1; font-style: italic; }}
-                .logo-sm {{ color: #1A479B; }}
-                .logo-tech {{ color: #E31E24; }}
-                .sub-logo {{ font-size: 9.5px; font-weight: bold; color: #00A651; letter-spacing: 0.3px; margin: 1px 0 0 0; }}
-                .tagline {{ font-size: 8px; font-style: italic; font-weight: 500; color: #000; margin: 0; }}
-                
-                .owner-section {{ text-align: right; color: #1A479B; line-height: 1.1; }}
+                .logo-sm {{ color: #1A479B; }} .logo-tech {{ color: #E31E24; }}
+                .sub-logo {{ font-size: 9.5px; font-weight: bold; color: #00A651; margin: 1px 0 0 0; }}
+                .tagline {{ font-size: 8px; font-style: italic; color: #000; margin: 0; }}
+                .owner-section {{ text-align: right; color: #1A479B; }}
                 .owner-name {{ font-size: 11px; font-weight: bold; }}
-                .owner-title {{ font-size: 8px; color: #000; font-weight: bold; }}
                 .owner-phone {{ font-size: 9px; font-weight: bold; margin: 0; }}
-                
-                .info-container {{ display: flex; justify-content: space-between; margin-top: 8px; margin-bottom: 5px; }}
+                .info-container {{ display: flex; justify-content: space-between; margin-top: 8px; }}
                 .info-left {{ width: 65%; font-size: 10px; font-weight: bold; color: #1A479B; }}
-                .bill-to-badge {{ background-color: #1A479B; color: white; display: inline-block; padding: 1px 4px; font-size: 9px; font-weight: bold; clip-path: polygon(0 0, 85% 0, 100% 100%, 0% 100%); margin-right: 3px; }}
-                .dots-line {{ color: #000; font-weight: normal; font-size: 10px; }}
-                
-                .info-right {{ width: 32%; text-align: left; font-size: 9px; font-weight: bold; color: #1A479B; }}
-                .invoice-badge {{ background-color: #1A479B; color: white; text-align: center; padding: 2px 0; font-size: 11px; font-weight: bold; letter-spacing: 0.5px; border-radius: 2px; margin-bottom: 3px; width: 100%; }}
-                
+                .bill-to-badge {{ background-color: #1A479B; color: white; display: inline-block; padding: 1px 4px; font-size: 9px; margin-right: 3px; }}
+                .dots-line {{ color: #000; font-weight: normal; }}
+                .info-right {{ width: 32%; font-size: 9px; font-weight: bold; color: #1A479B; }}
+                .invoice-badge {{ background-color: #1A479B; color: white; text-align: center; padding: 2px 0; font-size: 11px; font-weight: bold; border-radius: 2px; width: 100%; margin-bottom: 3px; }}
                 .product-table {{ width: 100%; border-collapse: collapse; margin-top: 5px; }}
-                .product-table th {{ background-color: #1A479B; color: white; border: 1.2px solid #1A479B; padding: 4px 2px; font-size: 9px; font-weight: bold; text-align: center; }}
+                .product-table th {{ background-color: #1A479B; color: white; border: 1.2px solid #1A479B; padding: 4px 2px; font-size: 9px; text-align: center; }}
                 .product-table td {{ border-left: 1.2px solid #1A479B; border-right: 1.2px solid #1A479B; border-bottom: 1px solid #e2e2e2; font-size: 10px; }}
-                .product-table tr:last-child td {{ border-bottom: 1.2px solid #1A479B; }}
-                
-                .col-sl {{ width: 7%; text-align: center; }}
-                .col-desc {{ width: 51%; }}
-                .col-qty {{ width: 9%; text-align: center; }}
-                .col-uprice {{ width: 15%; text-align: center; }}
-                .col-amount {{ width: 18%; text-align: center; }}
-                
-                .subtotal-row td {{ border: none !important; }}
-                .subtotal-box {{ background-color: #1A479B; color: white; text-align: center; font-size: 10px; font-weight: bold; padding: 4px; border: 1.2px solid #1A479B; }}
-                .subtotal-val {{ border: 1.2px solid #1A479B !important; text-align: center !important; font-size: 10px; font-weight: bold; background: #fff; }}
-                
+                .subtotal-box {{ background-color: #1A479B; color: white; text-align: center; font-size: 10px; font-weight: bold; padding: 4px; }}
+                .subtotal-val {{ border: 1.2px solid #1A479B !important; text-align: center !important; font-size: 10px; font-weight: bold; }}
                 .footer-container {{ display: flex; justify-content: space-between; align-items: flex-end; position: absolute; bottom: 12px; left: 8px; right: 8px; }}
-                .words-text {{ font-size: 9px; font-weight: bold; color: #1A479B; margin-bottom: 8px; }}
-                
-                .payment-box {{ border: 1.2px solid #1A479B; border-collapse: collapse; width: 160px; text-align: center; font-size: 8px; font-weight: bold; color: #1A479B; }}
+                .words-text {{ font-size: 9px; font-weight: bold; color: #1A479B; }}
+                .payment-box {{ border: 1.2px solid #1A479B; border-collapse: collapse; width: 160px; text-align: center; font-size: 8px; color: #1A479B; }}
                 .payment-box td {{ border: 1px solid #1A479B; padding: 2px; }}
-                
                 .signature-section {{ text-align: center; color: #1A479B; font-size: 9px; font-weight: bold; width: 130px; }}
                 .sig-line {{ border-top: 1.2px solid #1A479B; padding-top: 2px; }}
-                .sig-company {{ font-size: 7.5px; font-weight: normal; }}
-            </style>
-            </head>
-            <body>
+            </style></head><body>
             <div class="outer-border">
-                
                 <div class="header-container">
-                    <div class="logo-section">
-                        <h1 class="logo-main"><span class="logo-sm">SM-</span><span class="logo-tech">TECH</span></h1>
-                        <p class="sub-logo">COMPUTER & IT SOLUTION</p>
-                        <p class="tagline">Smart Technology-Trusted Service</p>
-                    </div>
-                    <div class="owner-section">
-                        <span class="owner-name">S.m. Ibrahim</span><br>
-                        <span class="owner-title">Owner</span><br>
-                        <p class="owner-phone">01940-556114<br>01810-499166</p>
-                    </div>
+                    <div><h1 class="logo-main"><span class="logo-sm">SM-</span><span class="logo-tech">TECH</span></h1><p class="sub-logo">COMPUTER & IT SOLUTION</p><p class="tagline">Smart Technology-Trusted Service</p></div>
+                    <div class="owner-section"><span class="owner-name">S.m. Ibrahim</span><br><span class="owner-title">Owner</span><p class="owner-phone">01940-556114<br>01810-499166</p></div>
                 </div>
-                
                 <div class="info-container">
                     <div class="info-left">
-                        <div style="margin-bottom: 4px; display: flex; align-items: center;">
-                            <div class="bill-to-badge">Bill To</div>
-                            <span style="color:#1A479B;">Name:</span>
-                            <span class="dots-line">&nbsp;{customer_name}......................................................</span>
-                        </div>
-                        <div style="margin-bottom: 4px;">
-                            <span style="color:#1A479B;">Address:</span>
-                            <span class="dots-line">&nbsp;{customer_address}............................................................</span>
-                        </div>
+                        <div style="display: flex; align-items: center;"><div class="bill-to-badge">Bill To</div>Name:<span class="dots-line">&nbsp;{customer_name}...................................</span></div>
+                        <div>Address:<span class="dots-line">&nbsp;{customer_address}..........................................</span></div>
                     </div>
-                    <div class="info-right">
-                        <div class="invoice-badge">INVOICE</div>
-                        <span style="color:#1A479B;">Inv No:</span> <span class="dots-line">{invoice_no[:12]}</span><br>
-                        <div style="margin-top: 2px;">
-                            <span style="color:#1A479B;">Date:</span> <span class="dots-line">{current_date}</span>
-                        </div>
-                    </div>
+                    <div class="info-right"><div class="invoice-badge">INVOICE</div>Inv No: <span class="dots-line">{invoice_no[:12]}</span><br>Date: <span class="dots-line">{current_date}</span></div>
                 </div>
-                
                 <table class="product-table">
-                    <thead>
-                        <tr>
-                            <th class="col-sl">S.L</th>
-                            <th class="col-desc">DESCRIPTION</th>
-                            <th class="col-qty">QTY</th>
-                            <th class="col-uprice">U.PRICE</th>
-                            <th class="col-amount">AMOUNT</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {table_rows_html}
-                        <tr class="subtotal-row" style="height: 24px;">
-                            <td colspan="3"></td>
-                            <td class="subtotal-box">SUB TOTAL</td>
-                            <td class="subtotal-val">{amount_display}</td>
-                        </tr>
-                    </tbody>
+                    <thead><tr><th style="width:7%;">S.L</th><th style="width:51%;">DESCRIPTION</th><th style="width:9%;">QTY</th><th style="width:15%;">U.PRICE</th><th style="width:18%;">AMOUNT</th></tr></thead>
+                    <tbody>{table_rows_html}<tr style="height: 24px;"><td colspan="3"></td><td class="subtotal-box">SUB TOTAL</td><td class="subtotal-val">{amount_display}</td></tr></tbody>
                 </table>
-                
                 <div class="footer-container">
-                    <div>
-                        <div class="words-text">In Words:<span style="color:#000; font-weight: normal;">&nbsp;.....................................................</span></div>
-                        
-                        <table class="payment-box">
-                            <tr>
-                                <td colspan="4" style="background-color: #1A479B; color: white; border: none; padding: 1px; font-weight: bold;">Payment Methods</td>
-                            </tr>
-                            <tr>
-                                <td>Cash</td>
-                                <td>Bkash</td>
-                                <td>Nagad</td>
-                                <td>Bank</td>
-                            </tr>
-                        </table>
-                    </div>
-                    
-                    <div class="signature-section">
-                        <div class="sig-line">Authorised Signature</div>
-                        <div style="font-size: 9px; font-weight: bold; margin-top: 1px;">SM-TECH</div>
-                    </div>
+                    <div><div class="words-text">In Words:<span style="color:#000; font-weight: normal;">&nbsp;...........................................</span></div><table class="payment-box"><tr><td colspan="4" style="background-color: #1A479B; color: white;">Payment Methods</td></tr><tr><td>Cash</td><td>Bkash</td><td>Nagad</td><td>Bank</td></tr></table></div>
+                    <div class="signature-section"><div class="sig-line">Authorised Signature</div><div style="margin-top: 1px;">SM-TECH</div></div>
                 </div>
-                
             </div>
-            
-            <script>
-                window.onload = function() {{ 
-                    window.print(); 
-                }}
-            </script>
-            </body>
-            </html>
+            <script>window.onload = function() {{ window.print(); }}</script>
+            </body></html>
             """
             st.success("খালি ইনভয়েস প্যাড সফলভাবে জেনারেট হয়েছে!")
             st.download_button("📥 মেমো ডাউনলোড ও প্রিন্ট", data=invoice_html, file_name=f"Blank_Invoice_{invoice_no}.html", mime="text/html")
         else:
             st.error("দয়া করে কাস্টমারের নাম ইনপুট দিন।")
 
-# ==========================================
-# 👤 কাস্টমার ম্যানেজমেন্ট (CUSTOMER MANAGEMENT)
-# ==========================================
 elif menu_choice == "👤 কাস্টমার ম্যানেজমেন্ট":
     st.markdown("<h2 class='main-title'>👤 কাস্টমার ম্যানেজমেন্ট</h2>", unsafe_allow_html=True)
-    
     if st.session_state["customers_data"]:
         df_cust = pd.DataFrame(st.session_state["customers_data"])
         df_cust.columns = ["কাস্টমারের নাম", "মোবাইল নম্বর", "ঠিকানা"]
@@ -476,12 +416,8 @@ elif menu_choice == "👤 কাস্টমার ম্যানেজমে�
     else:
         st.info("এখনো কোনো কাস্টমার রেজিস্টার্ড হয়নি।")
 
-# ==========================================
-# 📊 বিক্রয় রিপোর্ট (SALES REPORT)
-# ==========================================
 elif menu_choice == "📊 বিক্রয় রিপোর্ট":
     st.markdown("<h2 class='main-title'>📊 বিক্রয় রিপোর্ট তালিকা</h2>", unsafe_allow_html=True)
-    
     if st.session_state["sales_data"]:
         df_sales = pd.DataFrame(st.session_state["sales_data"]).drop(columns=["profit"])
         df_sales.columns = ["ইনভয়েস নম্বর", "কাস্টমার নাম", "তারিখ", "মোট বিল (৳)", "ডিসকাউন্ট (৳)"]
@@ -489,12 +425,8 @@ elif menu_choice == "📊 বিক্রয় রিপোর্ট":
     else:
         st.info("কোনো বিক্রয়ের রেকর্ড পাওয়া যায়নি।")
 
-# ==========================================
-# 💰 লাভ-লোকসানের হিসাব (PROFIT LOSS)
-# ==========================================
 elif menu_choice == "💰 লাভ-লোকসানের হিসাব":
     st.markdown("<h2 class='main-title'>💰 লাভ-লোকসানের হিসাব</h2>", unsafe_allow_html=True)
-    
     if st.session_state["sales_data"]:
         df_p = pd.DataFrame(st.session_state["sales_data"])
         df_summary = df_p.groupby("date")[["total", "profit"]].sum().reset_index()
