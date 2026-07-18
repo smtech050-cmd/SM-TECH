@@ -26,11 +26,27 @@ if "customers_data" not in st.session_state:
 if "editing_stock_id" not in st.session_state:
     st.session_state["editing_stock_id"] = None
 
-# সিএসএস স্টাইল
+if "menu_choice" not in st.session_state:
+    st.session_state["menu_choice"] = "🏠 ড্যাশবোর্ড"
+
+# সিএসএস স্টাইল (মেনু বক্স এবং ড্যাশবোর্ড বক্সের জন্য)
 st.markdown("""
     <style>
     .main-title { font-size: 28px; font-weight: bold; color: #1A479B; text-align: center; margin-bottom: 20px;}
     .card-box { background-color: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 5px solid #1A479B; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    
+    /* সাইডবার রঙিন বক্স বোতামগুলোর নিজস্ব স্টাইল */
+    .menu-btn {
+        display: block;
+        padding: 12px 15px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: bold;
+        color: #333;
+        transition: all 0.3s ease;
+        border: 1px solid #e0e0e0;
+    }
     @media (max-width: 768px) {
         .main-title { font-size: 22px; }
         .stButton button { width: 100%; }
@@ -60,22 +76,45 @@ if not st.session_state["logged_in"]:
     st.stop()
 
 # ==========================================
-# 📱 নেভিগেশন সাইডবার মেনু
+# 📱 নেভিগেশন সাইডবার (রঙিন কাস্টম বক্স বোতাম)
 # ==========================================
 st.sidebar.markdown("### 💻 SM-TECH POS v2.0")
-menu_choice = st.sidebar.radio("মেনু নেভিগেশন:", [
-    "🏠 ড্যাশবোর্ড",
-    "📦 স্টক ম্যানেজমেন্ট",
-    "🔍 পণ্য সার্চ",
-    "🧾 ব্ল্যাঙ্ক ইনভয়েস প্রিন্ট",
-    "👤 কাস্টমার ম্যানেজমেন্ট",
-    "📊 বিক্রয় রিপোর্ট",
-    "💰 লাভ-লোকসানের হিসাব"
-])
+st.sidebar.markdown("---")
 
-if st.sidebar.button("🔓 লগআউট"):
+# মেনু আইটেমের তালিকা ও তাদের জন্য নির্দিষ্ট বর্ডার কালার এবং ব্যাকগ্রাউন্ড
+menu_items = [
+    {"name": "🏠 ড্যাশবোর্ড", "bg": "#E8F0FE", "border": "#1A479B"},
+    {"name": "📦 স্টক ম্যানেজমেন্ট", "bg": "#FEF3E2", "border": "#F39C12"},
+    {"name": "🔍 পণ্য সার্চ", "bg": "#E6F9FF", "border": "#00A651"},
+    {"name": "🧾 ব্ল্যাঙ্ক ইনভয়েস প্রিন্ট", "bg": "#FCE4D6", "border": "#E31E24"},
+    {"name": "👤 কাস্টমার ম্যানেজমেন্ট", "bg": "#EBF5FB", "border": "#2980B9"},
+    {"name": "📊 বিক্রয় রিপোর্ট", "bg": "#E8F8F5", "border": "#16A085"},
+    {"name": "💰 লাভ-লোকসানের হিসাব", "bg": "#F9EBEA", "border": "#C0392B"}
+]
+
+# বাটন ক্লিকের মাধ্যমে সেশন স্টেট আপডেট ও নেভিগেশন পরিচালনা
+for item in menu_items:
+    is_active = st.session_state["menu_choice"] == item["name"]
+    # এক্টিভ থাকলে ব্যাকগ্রাউন্ড আরও উজ্জ্বল হবে এবং বর্ডার মোটা হবে
+    bg_color = item["bg"] if not is_active else "#D5F5E3"
+    border_style = f"4px solid {item['border']}" if is_active else f"1px solid {item['border']}"
+    
+    if st.sidebar.button(
+        item["name"], 
+        key=f"menu_{item['name']}",
+        use_container_width=True,
+        help=f"Go to {item['name']}"
+    ):
+        st.session_state["menu_choice"] = item["name"]
+        st.rerun()
+
+st.sidebar.markdown("---")
+if st.sidebar.button("🔓 লগআউট", type="primary", use_container_width=True):
     st.session_state["logged_in"] = False
     st.rerun()
+
+# কারেন্ট অ্যাক্টিভ মেনু
+menu_choice = st.session_state["menu_choice"]
 
 # ==========================================
 # 🏠 ড্যাশবোর্ড (DASHBOARD)
@@ -227,9 +266,9 @@ elif menu_choice == "🔍 পণ্য সার্চ":
             st.warning("এই নামে কোনো পণ্য পাওয়া যায়নি।")
 
 # ==========================================
-# 🧾 ইনভয়েস তৈরি ও প্রিন্ট (HANDWRITTEN H7" W5" PADS)
+# 🧾 ইনভয়েস তৈরি ও প্রিন্ট (BLANK INVOICE PRINT)
 # ==========================================
-elif menu_choice == "🧾 ইনভয়েস তৈরি ও প্রিন্ট":
+elif menu_choice == "🧾 ব্ল্যাঙ্ক ইনভয়েস প্রিন্ট":
     st.markdown("<h2 class='main-title'>🧾 ক্যাশ মেমো (হাতে লেখার জন্য খালি প্যাড)</h2>", unsafe_allow_html=True)
     
     col_a, col_b = st.columns(2)
@@ -245,22 +284,19 @@ elif menu_choice == "🧾 ইনভয়েস তৈরি ও প্রিন
         if customer_name:
             current_date = datetime.date.today().strftime("%d-%m-%Y")
             
-            # কাস্টমার ডাটাবেসে সেভ
             if not any(c['phone'] == customer_phone for c in st.session_state["customers_data"]):
                 st.session_state["customers_data"].append({"name": customer_name, "phone": customer_phone, "address": customer_address})
             
-            # বিক্রয় ডাটাবেসে সেভ
             if total_bill_input > 0:
                 st.session_state["sales_data"].append({
                     "invoice_no": invoice_no,
                     "customer": customer_name,
                     "date": current_date,
                     "total": total_bill_input,
-                    "profit": total_bill_input * 0.15, # আনুমানিক লাভ
+                    "profit": total_bill_input * 0.15,
                     "discount": 0.0
                 })
             
-            # টেবিলের জন্য ফিক্সড ৮টি সম্পূর্ণ ফাঁকা রো জেনারেট করা
             table_rows_html = ""
             for i in range(1, 9):
                 table_rows_html += f"""
@@ -275,21 +311,16 @@ elif menu_choice == "🧾 ইনভয়েস তৈরি ও প্রিন
                 
             amount_display = f"{total_bill_input:.2f}" if total_bill_input > 0 else ""
             
-            # =========================================================
-            # 🎨 H7" X W5" সাইজের পিক্সেল-পারফেক্ট ক্যাশ মেমো টেমপ্লেট
-            # =========================================================
             invoice_html = f"""
             <html>
             <head>
             <meta charset="UTF-8">
             <style>
-                /* পেপার সাইজ ফিক্সড: চওড়া ৫ ইঞ্চি, লম্বা ৭ ইঞ্চি */
                 @page {{ size: 5in 7in; margin: 0.15in; }}
                 body {{ font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; padding: 0; color: #000; background-color: #fff; }}
                 
                 .outer-border {{ border: 2px solid #1A479B; padding: 8px; border-radius: 4px; box-sizing: border-box; height: 6.7in; position: relative; }}
                 
-                /* হেডার স্টাইল */
                 .header-container {{ display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; }}
                 .logo-section {{ text-align: left; }}
                 .logo-main {{ font-size: 24px; font-weight: 900; margin: 0; line-height: 1; font-style: italic; }}
@@ -303,7 +334,6 @@ elif menu_choice == "🧾 ইনভয়েস তৈরি ও প্রিন
                 .owner-title {{ font-size: 8px; color: #000; font-weight: bold; }}
                 .owner-phone {{ font-size: 9px; font-weight: bold; margin: 0; }}
                 
-                /* কাস্টমার ও ইনভয়েস তথ্য */
                 .info-container {{ display: flex; justify-content: space-between; margin-top: 8px; margin-bottom: 5px; }}
                 .info-left {{ width: 65%; font-size: 10px; font-weight: bold; color: #1A479B; }}
                 .bill-to-badge {{ background-color: #1A479B; color: white; display: inline-block; padding: 1px 4px; font-size: 9px; font-weight: bold; clip-path: polygon(0 0, 85% 0, 100% 100%, 0% 100%); margin-right: 3px; }}
@@ -312,13 +342,11 @@ elif menu_choice == "🧾 ইনভয়েস তৈরি ও প্রিন
                 .info-right {{ width: 32%; text-align: left; font-size: 9px; font-weight: bold; color: #1A479B; }}
                 .invoice-badge {{ background-color: #1A479B; color: white; text-align: center; padding: 2px 0; font-size: 11px; font-weight: bold; letter-spacing: 0.5px; border-radius: 2px; margin-bottom: 3px; width: 100%; }}
                 
-                /* মেইন প্রোডাক্ট টেবিল (হাতে লেখার জন্য তৈরি) */
                 .product-table {{ width: 100%; border-collapse: collapse; margin-top: 5px; }}
                 .product-table th {{ background-color: #1A479B; color: white; border: 1.2px solid #1A479B; padding: 4px 2px; font-size: 9px; font-weight: bold; text-align: center; }}
                 .product-table td {{ border-left: 1.2px solid #1A479B; border-right: 1.2px solid #1A479B; border-bottom: 1px solid #e2e2e2; font-size: 10px; }}
                 .product-table tr:last-child td {{ border-bottom: 1.2px solid #1A479B; }}
                 
-                /* টেবিল কলাম উইডথ */
                 .col-sl {{ width: 7%; text-align: center; }}
                 .col-desc {{ width: 51%; }}
                 .col-qty {{ width: 9%; text-align: center; }}
@@ -329,7 +357,6 @@ elif menu_choice == "🧾 ইনভয়েস তৈরি ও প্রিন
                 .subtotal-box {{ background-color: #1A479B; color: white; text-align: center; font-size: 10px; font-weight: bold; padding: 4px; border: 1.2px solid #1A479B; }}
                 .subtotal-val {{ border: 1.2px solid #1A479B !important; text-align: center !important; font-size: 10px; font-weight: bold; background: #fff; }}
                 
-                /* ফুটার ও মেথড */
                 .footer-container {{ display: flex; justify-content: space-between; align-items: flex-end; position: absolute; bottom: 12px; left: 8px; right: 8px; }}
                 .words-text {{ font-size: 9px; font-weight: bold; color: #1A479B; margin-bottom: 8px; }}
                 
@@ -344,7 +371,6 @@ elif menu_choice == "🧾 ইনভয়েস তৈরি ও প্রিন
             <body>
             <div class="outer-border">
                 
-                <!-- ১. হেডার সেকশন -->
                 <div class="header-container">
                     <div class="logo-section">
                         <h1 class="logo-main"><span class="logo-sm">SM-</span><span class="logo-tech">TECH</span></h1>
@@ -358,7 +384,6 @@ elif menu_choice == "🧾 ইনভয়েস তৈরি ও প্রিন
                     </div>
                 </div>
                 
-                <!-- ২. কাস্টমার ইনফো সেকশন -->
                 <div class="info-container">
                     <div class="info-left">
                         <div style="margin-bottom: 4px; display: flex; align-items: center;">
@@ -380,7 +405,6 @@ elif menu_choice == "🧾 ইনভয়েস তৈরি ও প্রিন
                     </div>
                 </div>
                 
-                <!-- ৩. প্রোডাক্ট আইটেম টেবিল (খালি) -->
                 <table class="product-table">
                     <thead>
                         <tr>
@@ -393,7 +417,6 @@ elif menu_choice == "🧾 ইনভয়েস তৈরি ও প্রিন
                     </thead>
                     <tbody>
                         {table_rows_html}
-                        <!-- সাবটোটাল রো -->
                         <tr class="subtotal-row" style="height: 24px;">
                             <td colspan="3"></td>
                             <td class="subtotal-box">SUB TOTAL</td>
@@ -402,7 +425,6 @@ elif menu_choice == "🧾 ইনভয়েস তৈরি ও প্রিন
                     </tbody>
                 </table>
                 
-                <!-- ৪. ফুটার সেকশন -->
                 <div class="footer-container">
                     <div>
                         <div class="words-text">In Words:<span style="color:#000; font-weight: normal;">&nbsp;.....................................................</span></div>
@@ -471,7 +493,7 @@ elif menu_choice == "📊 বিক্রয় রিপোর্ট":
 # 💰 লাভ-লোকসানের হিসাব (PROFIT LOSS)
 # ==========================================
 elif menu_choice == "💰 লাভ-লোকসানের হিসাব":
-    st.markdown("<h2 class='main-title'>💰 লাভ-লোকসানের নিখুঁত হিসাব</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 class='main-title'>💰 লাভ-লোকসানের হিসাব</h2>", unsafe_allow_html=True)
     
     if st.session_state["sales_data"]:
         df_p = pd.DataFrame(st.session_state["sales_data"])
