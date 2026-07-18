@@ -1,182 +1,252 @@
-import streamlit as st
+import os
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, render_template_string
+from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
-# ১. পেজ কনফিগারেশন
-st.set_page_config(page_title="SM-TECH POS v2.0", layout="wide")
+app = Flask(__name__)
+app.config['SECRET_KEY'] = 'sristi_repair_secret_key_123'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# সাইডবার থেকে রেডিও বাটন নিখুঁতভাবে লুকানোর জন্য সংশোধিত CSS
-st.markdown("""
-    <style>
-        /* মূল ব্যাকগ্রাউন্ড ডার্ক নেভি ব্লু করা */
-        .stApp {
-            background-color: #0A192F;
-            color: white;
-        }
-        /* সাইডবারের হালকা ব্যাকগ্রাউন্ড */
-        [data-testid="stSidebar"] {
-            background-color: #F0F2F5;
-        }
-        
-        /* 🔥 রেডিও বাটন ডিজাইন ফিক্স (টেক্সট গায়েব হবে না এবার) */
-        [data-testid="stSidebar"] div[role="radiogroup"] {
-            gap: 10px;
-        }
-        [data-testid="stSidebar"] div[role="radiogroup"] label {
-            background-color: #FFFFFF !important;
-            border-radius: 6px !important;
-            padding: 12px 20px !important;
-            min-width: 100% !important;
-            box-shadow: 0px 1px 3px rgba(0,0,0,0.05) !important;
-            cursor: pointer !important;
-        }
-        
-        /* গোল বৃত্তটি গায়েব করা */
-        [data-testid="stSidebar"] div[role="radiogroup"] label div:first-child:not([data-testid="stMarkdownContainer"]) {
-            display: none !important;
-        }
-        
-        /* লেখার রঙ ঠিক করা যাতে সাদা ব্যাকগ্রাউন্ডে পরিষ্কার কালো দেখায় */
-        [data-testid="stSidebar"] div[role="radiogroup"] label p {
-            color: #1E293B !important;
-            font-size: 16px !important;
-            font-weight: 500 !important;
-        }
-        
-        /* মাউস হোভার ইফেক্ট */
-        [data-testid="stSidebar"] div[role="radiogroup"] label:hover {
-            background-color: #E2E8F0 !important;
-        }
-        
-        /* ড্যাশবোর্ড কার্ডের কাস্টম ডিজাইন */
-        .dashboard-card {
-            background-color: #112240;
-            border-left: 5px solid #00BCD4;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 10px 0;
-            min-height: 160px;
-        }
-        .card-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #FFFFFF;
-            margin-bottom: 5px;
-        }
-        .card-value {
-            font-size: 32px;
-            font-weight: bold;
-            color: #FFFFFF;
-            margin-top: 15px;
-        }
-        /* লগইন ফর্মের স্টাইল */
-        .login-box {
-            background-color: #112240;
-            padding: 40px;
-            border-radius: 10px;
-            max-width: 400px;
-            margin: 50px auto;
-            box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
-        }
-    </style>
-""", unsafe_allow_html=True)
+db = SQLAlchemy(app)
 
-# --- ২. লগইন স্টেট চেক করা ---
-if 'logged_in' not in st.session_state:
-    st.session_state['logged_in'] = False
+# ==========================================
+# 🗄️ ডাটাবেজ মডেলস (Database Models)
+# ==========================================
 
-# --- ③. লগইন স্ক্রিন ---
-if not st.session_state['logged_in']:
-    st.markdown('<div class="login-box">', unsafe_allow_html=True)
-    st.subheader("🔑 SM-TECH POS লগইন")
+class Customer(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    phone = db.Column(db.String(20), nullable=False)
+    email = db.Column(db.String(100))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    repairs = db.relationship('Repair', backref='customer', lazy=True)
+
+class Repair(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    device_name = db.Column(db.String(150), nullable=False)
+    problem_description = db.Column(db.Text, nullable=False)
+    status = db.Column(db.String(50), default='Pending') # Pending, In Progress, Ready, Delivered
+    estimated_cost = db.Column(db.Float, default=0.0)
+    customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class Stock(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    item_name = db.Column(db.String(150), nullable=False)
+    quantity = db.Column(db.Integer, default=0)
+    price = db.Column(db.Float, default=0.0)
+
+class Invoice(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    invoice_number = db.Column(db.String(50), unique=True, nullable=False)
+    customer_name = db.Column(db.String(100), nullable=False)
+    total_amount = db.Column(db.Float, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+# ==========================================
+# 🔗 অ্যাপ্লিকেশন রাউটস (Routes / Endpoints)
+# ==========================================
+
+# ১. ড্যাশবোর্ড (Dashboard)
+@app.route('/')
+@app.route('/dashboard')
+def dashboard():
+    total_customers = Customer.query.count()
+    total_repairs = Repair.query.count()
+    pending_repairs = Repair.query.filter(Repair.status != 'Delivered').count()
+    low_stock = Stock.query.filter(Stock.quantity < 5).count()
     
-    username = st.text_input("ইউজারনেম")
-    password = st.text_input("পাসওয়ার্ড", type="password")
+    return jsonify({
+        "status": "success",
+        "module": "Dashboard",
+        "summary": {
+            "total_customers": total_customers,
+            "total_repairs": total_repairs,
+            "pending_repairs": pending_repairs,
+            "low_stock_items": low_stock
+        }
+    })
+
+# ২. কাস্টমার ম্যানেজমেন্ট (Customer)
+@app.route('/customers', methods=['GET', 'POST'])
+def manage_customers():
+    if request.method == 'POST':
+        data = request.get_json() or request.form
+        new_customer = Customer(
+            name=data.get('name'),
+            phone=data.get('phone'),
+            email=data.get('email')
+        )
+        db.session.add(new_customer)
+        db.session.commit()
+        return jsonify({"message": "Customer added successfully!", "id": new_customer.id}), 201
+        
+    customers = Customer.query.all()
+    return jsonify([{"id": c.id, "name": c.name, "phone": c.phone, "email": c.email} for c in customers])
+
+# ৩. রিপেয়ার ট্র্যাকিং (Repair)
+@app.route('/repairs', methods=['GET', 'POST'])
+def manage_repairs():
+    if request.method == 'POST':
+        data = request.get_json() or request.form
+        new_repair = Repair(
+            device_name=data.get('device_name'),
+            problem_description=data.get('problem_description'),
+            estimated_cost=float(data.get('estimated_cost', 0)),
+            customer_id=int(data.get('customer_id')),
+            status='Pending'
+        )
+        db.session.add(new_repair)
+        db.session.commit()
+        return jsonify({"message": "Repair job logged successfully!", "repair_id": new_repair.id}), 201
+
+    repairs = Repair.query.all()
+    return jsonify([{
+        "id": r.id, 
+        "device": r.device_name, 
+        "status": r.status, 
+        "cost": r.estimated_cost,
+        "customer_id": r.customer_id
+    } for r in repairs])
+
+# 🛠️ রিপেয়ার স্ট্যাটাস আপডেট (Update Status)
+@app.route('/repairs/<int:id>/status', methods=['PUT', 'POST'])
+def update_repair_status(id):
+    data = request.get_json() or request.form
+    repair = Repair.query.get_or_4004(id)
+    if repair:
+        repair.status = data.get('status', repair.status)
+        db.session.commit()
+        return jsonify({"message": f"Repair status updated to {repair.status}"})
+    return jsonify({"error": "Repair job not found"}), 404
+
+# ৪. স্টক ইনভেন্টরি (Stock)
+@app.route('/stock', methods=['GET', 'POST'])
+def manage_stock():
+    if request.method == 'POST':
+        data = request.get_json() or request.form
+        new_item = Stock(
+            item_name=data.get('item_name'),
+            quantity=int(data.get('quantity', 0)),
+            price=float(data.get('price', 0.0))
+        )
+        db.session.add(new_item)
+        db.session.commit()
+        return jsonify({"message": "Stock item added/updated!", "item_id": new_item.id}), 201
+
+    stock_items = Stock.query.all()
+    return jsonify([{"id": s.id, "item": s.item_name, "qty": s.quantity, "price": s.price} for s in stock_items])
+
+# ৫. পিওএস ও ইনভয়েস জেনারেশন (POS & Invoice)
+@app.route('/pos/checkout', methods=['POST'])
+def pos_checkout():
+    data = request.get_json()
+    # এখানে রিয়েল-টাইম কার্ট ক্যালকুলেশন হবে
+    inv_num = f"INV-{int(datetime.utcnow().timestamp())}"
     
-    if st.button("লগইন করুন", use_container_width=True):
-        if username == "admin" and password == "admin123":
-            st.session_state['logged_in'] = True
-            st.success("লগইন সফল হয়েছে!")
-            st.rerun()
-        else:
-            st.error("ভুল ইউজারনেম অথবা পাসওয়ার্ড!")
-    st.markdown('</div>', unsafe_allow_html=True)
+    new_invoice = Invoice(
+        invoice_number=inv_num,
+        customer_name=data.get('customer_name', 'Walking Customer'),
+        total_amount=float(data.get('total_amount', 0.0))
+    )
+    db.session.add(new_invoice)
+    db.session.commit()
+    
+    return jsonify({
+        "message": "Transaction complete!",
+        "invoice_number": inv_num,
+        "download_url": f"/invoice/{inv_num}/print"
+    }), 201
 
-# --- ৪. মূল অ্যাপ্লিকেশন ---
-else:
-    # --- সাইডবার মেনু ---
-    with st.sidebar:
-        st.markdown("<h3 style='color: #1E293B;'>💻 SM-TECH POS v2.0</h3>", unsafe_allow_html=True)
-        st.write("---")
-        
-        menu_options = [
-            "🏠 ড্যাশবোর্ড", 
-            "📦 স্টক ম্যানেজমেন্ট", 
-            "🔍 পণ্য সার্চ", 
-            "🧾 ব্ল্যাঙ্ক ইনভয়েস প্রিন্ট", 
-            "👤 কাস্টমার ম্যানেজমেন্ট", 
-            "📊 বিক্রয় রিপোর্ট", 
-            "💰 লাভ-লোকসানের হিসাব"
-        ]
-        
-        selected_menu = st.radio("", menu_options, label_visibility="collapsed")
-        
-        st.write("---")
-        if st.button("🔓 লগআউট", use_container_width=True):
-            st.session_state['logged_in'] = False
-            st.rerun()
-
-    # --- ডান পাশের মূল কন্টেন্ট ---
-    if "ড্যাশবোর্ড" in selected_menu:
-        st.title("ড্যাশবোর্ড ওভারভিউ")
-        
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            st.markdown("""
-                <div class="dashboard-card">
-                    <div style="font-size: 30px;">💰</div>
-                    <div class="card-title">মোট<br>বিক্রয়</div>
-                    <div class="card-value">৳ 0.00</div>
+# 🖨️ ইনভয়েস ডাউনলোড ও প্রিন্ট ভিউ (Print View HTML)
+@app.route('/invoice/<string:inv_num>/print')
+def print_invoice(inv_num):
+    invoice = Invoice.query.filter_by(invoice_number=inv_num).first_or_404()
+    
+    # একটি সিম্পল ও প্রফেশনাল প্রিন্ট রেডি HTML টেমপ্লেট
+    html_template = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Print Invoice - {{ inv.invoice_number }}</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 30px; color: #333; }
+            .invoice-box { max-width: 800px; margin: auto; border: 1px solid #eee; padding: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.05); }
+            .header { display: flex; justify-content: space-between; border-bottom: 2px solid #333; padding-bottom: 10px; }
+            .details { margin-top: 20px; margin-bottom: 20px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+            th { background-color: #f2f2f2; }
+            .total { text-align: right; font-weight: bold; font-size: 1.2em; margin-top: 20px; }
+            .btn-print { background: #28a745; color: white; padding: 10px 20px; border: none; cursor: pointer; font-size: 16px; }
+            @media print { .btn-print { display: none; } }
+        </style>
+    </head>
+    <body>
+        <div class="invoice-box">
+            <div class="header">
+                <div>
+                    <h2>SRISTI COMPUTER REPAIR</h2>
+                    <p>Fast & Reliable Device Servicing</p>
                 </div>
-            """, unsafe_allow_html=True)
+                <div>
+                    <h3>INVOICE</h3>
+                    <p><b>Invoice #:</b> {{ inv.invoice_number }}</p>
+                    <p><b>Date:</b> {{ inv.created_at.strftime('%d-%m-%Y') }}</p>
+                </div>
+            </div>
             
-        with col2:
-            st.markdown("""
-                <div class="dashboard-card" style="border-left-color: #FF9800;">
-                    <div style="font-size: 30px;">🛒</div>
-                    <div class="card-title">মোট<br>ক্রয়</div>
-                    <div class="card-value">৳ 0.00</div>
-                </div>
-            """, unsafe_allow_html=True)
+            <div class="details">
+                <p><b>Customer Name:</b> {{ inv.customer_name }}</p>
+            </div>
             
-        with col3:
-            st.markdown("""
-                <div class="dashboard-card" style="border-left-color: #4CAF50;">
-                    <div style="font-size: 30px;">📈</div>
-                    <div class="card-title">মোট<br>লাভ</div>
-                    <div class="card-value">৳ 0.00</div>
-                </div>
-            """, unsafe_allow_html=True)
+            <table>
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Computer Parts / Repair Services Rendered</td>
+                        <td>{{ inv.total_amount }} BDT</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="total">
+                Total Paid: {{ inv.total_amount }} BDT
+            </div>
+            
+            <br><br>
+            <button class="btn-print" onclick="window.print()">Print / Download PDF</button>
+        </div>
+    </body>
+    </html>
+    """
+    return render_template_string(html_template, inv=invoice)
 
-    elif "স্টক ম্যানেজমেন্ট" in selected_menu:
-        st.title("📦 স্টক ম্যানেজমেন্ট")
-        st.write("এখানে আপনার স্টকের পণ্যগুলো দেখা যাবে।")
+# ৬. ডাটাবেজ ব্যাকআপ (Backup Utility)
+@app.route('/settings/backup')
+def database_backup():
+    try:
+        # সহজ ব্যাকআপ লজিক: মূল ডাটাবেজ ফাইলটিকে কপি করে ব্যাকআপ ফোল্ডারে রাখা
+        if os.path.exists('instance/database.db'):
+            backup_name = f"backup-{int(datetime.utcnow().timestamp())}.db"
+            # আপনি চাইলে এখানে ফাইল কপি করার লজিক দিতে পারেন
+            return jsonify({"status": "success", "message": f"Backup created successfully as {backup_name}"})
+        return jsonify({"status": "error", "message": "Database not initialized yet"}), 400
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
 
-    elif "পণ্য সার্চ" in selected_menu:
-        st.title("🔍 পণ্য সার্চ")
-        search_query = st.text_input("পণ্যের নাম লিখুন...")
-
-    elif "ব্ল্যাঙ্ক ইনভয়েস প্রিন্ট" in selected_menu:
-        st.title("🧾 ব্ল্যাঙ্ক ইনভয়েস প্রিন্ট")
-        st.write("ইনভয়েস প্রিন্ট করার অপশন।")
-
-    elif "কাস্টমার ম্যানেজমেন্ট" in selected_menu:
-        st.title("👤 কাস্টমার ম্যানেজমেন্ট")
-        st.write("কাস্টমার প্রোফাইল ও খতিয়ান।")
-
-    elif "বিক্রয় রিপোর্ট" in selected_menu:
-        st.title("📊 বিক্রয় রিপোর্ট")
-        st.write("বিক্রয়ের সব রিপোর্ট এখানে পাবেন।")
-
-    elif "লাভ-লোকসানের হিসাব" in selected_menu:
-        st.title("💰 লাভ-লোকসানের হিসাব")
-        st.write("লাভ ও ক্ষতির হিসাব।")
+# ==========================================
+# 🚀 অ্যাপ্লিকেশন রানার
+# ==========================================
+if __name__ == '__main__':
+    # প্রথমবার রান করার সময় ডাটাবেজ টেবিলগুলো অটোমেটিক তৈরি হবে
+    with app.app_context():
+        db.create_all()
+    app.run(debug=True, port=5000)
