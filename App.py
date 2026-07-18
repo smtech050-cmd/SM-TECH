@@ -3,7 +3,7 @@ import streamlit as st
 # ১. পেজ কনফিগারেশন
 st.set_page_config(page_title="SM-TECH POS v2.0", layout="wide")
 
-# সাইডবার থেকে রেডিও বাটন লুকানো এবং সুন্দর কার্ডের কাস্টম CSS
+# সাইডবার থেকে রেডিও বাটন নিখুঁতভাবে লুকানোর জন্য সংশোধিত CSS
 st.markdown("""
     <style>
         /* মূল ব্যাকগ্রাউন্ড ডার্ক নেভি ব্লু করা */
@@ -15,34 +15,33 @@ st.markdown("""
         [data-testid="stSidebar"] {
             background-color: #F0F2F5;
         }
-        [data-testid="stSidebar"] * {
-            color: #1E293B !important;
-        }
         
-        /* 🔥 রেডিও বাটনের গোল গোল বৃত্ত এবং ডিফল্ট স্টাইল হাইড করা */
+        /* 🔥 রেডিও বাটন ডিজাইন ফিক্স (টেক্সট গায়েব হবে না এবার) */
         [data-testid="stSidebar"] div[role="radiogroup"] {
-            background-color: transparent !important;
-            padding: 0 !important;
+            gap: 10px;
         }
         [data-testid="stSidebar"] div[role="radiogroup"] label {
             background-color: #FFFFFF !important;
             border-radius: 6px !important;
             padding: 12px 20px !important;
-            margin-bottom: 10px !important;
             min-width: 100% !important;
             box-shadow: 0px 1px 3px rgba(0,0,0,0.05) !important;
             cursor: pointer !important;
-            transition: all 0.2s ease;
         }
-        /* গোল রেডিও সার্কেলটি গায়েব করার ম্যাজিক CSS */
-        [data-testid="stSidebar"] div[role="radiogroup"] label div[data-testid="stMarkdownContainer"]::before {
-            display: none !important;
-        }
-        [data-testid="stSidebar"] div[role="radiogroup"] label div:first-child {
+        
+        /* গোল বৃত্তটি গায়েব করা */
+        [data-testid="stSidebar"] div[role="radiogroup"] label div:first-child:not([data-testid="stMarkdownContainer"]) {
             display: none !important;
         }
         
-        /* মাউস হোভার বা সিলেক্ট হলে হালকা ইফেক্ট */
+        /* লেখার রঙ ঠিক করা যাতে সাদা ব্যাকগ্রাউন্ডে পরিষ্কার কালো দেখায় */
+        [data-testid="stSidebar"] div[role="radiogroup"] label p {
+            color: #1E293B !important;
+            font-size: 16px !important;
+            font-weight: 500 !important;
+        }
+        
+        /* মাউস হোভার ইফেক্ট */
         [data-testid="stSidebar"] div[role="radiogroup"] label:hover {
             background-color: #E2E8F0 !important;
         }
@@ -84,7 +83,7 @@ st.markdown("""
 if 'logged_in' not in st.session_state:
     st.session_state['logged_in'] = False
 
-# --- ৩. লগইন স্ক্রিন ---
+# --- ③. লগইন স্ক্রিন ---
 if not st.session_state['logged_in']:
     st.markdown('<div class="login-box">', unsafe_allow_html=True)
     st.subheader("🔑 SM-TECH POS লগইন")
@@ -93,7 +92,7 @@ if not st.session_state['logged_in']:
     password = st.text_input("পাসওয়ার্ড", type="password")
     
     if st.button("লগইন করুন", use_container_width=True):
-        if username == "admin" and password == "1234":
+        if username == "admin" and password == "admin123":
             st.session_state['logged_in'] = True
             st.success("লগইন সফল হয়েছে!")
             st.rerun()
@@ -105,7 +104,7 @@ if not st.session_state['logged_in']:
 else:
     # --- সাইডবার মেনু ---
     with st.sidebar:
-        st.subheader("💻 SM-TECH POS v2.0")
+        st.markdown("<h3 style='color: #1E293B;'>💻 SM-TECH POS v2.0</h3>", unsafe_allow_html=True)
         st.write("---")
         
         menu_options = [
@@ -118,7 +117,6 @@ else:
             "💰 লাভ-লোকসানের হিসাব"
         ]
         
-        # এখানে রেডিও বাটনই ব্যাকএন্ডে কাজ করছে, কিন্তু CSS দিয়ে গোল্লাগুলো লুকানো হয়েছে
         selected_menu = st.radio("", menu_options, label_visibility="collapsed")
         
         st.write("---")
@@ -126,7 +124,7 @@ else:
             st.session_state['logged_in'] = False
             st.rerun()
 
-    # --- ডান পাশের মূল কন্টেন্ট (সব মেনু এখন ক্লিক করলে কাজ করবে) ---
+    # --- ডান পাশের মূল কন্টেন্ট ---
     if "ড্যাশবোর্ড" in selected_menu:
         st.title("ড্যাশবোর্ড ওভারভিউ")
         
@@ -161,24 +159,24 @@ else:
 
     elif "স্টক ম্যানেজমেন্ট" in selected_menu:
         st.title("📦 স্টক ম্যানেজমেন্ট")
-        st.write("স্টক ম্যানেজমেন্টের কাজ এখানে হবে।")
+        st.write("এখানে আপনার স্টকের পণ্যগুলো দেখা যাবে।")
 
     elif "পণ্য সার্চ" in selected_menu:
         st.title("🔍 পণ্য সার্চ")
-        search_query = st.text_input("পণ্যের নাম বা বারকোড দিয়ে খুঁজুন...")
+        search_query = st.text_input("পণ্যের নাম লিখুন...")
 
     elif "ব্ল্যাঙ্ক ইনভয়েস প্রিন্ট" in selected_menu:
         st.title("🧾 ব্ল্যাঙ্ক ইনভয়েস প্রিন্ট")
-        st.button("নতুন ইনভয়েস প্রিন্ট করুন")
+        st.write("ইনভয়েস প্রিন্ট করার অপশন।")
 
     elif "কাস্টমার ম্যানেজমেন্ট" in selected_menu:
         st.title("👤 কাস্টমার ম্যানেজমেন্ট")
-        st.write("কাস্টমার তালিকা ও বকেয়া হিসাব।")
+        st.write("কাস্টমার প্রোফাইল ও খতিয়ান।")
 
     elif "বিক্রয় রিপোর্ট" in selected_menu:
         st.title("📊 বিক্রয় রিপোর্ট")
-        st.write("বিক্রয়ের দৈনিক ও মাসিক রিপোর্ট।")
+        st.write("বিক্রয়ের সব রিপোর্ট এখানে পাবেন।")
 
     elif "লাভ-লোকসানের হিসাব" in selected_menu:
         st.title("💰 লাভ-লোকসানের হিসাব")
-        st.write("লাভ ও ক্ষতির বিবরণী।")
+        st.write("লাভ ও ক্ষতির হিসাব।")
