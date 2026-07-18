@@ -12,7 +12,6 @@ if "logged_in" not in st.session_state:
     st.session_state["logged_in"] = False
 
 if "stock_data" not in st.session_state:
-    # ডামি ডাটা (শুরু করার জন্য)
     st.session_state["stock_data"] = [
         {"id": 1, "Date": "17-07-2026", "New Products": "SSD 120GB", "Quantity": 10, "Cost Price": 1200.0, "Sell Rate": 1600.0},
         {"id": 2, "Date": "18-07-2026", "New Products": "RAM 8GB DDR4", "Quantity": 6, "Cost Price": 1800.0, "Sell Rate": 2200.0},
@@ -24,13 +23,10 @@ if "sales_data" not in st.session_state:
 if "customers_data" not in st.session_state:
     st.session_state["customers_data"] = []
 
-if "invoice_items" not in st.session_state:
-    st.session_state["invoice_items"] = [{"description": "", "qty": 1, "uprice": 0.0}]
-
 if "editing_stock_id" not in st.session_state:
     st.session_state["editing_stock_id"] = None
 
-# সিএসএস স্টাইল (অ্যাপ্লিকেশন ইউজার ইন্টারফেস সুন্দর করার জন্য)
+# সিএসএস স্টাইল
 st.markdown("""
     <style>
     .main-title { font-size: 28px; font-weight: bold; color: #1A479B; text-align: center; margin-bottom: 20px;}
@@ -71,7 +67,7 @@ menu_choice = st.sidebar.radio("মেনু নেভিগেশন:", [
     "🏠 ড্যাশবোর্ড",
     "📦 স্টক ম্যানেজমেন্ট",
     "🔍 পণ্য সার্চ",
-    "🧾 ইনভয়েস তৈরি ও প্রিন্ট",
+    "🧾 ব্ল্যাঙ্ক ইনভয়েস প্রিন্ট",
     "👤 কাস্টমার ম্যানেজমেন্ট",
     "📊 বিক্রয় রিপোর্ট",
     "💰 লাভ-লোকসানের হিসাব"
@@ -87,7 +83,6 @@ if st.sidebar.button("🔓 লগআউট"):
 if menu_choice == "🏠 ড্যাশবোর্ড":
     st.markdown("<h2 class='main-title'>🏠 বিজনেস ড্যাশবোর্ড</h2>", unsafe_allow_html=True)
     
-    # হিসাব নিকাশ
     total_sales = sum([item["total"] for item in st.session_state["sales_data"]])
     total_profit = sum([item["profit"] for item in st.session_state["sales_data"]])
     total_items = len(st.session_state["stock_data"])
@@ -232,10 +227,10 @@ elif menu_choice == "🔍 পণ্য সার্চ":
             st.warning("এই নামে কোনো পণ্য পাওয়া যায়নি।")
 
 # ==========================================
-# 🧾 ইনভয়েস তৈরি ও প্রিন্ট (INVOICE GENERATOR)
+# 🧾 ইনভয়েস তৈরি ও প্রিন্ট (HANDWRITTEN H7" W5" PADS)
 # ==========================================
 elif menu_choice == "🧾 ইনভয়েস তৈরি ও প্রিন্ট":
-    st.markdown("<h2 class='main-title'>🧾 ক্যাশ মেমো / ইনভয়েস জেনারেটর</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 class='main-title'>🧾 ক্যাশ মেমো (হাতে লেখার জন্য খালি প্যাড)</h2>", unsafe_allow_html=True)
     
     col_a, col_b = st.columns(2)
     with col_a:
@@ -244,160 +239,106 @@ elif menu_choice == "🧾 ইনভয়েস তৈরি ও প্রিন
         customer_address = st.text_input("Address (ঠিকানা)")
     with col_b:
         invoice_no = st.text_input("Invoice No", value=f"SM-{datetime.datetime.now().strftime('%d%m%y%H%M%S')}")
-    
-    st.markdown("---")
-    st.subheader("🛒 বিলের বিবরণ")
-    
-    prod_options = {p['New Products']: p for p in st.session_state["stock_data"] if p['Quantity'] > 0}
-    
-    updated_items = []
-    for i, item in enumerate(st.session_state["invoice_items"]):
-        col_desc, col_qty, col_uprice = st.columns([5, 2, 3])
-        
-        with col_desc:
-            selected_prod = st.selectbox(f"পণ্যের নাম সিলেক্ট করুন #{i+1}", [""] + list(prod_options.keys()), key=f"inv_prod_{i}")
-        with col_qty:
-            max_q = prod_options[selected_prod]['Quantity'] if selected_prod else 100
-            qty = st.number_input(f"QTY #{i+1}", min_value=1, max_value=max_q, value=1, key=f"inv_qty_{i}")
-        with col_uprice:
-            default_price = float(prod_options[selected_prod]['Sell Rate']) if selected_prod else 0.0
-            uprice = st.number_input(f"মূল্য #{i+1}", min_value=0.0, value=default_price, key=f"inv_price_{i}")
+        total_bill_input = st.number_input("Total Amount (মোট টাকার পরিমাণ - অপশনাল)", min_value=0.0, value=0.0)
+
+    if st.button("🛒 ইনভয়েস প্যাড জেনারেট ও প্রিন্ট করুন"):
+        if customer_name:
+            current_date = datetime.date.today().strftime("%d-%m-%Y")
             
-        if selected_prod:
-            updated_items.append({
-                "prod_name": selected_prod,
-                "qty": qty,
-                "uprice": uprice,
-                "cost_price": float(prod_options[selected_prod]['Cost Price'])
-            })
-            
-    col_btn1, col_btn2, _ = st.columns([2, 2, 6])
-    with col_btn1:
-        if st.button("➕ নতুন রো যোগ করুন"):
-            st.session_state["invoice_items"].append({"description": "", "qty": 1, "uprice": 0.0})
-            st.rerun()
-    with col_btn2:
-        if st.button("❌ শেষ রো বাদ দিন") and len(st.session_state["invoice_items"]) > 1:
-            st.session_state["invoice_items"].pop()
-            st.rerun()
-            
-    discount = st.number_input("DISCOUNT (ডিসকাউন্ট টাকা)", min_value=0.0, value=0.0)
-    
-    if st.button("🛒 সেল সম্পন্ন ও ইনভয়েস প্রিন্ট করুন"):
-        if customer_name and updated_items:
-            sub_total = 0
-            total_cost = 0
-            table_rows_html = ""
-            
+            # কাস্টমার ডাটাবেসে সেভ
             if not any(c['phone'] == customer_phone for c in st.session_state["customers_data"]):
                 st.session_state["customers_data"].append({"name": customer_name, "phone": customer_phone, "address": customer_address})
             
-            for index, item in enumerate(updated_items):
-                amount = item["qty"] * item["uprice"]
-                sub_total += amount
-                total_cost += (item["qty"] * item["cost_price"])
-                
-                for p in st.session_state["stock_data"]:
-                    if p["New Products"] == item["prod_name"]:
-                        p["Quantity"] -= item["qty"]
-                        break
-                
+            # বিক্রয় ডাটাবেসে সেভ
+            if total_bill_input > 0:
+                st.session_state["sales_data"].append({
+                    "invoice_no": invoice_no,
+                    "customer": customer_name,
+                    "date": current_date,
+                    "total": total_bill_input,
+                    "profit": total_bill_input * 0.15, # আনুমানিক লাভ
+                    "discount": 0.0
+                })
+            
+            # টেবিলের জন্য ফিক্সড ৮টি সম্পূর্ণ ফাঁকা রো জেনারেট করা
+            table_rows_html = ""
+            for i in range(1, 9):
                 table_rows_html += f"""
-                <tr style="height: 28px;">
-                    <td style='text-align:center;'>{index+1}</td>
-                    <td style='padding-left: 5px;'>{item['prod_name']}</td>
-                    <td style='text-align:center;'>{item['qty']}</td>
-                    <td style='text-align:center;'>{item['uprice']:.2f}</td>
-                    <td style='text-align:center;'>{amount:.2f}</td>
-                </tr>
-                """
-            
-            # মেমোর আকৃতি ঠিক রাখতে ১২টি রো পূরণ করার জন্য ব্ল্যাঙ্ক রো জেনারেটর
-            remaining_rows = max(0, 12 - len(updated_items))
-            for i in range(remaining_rows):
-                table_rows_html += """
-                <tr style="height: 28px;">
-                    <td>&nbsp;</td>
+                <tr style="height: 26px;">
+                    <td style='text-align:center; color:#dcdcdc;'>{i}</td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                 </tr>
                 """
-            
-            total_bill = sub_total - discount
-            total_profit = total_bill - total_cost
-            current_date = datetime.date.today().strftime("%d-%m-%Y")
-            
-            st.session_state["sales_data"].append({
-                "invoice_no": invoice_no,
-                "customer": customer_name,
-                "date": current_date,
-                "total": total_bill,
-                "profit": total_profit,
-                "discount": discount
-            })
-            
-            amount_in_words = f"{int(total_bill)} Taka Only"
+                
+            amount_display = f"{total_bill_input:.2f}" if total_bill_input > 0 else ""
             
             # =========================================================
-            # 🎨 পিক্সেল-পারফেক্ট ক্যাশ মেমো টেমপ্লেট (HTML/CSS)
+            # 🎨 H7" X W5" সাইজের পিক্সেল-পারফেক্ট ক্যাশ মেমো টেমপ্লেট
             # =========================================================
             invoice_html = f"""
             <html>
             <head>
             <meta charset="UTF-8">
             <style>
-                @page {{ size: 8.5in 11in; margin: 0.3in; }}
-                body {{ font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; padding: 10px; color: #000; }}
+                /* পেপার সাইজ ফিক্সড: চওড়া ৫ ইঞ্চি, লম্বা ৭ ইঞ্চি */
+                @page {{ size: 5in 7in; margin: 0.15in; }}
+                body {{ font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; padding: 0; color: #000; background-color: #fff; }}
                 
-                .outer-border {{ border: 2.5px solid #1A479B; padding: 15px; border-radius: 4px; box-sizing: border-box; min-height: 10.2in; position: relative; }}
+                .outer-border {{ border: 2px solid #1A479B; padding: 8px; border-radius: 4px; box-sizing: border-box; height: 6.7in; position: relative; }}
                 
-                .header-container {{ display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }}
+                /* হেডার স্টাইল */
+                .header-container {{ display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; }}
                 .logo-section {{ text-align: left; }}
-                .logo-main {{ font-size: 38px; font-weight: 900; margin: 0; line-height: 1; font-style: italic; }}
+                .logo-main {{ font-size: 24px; font-weight: 900; margin: 0; line-height: 1; font-style: italic; }}
                 .logo-sm {{ color: #1A479B; }}
                 .logo-tech {{ color: #E31E24; }}
-                .sub-logo {{ font-size: 13.5px; font-weight: bold; color: #00A651; letter-spacing: 0.5px; margin: 2px 0 0 0; }}
-                .tagline {{ font-size: 11px; font-style: italic; font-weight: 500; color: #000; margin: 1px 0 0 0; }}
+                .sub-logo {{ font-size: 9.5px; font-weight: bold; color: #00A651; letter-spacing: 0.3px; margin: 1px 0 0 0; }}
+                .tagline {{ font-size: 8px; font-style: italic; font-weight: 500; color: #000; margin: 0; }}
                 
-                .owner-section {{ text-align: right; color: #1A479B; line-height: 1.2; }}
-                .owner-name {{ font-size: 15px; font-weight: bold; }}
-                .owner-title {{ font-size: 11px; color: #000; font-weight: bold; margin-bottom: 4px; }}
-                .owner-phone {{ font-size: 13px; font-weight: bold; margin: 0; }}
+                .owner-section {{ text-align: right; color: #1A479B; line-height: 1.1; }}
+                .owner-name {{ font-size: 11px; font-weight: bold; }}
+                .owner-title {{ font-size: 8px; color: #000; font-weight: bold; }}
+                .owner-phone {{ font-size: 9px; font-weight: bold; margin: 0; }}
                 
-                .info-container {{ display: flex; justify-content: space-between; margin-top: 15px; margin-bottom: 10px; }}
-                .info-left {{ width: 68%; font-size: 13px; font-weight: bold; color: #1A479B; }}
-                .bill-to-badge {{ background-color: #1A479B; color: white; display: inline-block; padding: 3px 8px; font-size: 12px; font-weight: bold; clip-path: polygon(0 0, 85% 0, 100% 100%, 0% 100%); margin-right: 5px; }}
-                .dots-line {{ color: #000; font-weight: normal; font-size: 13px; }}
+                /* কাস্টমার ও ইনভয়েস তথ্য */
+                .info-container {{ display: flex; justify-content: space-between; margin-top: 8px; margin-bottom: 5px; }}
+                .info-left {{ width: 65%; font-size: 10px; font-weight: bold; color: #1A479B; }}
+                .bill-to-badge {{ background-color: #1A479B; color: white; display: inline-block; padding: 1px 4px; font-size: 9px; font-weight: bold; clip-path: polygon(0 0, 85% 0, 100% 100%, 0% 100%); margin-right: 3px; }}
+                .dots-line {{ color: #000; font-weight: normal; font-size: 10px; }}
                 
-                .info-right {{ width: 28%; text-align: left; font-size: 13px; font-weight: bold; color: #1A479B; }}
-                .invoice-badge {{ background-color: #1A479B; color: white; text-align: center; padding: 4px 0; font-size: 16px; font-weight: bold; letter-spacing: 1px; border-radius: 2px; margin-bottom: 6px; width: 100%; }}
+                .info-right {{ width: 32%; text-align: left; font-size: 9px; font-weight: bold; color: #1A479B; }}
+                .invoice-badge {{ background-color: #1A479B; color: white; text-align: center; padding: 2px 0; font-size: 11px; font-weight: bold; letter-spacing: 0.5px; border-radius: 2px; margin-bottom: 3px; width: 100%; }}
                 
-                .product-table {{ width: 100%; border-collapse: collapse; margin-top: 10px; }}
-                .product-table th {{ background-color: #1A479B; color: white; border: 1.5px solid #1A479B; padding: 6px; font-size: 12px; font-weight: bold; text-align: center; }}
-                .product-table td {{ border-left: 1.5px solid #1A479B; border-right: 1.5px solid #1A479B; border-bottom: 1px solid #dcdcdc; font-size: 12px; font-weight: bold; }}
-                .product-table tr:last-child td {{ border-bottom: 1.5px solid #1A479B; }}
+                /* মেইন প্রোডাক্ট টেবিল (হাতে লেখার জন্য তৈরি) */
+                .product-table {{ width: 100%; border-collapse: collapse; margin-top: 5px; }}
+                .product-table th {{ background-color: #1A479B; color: white; border: 1.2px solid #1A479B; padding: 4px 2px; font-size: 9px; font-weight: bold; text-align: center; }}
+                .product-table td {{ border-left: 1.2px solid #1A479B; border-right: 1.2px solid #1A479B; border-bottom: 1px solid #e2e2e2; font-size: 10px; }}
+                .product-table tr:last-child td {{ border-bottom: 1.2px solid #1A479B; }}
                 
-                .col-sl {{ width: 6%; text-align: center; }}
-                .col-desc {{ width: 48%; }}
-                .col-qty {{ width: 10%; text-align: center; }}
-                .col-uprice {{ width: 16%; text-align: center; }}
-                .col-amount {{ width: 20%; text-align: center; }}
+                /* টেবিল কলাম উইডথ */
+                .col-sl {{ width: 7%; text-align: center; }}
+                .col-desc {{ width: 51%; }}
+                .col-qty {{ width: 9%; text-align: center; }}
+                .col-uprice {{ width: 15%; text-align: center; }}
+                .col-amount {{ width: 18%; text-align: center; }}
                 
                 .subtotal-row td {{ border: none !important; }}
-                .subtotal-box {{ background-color: #1A479B; color: white; text-align: center; font-size: 13px; font-weight: bold; padding: 7px; border: 1.5px solid #1A479B; border-radius: 0 0 0 8px; }}
-                .subtotal-val {{ border: 1.5px solid #1A479B !important; text-align: center !important; font-size: 13px; font-weight: bold; background: #fff; }}
+                .subtotal-box {{ background-color: #1A479B; color: white; text-align: center; font-size: 10px; font-weight: bold; padding: 4px; border: 1.2px solid #1A479B; }}
+                .subtotal-val {{ border: 1.2px solid #1A479B !important; text-align: center !important; font-size: 10px; font-weight: bold; background: #fff; }}
                 
-                .footer-container {{ display: flex; justify-content: space-between; align-items: flex-end; margin-top: 30px; position: absolute; bottom: 25px; left: 15px; right: 15px; }}
-                .words-text {{ font-size: 12px; font-weight: bold; color: #1A479B; margin-bottom: 15px; }}
+                /* ফুটার ও মেথড */
+                .footer-container {{ display: flex; justify-content: space-between; align-items: flex-end; position: absolute; bottom: 12px; left: 8px; right: 8px; }}
+                .words-text {{ font-size: 9px; font-weight: bold; color: #1A479B; margin-bottom: 8px; }}
                 
-                .payment-box {{ border: 1.5px solid #1A479B; border-collapse: collapse; width: 220px; text-align: center; font-size: 11px; font-weight: bold; color: #1A479B; }}
-                .payment-box td {{ border: 1px solid #1A479B; padding: 5px; }}
+                .payment-box {{ border: 1.2px solid #1A479B; border-collapse: collapse; width: 160px; text-align: center; font-size: 8px; font-weight: bold; color: #1A479B; }}
+                .payment-box td {{ border: 1px solid #1A479B; padding: 2px; }}
                 
-                .signature-section {{ text-align: center; color: #1A479B; font-size: 11px; font-weight: bold; line-height: 1.3; width: 200px; }}
-                .sig-line {{ border-top: 1.5px solid #1A479B; padding-top: 3px; font-size: 11px; }}
-                .sig-company {{ font-size: 9px; font-weight: normal; color: #1A479B; }}
+                .signature-section {{ text-align: center; color: #1A479B; font-size: 9px; font-weight: bold; width: 130px; }}
+                .sig-line {{ border-top: 1.2px solid #1A479B; padding-top: 2px; }}
+                .sig-company {{ font-size: 7.5px; font-weight: normal; }}
             </style>
             </head>
             <body>
@@ -420,29 +361,26 @@ elif menu_choice == "🧾 ইনভয়েস তৈরি ও প্রিন
                 <!-- ২. কাস্টমার ইনফো সেকশন -->
                 <div class="info-container">
                     <div class="info-left">
-                        <div style="margin-bottom: 6px; display: flex; align-items: center;">
+                        <div style="margin-bottom: 4px; display: flex; align-items: center;">
                             <div class="bill-to-badge">Bill To</div>
                             <span style="color:#1A479B;">Name:</span>
-                            <span class="dots-line">&nbsp;{customer_name}....................................................................................</span>
+                            <span class="dots-line">&nbsp;{customer_name}......................................................</span>
                         </div>
-                        <div style="margin-bottom: 6px;">
+                        <div style="margin-bottom: 4px;">
                             <span style="color:#1A479B;">Address:</span>
-                            <span class="dots-line">&nbsp;{customer_address}..........................................................................................</span>
-                        </div>
-                        <div>
-                            <span class="dots-line">.......................................................................................................................</span>
+                            <span class="dots-line">&nbsp;{customer_address}............................................................</span>
                         </div>
                     </div>
                     <div class="info-right">
                         <div class="invoice-badge">INVOICE</div>
-                        <span style="color:#1A479B;">Invoice No:</span> <span class="dots-line">{invoice_no}</span><br>
-                        <div style="margin-top: 4px;">
-                            <span style="color:#1A479B;">Date:</span> <span class="dots-line">{current_date}.......................</span>
+                        <span style="color:#1A479B;">Inv No:</span> <span class="dots-line">{invoice_no[:12]}</span><br>
+                        <div style="margin-top: 2px;">
+                            <span style="color:#1A479B;">Date:</span> <span class="dots-line">{current_date}</span>
                         </div>
                     </div>
                 </div>
                 
-                <!-- ৩. প্রোডাক্ট আইটেম টেবিল -->
+                <!-- ৩. প্রোডাক্ট আইটেম টেবিল (খালি) -->
                 <table class="product-table">
                     <thead>
                         <tr>
@@ -455,22 +393,23 @@ elif menu_choice == "🧾 ইনভয়েস তৈরি ও প্রিন
                     </thead>
                     <tbody>
                         {table_rows_html}
-                        <tr class="subtotal-row" style="height: 32px;">
+                        <!-- সাবটোটাল রো -->
+                        <tr class="subtotal-row" style="height: 24px;">
                             <td colspan="3"></td>
                             <td class="subtotal-box">SUB TOTAL</td>
-                            <td class="subtotal-val">{total_bill:.2f}</td>
+                            <td class="subtotal-val">{amount_display}</td>
                         </tr>
                     </tbody>
                 </table>
                 
-                <!-- ৪. ফুটার ও পেমেন্ট গেটওয়ে -->
+                <!-- ৪. ফুটার সেকশন -->
                 <div class="footer-container">
                     <div>
-                        <div class="words-text">Amount In Words:<span style="color:#000; font-weight: normal;">&nbsp;{amount_in_words}............................................................</span></div>
+                        <div class="words-text">In Words:<span style="color:#000; font-weight: normal;">&nbsp;.....................................................</span></div>
                         
                         <table class="payment-box">
                             <tr>
-                                <td colspan="4" style="background-color: #1A479B; color: white; border: none; padding: 2px; font-weight: bold;">Payment Methods</td>
+                                <td colspan="4" style="background-color: #1A479B; color: white; border: none; padding: 1px; font-weight: bold;">Payment Methods</td>
                             </tr>
                             <tr>
                                 <td>Cash</td>
@@ -483,8 +422,7 @@ elif menu_choice == "🧾 ইনভয়েস তৈরি ও প্রিন
                     
                     <div class="signature-section">
                         <div class="sig-line">Authorised Signature</div>
-                        <div style="font-size: 11px; font-weight: bold; margin-top: 1px;">SM-TECH</div>
-                        <div class="sig-company">Computer & IT Solutions</div>
+                        <div style="font-size: 9px; font-weight: bold; margin-top: 1px;">SM-TECH</div>
                     </div>
                 </div>
                 
@@ -498,10 +436,10 @@ elif menu_choice == "🧾 ইনভয়েস তৈরি ও প্রিন
             </body>
             </html>
             """
-            st.success("বিক্রয় সফল হয়েছে এবং স্টক আপডেট করা হয়েছে!")
-            st.download_button("📥 মেমো ডাউনলোড ও প্রিন্ট", data=invoice_html, file_name=f"Invoice_{invoice_no}.html", mime="text/html")
+            st.success("খালি ইনভয়েস প্যাড সফলভাবে জেনারেট হয়েছে!")
+            st.download_button("📥 মেমো ডাউনলোড ও প্রিন্ট", data=invoice_html, file_name=f"Blank_Invoice_{invoice_no}.html", mime="text/html")
         else:
-            st.error("কাস্টমারের নাম এবং কমপক্ষে ১টি প্রোডাক্ট সিলেক্ট করুন।")
+            st.error("দয়া করে কাস্টমারের নাম ইনপুট দিন।")
 
 # ==========================================
 # 👤 কাস্টমার ম্যানেজমেন্ট (CUSTOMER MANAGEMENT)
@@ -540,8 +478,6 @@ elif menu_choice == "💰 লাভ-লোকসানের হিসাব":
         df_summary = df_p.groupby("date")[["total", "profit"]].sum().reset_index()
         df_summary.columns = ["তারিখ", "মোট বিক্রি (৳)", "নীট লাভ (৳)"]
         st.dataframe(df_summary, use_container_width=True)
-        
-        st.markdown("### 📈 বিক্রয় বনাম লাভ গ্রাফ চিত্র")
         st.line_chart(df_summary.set_index("তারিখ"))
     else:
         st.info("হিসাব দেখানোর জন্য পর্যাপ্ত বিক্রয় ডাটা নেই।")
