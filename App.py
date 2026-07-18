@@ -60,15 +60,15 @@ login_css = """
 """
 
 # ==========================================
-# 🌐 ভাষা ডিকশনারি
+# 🌐 ভাষা ডিকশনারি (সংশোধিত)
 # ==========================================
 LANG = {
     "বাংলা": {
         "nav_title": "⚙️ SM-TECH",
         "go_to": "মেনু সিলেক্ট করুন",
-        "menu": ["ড্যাশবোর্ড", "কাস্টমার বাকির হিসাব", "স্টক মালের হিসাব", "ইনভয়েস"],
-        "dash_title": "🖥️ ড্যাশবোর্ড",
-        "sub_title": "
+        "menu": ["ড্যাশবোর্ড", "কাস্টমার ও রিপেয়ার", "স্টক / ইনভেন্টরি", "POS ও ইনভয়েস"],
+        "dash_title": "🖥️ রিপেয়ার ও POS ড্যাশবোর্ড",
+        "sub_title": "এসএম-টেক কম্পিউটার ও আইটি সল্যুশন",
         "btn_inv": "📄 ইনভয়েস প্রিভিউ দেখুন"
     }
 }
@@ -132,16 +132,16 @@ else:
         total_due_amount = sum(item.get("বাকি", 0) for item in st.session_state.customer_dues)
         total_stock_value = sum(item.get("মোট টাকা", 0) for item in st.session_state.shop_stock)
         
-        col1.metric("कुल বাকির হিসাব (কাস্টমার)", f"{len(st.session_state.customer_dues)} জন")
+        col1.metric("মোট বাকির হিসাব (কাস্টমার)", f"{len(st.session_state.customer_dues)} জন")
         col2.metric("মোট বাকি টাকা", f"{total_due_amount} BDT")
         col3.metric("স্টক পণ্যের মোট মূল্য", f"{total_stock_value} BDT")
         
         st.write("### 📑 কাস্টমার বাকির সংক্ষিপ্ত বিবরণ")
         st.dataframe(pd.DataFrame(st.session_state.customer_dues), use_container_width=True, hide_index=True)
 
-    # --- 🔧 কাস্টমার বাকির হিসাব) ---
+    # --- 🔧 কাস্টমার ও রিপেয়ার ---
     elif menu_choice == t["menu"][1]:
-        st.title("💸 কাস্টমার বাকির হিসাব")
+        st.title("💸 কাস্টমার বাকির হিসাব ও রিপেয়ার")
         
         with st.form("Add Customer Due"):
             st.write("### ➕ নতুন বাকির হিসাব যুক্ত করুন")
@@ -198,7 +198,7 @@ else:
         else:
             st.info("কোনো বাকির হিসাব পাওয়া যায়নি।")
 
-    # --- 📦 স্টক / ইনভেন্টরি (সংশোধিত: দোকানের স্টক পণ্য) ---
+    # --- 📦 স্টক / ইনভেন্টরি ---
     elif menu_choice == t["menu"][2]:
         st.title("📦 দোকানের স্টক পণ্য ম্যানেজমেন্ট")
         
@@ -244,7 +244,7 @@ else:
             if delete_stock_btn:
                 st.session_state.shop_stock = [item for idx, item in enumerate(st.session_state.shop_stock) if (idx + 1) != delete_stock_id]
                 for idx, item in enumerate(st.session_state.shop_stock):
-                    item["क्रमिक নং"] = idx + 1
+                    item["ক্রমিক নং"] = idx + 1
                 st.toast("পণ্যটি স্টক থেকে মুছে ফেলা হয়েছে।")
                 st.rerun()
         else:
@@ -263,7 +263,6 @@ else:
         st.markdown("### 👤 Customer Info")
         col_in1, col_in2, col_in3 = st.columns([1.5, 2, 2])
         with col_in1:
-            # ম্যানুয়াল ইনভয়েস নম্বর বসানোর ইনপুট বক্স
             inv_custom_num = st.text_input("Invoice No (ইনভয়েস নং)", value="1001")
         with col_in2:
             cust_name = st.text_input("কাস্টমারের নাম", value="খুচরা কাস্টমার")
@@ -429,7 +428,6 @@ else:
                 </div>
                 """
                 
-                # ফিক্সড: এখানে unsafe_allow_html=True যোগ করা হয়েছে, যাতে কোড না এসে সরাসরি ভিজ্যুয়াল মেমো আসে
                 st.markdown(invoice_html, unsafe_allow_html=True)
                 
                 b64_invoice = base64.b64encode(invoice_html.encode()).decode()
