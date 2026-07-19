@@ -23,8 +23,8 @@ if "customer_dues" not in st.session_state:
 
 if "shop_stock" not in st.session_state:
     st.session_state.shop_stock = [
-        {"क्रमिक नং": 1, "পণ্যের বিবরণ": "512GB NVMe SSD", "পরিমান": 10, "দর": 4200, "মোট টাকা": 42000},
-        {"क्रमিক नং": 2, "পণ্যের বিবরণ": "DDR4 8GB RAM", "পরিমান": 15, "দর": 2400, "মোট টাকা": 36000}
+        {"ক্রমিক নং": 1, "পণ্যের বিবরণ": "512GB NVMe SSD", "পরিমান": 10, "দর": 4200, "মোট টাকা": 42000},
+        {"ক্রমিক নং": 2, "পণ্যের বিবরণ": "DDR4 8GB RAM", "পরিমান": 15, "দর": 2400, "মোট টাকা": 36000}
     ]
 
 if "saved_passwords" not in st.session_state:
@@ -36,31 +36,21 @@ if "invoice_items" not in st.session_state:
     st.session_state.invoice_items = []
 
 # ==========================================
-# 🎨 গ্লোবাল থিম: ক্লাসিক সাদা ও লাল মেনুবার CSS
+# 🎨 গ্লোবাল থিম: সাদা ব্যাকগ্রাউন্ড এবং লাল বক্স মেনু বাটন CSS
 # ==========================================
 custom_css = """
 <style>
-    /* মূল ব্যাকগ্রাউন্ড সাদা */
-    [data-testid="stAppViewContainer"] {
+    /* মূল অ্যাপ এবং সাইডবার ব্যাকগ্রাউন্ড সম্পূর্ণ সাদা */
+    [data-testid="stAppViewContainer"], [data-testid="stSidebar"] {
         background-color: #ffffff !important;
         color: #111111 !important;
     }
     [data-testid="stHeader"] {
         background: transparent;
     }
-    /* মেনুবার সম্পূর্ণ লাল */
+    /* সাইডবারের বর্ডার ও টেক্সট অ্যাডজাস্টমেন্ট */
     [data-testid="stSidebar"] {
-        background-color: #cc0000 !important;
-        border-right: 2px solid #990000;
-    }
-    .panel-header {
-        font-size: 20px;
-        color: #ffffff;
-        text-align: center;
-        margin-bottom: 20px;
-        border-bottom: 2px solid #ff4d4d;
-        padding-bottom: 10px;
-        font-weight: bold;
+        border-right: 1px solid #e0e0e0;
     }
     /* টেক্সট ফিল্ড লেবেল কালো */
     .stTextInput label, .stNumberInput label, .stFileUploader label {
@@ -71,27 +61,39 @@ custom_css = """
     .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4 {
         color: #111111 !important;
     }
-    /* সাইডবার বাটন স্টাইল */
+    
+    /* সাইডবার মেনু বাটনগুলো লাল রঙের বক্স আকারে */
     div.stSidebar div.stButton > button {
-        background-color: #b30000 !important;
-        color: white !important;
-        border: none !important;
-        border-left: 5px solid #ff4d4d !important;
+        background-color: #cc0000 !important;
+        color: #ffffff !important;
+        border: 1px solid #b30000 !important;
         padding: 12px 15px !important;
         text-align: left !important;
         font-size: 15px !important;
         font-weight: bold !important;
-        border-radius: 6px !important;
-        margin-bottom: 8px !important;
+        border-radius: 8px !important;
+        margin-bottom: 10px !important;
         width: 100% !important;
+        box-shadow: 0px 2px 5px rgba(204, 0, 0, 0.2);
         transition: all 0.2s ease;
     }
+    /* হোভার করলে একটু গাঢ় লাল হবে */
     div.stSidebar div.stButton > button:hover {
-        background-color: #ff1a1a !important;
-        border-left: 5px solid #ffffff !important;
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        background-color: #a30000 !important;
+        border-color: #8a0000 !important;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
     }
-    /* ডাটাফ্রেম এর লেখার কালার এডজাস্টমেন্ট */
+    
+    /* লগআউট বাটন আলাদা করার জন্য ডার্ক গ্রে স্টাইল */
+    div.stSidebar div.stButton:first-child > button {
+        background-color: #333333 !important;
+        color: #ffffff !important;
+        border: 1px solid #222222 !important;
+    }
+    div.stSidebar div.stButton:first-child > button:hover {
+        background-color: #1a1a1a !important;
+    }
+    
     .stDataFrame {
         background-color: #ffffff !important;
     }
@@ -136,14 +138,14 @@ else:
         st.markdown('''
             <div style="display: flex; align-items: center; margin-bottom: 10px; padding-left: 5px;">
                 <span style="font-size: 28px; margin-right: 10px;">⚙️</span>
-                <span style="font-size: 24px; font-weight: bold; color: white;">SM-TECH</span>
+                <span style="font-size: 24px; font-weight: bold; color: #111111;">SM-TECH</span>
             </div>
         ''', unsafe_allow_html=True)
         if st.button("🔒 Logout / লগআউট", key="logout_btn"):
             st.session_state.logged_in = False
             st.rerun()
         st.write("---")
-        st.markdown("<h3 style='color:white; font-size:16px; margin-left:5px;'>মেনু নির্বাচন করুন</h3>", unsafe_allow_html=True)
+        st.markdown("<h3 style='color:#222222; font-size:16px; margin-left:5px;'>মেনু নির্বাচন করুন</h3>", unsafe_allow_html=True)
         if st.button("⬜  Dashboard", use_container_width=True):
             st.session_state.current_menu = "Dashboard"; st.rerun()
         if st.button("👥  Customer & Repair", use_container_width=True):
@@ -155,7 +157,7 @@ else:
         if st.button("🔐  Password Save", use_container_width=True):
             st.session_state.current_menu = "Password Save"; st.rerun()
 
-    # --- ড্যাশবোর্ড মডিউল (সংশোধিত লেখা ও আইকন) ---
+    # --- ড্যাশবোর্ড মডিউল ---
     if st.session_state.current_menu == "Dashboard":
         st.title("🖥️  ড্যাশবোর্ড")
         st.subheader("এসএম-টেক কম্পিউটার ও আইটি সল্যুশন")
@@ -174,7 +176,7 @@ else:
 
     # --- কাস্টমার ও রিপেয়ার ---
     elif st.session_state.current_menu == "Customer & Repair":
-        st.title("💸 কাস্টমার বাকির হিসাব ও রিপেয়ার")
+        st.title("👥 কাস্টমার বাকির হিসাব ও রিপেয়ার")
         with st.form("Add Customer Due", clear_on_submit=True):
             st.write("### ➕ নতুন বাকির হিসাব যুক্ত করুন")
             c_name = st.text_input("কাস্টমার নাম")
@@ -184,29 +186,36 @@ else:
             with col_c2: c_price = st.number_input("দর (টাকা)", min_value=0, value=0, step=50)
             with col_c3: c_paid = st.number_input("আদায় (টাকা)", min_value=0, value=0, step=50)
             submitted = st.form_submit_button(label="💾 লিস্টে যুক্ত করুন")
-            if submitted and c_name and c_desc:
-                total_amt = c_qty * c_price
-                due_amt = total_amt - c_paid
-                new_sl = len(st.session_state.customer_dues) + 1 if st.session_state.customer_dues else 1
-                st.session_state.customer_dues.append({
-                    "ক্রমিক নং": new_sl, "কাস্টমার নাম": c_name, "কাজের বিবরণ": c_desc,
-                    "পরিমান": c_qty, "দর": c_price, "মোট টাকা": total_amt, "আদায়": c_paid, "বাকি": due_amt
-                })
-                st.success(f"সফলভাবে {c_name} এর বাকির হিসাব যুক্ত হয়েছে!"); st.rerun()
+            
+            if submitted:
+                if c_name and c_desc:
+                    total_amt = c_qty * c_price
+                    due_amt = total_amt - c_paid
+                    new_sl = len(st.session_state.customer_dues) + 1
+                    st.session_state.customer_dues.append({
+                        "ক্রমিক নং": new_sl, "কাস্টমার নাম": c_name, "কাজের বিবরণ": c_desc,
+                        "পরিমান": c_qty, "দর": c_price, "মোট টাকা": total_amt, "আদায়": c_paid, "বাকি": due_amt
+                    })
+                    st.success(f"সফলভাবে {c_name} এর বাকির হিসাব যুক্ত হয়েছে!")
+                    st.rerun()
+                else:
+                    st.error("দয়া করে কাস্টমার নাম ও কাজের বিবরণ সঠিকভাবে লিখুন।")
 
         st.write("### 📋 বর্তমান কাস্টমার বাকির তালিকা")
         if st.session_state.customer_dues:
             st.dataframe(pd.DataFrame(st.session_state.customer_dues), use_container_width=True, hide_index=True)
+            
             st.write("### 🗑️ এন্ট্রি ডিলিট করুন")
             col_del1, col_del2 = st.columns([2, 1])
-            with col_del1: delete_id = st.number_input("ডিলিট করার জন্য ক্রমিক নং লিখুন:", min_value=1, max_value=200, step=1)
+            with col_del1: delete_id = st.number_input("ডিলিট করার জন্য ক্রমিক নং লিখুন:", min_value=1, max_value=500, step=1)
             with col_del2: 
                 st.markdown("<br>", unsafe_allow_html=True)
                 delete_btn = st.button("❌ এন্ট্রি মুছুন", type="primary", use_container_width=True)
             if delete_btn:
-                st.session_state.customer_dues = [item for item in st.session_state.customer_dues if item["ক্রমিক নং"] != delete_id]
+                st.session_state.customer_dues = [item for item in st.session_state.customer_dues if item["क्रमিক নং"] != delete_id]
                 for idx, item in enumerate(st.session_state.customer_dues): item["ক্রমিক নং"] = idx + 1
-                st.toast("তালিকা সফলভাবে আপডেট করা হয়েছে।"); st.rerun()
+                st.success("তালিকা সফলভাবে আপডেট করা হয়েছে।")
+                st.rerun()
 
     # --- স্টক পণ্য ---
     elif st.session_state.current_menu == "Stock product":
@@ -218,44 +227,49 @@ else:
             with col_s1: s_qty = st.number_input("পরিমান", min_value=1, value=1, step=1)
             with col_s2: s_price = st.number_input("দর (টাকা)", min_value=0, value=0, step=50)
             submitted_stock = st.form_submit_button(label="📥 স্টকে যুক্ত করুন")
-            if submitted_stock and s_desc:
-                total_stock_amt = s_qty * s_price
-                new_sl_stock = len(st.session_state.shop_stock) + 1 if st.session_state.shop_stock else 1
-                st.session_state.shop_stock.append({
-                    "ক্রমিক নং": new_sl_stock, "পণ্যের বিবরণ": s_desc, "পরিমান": s_qty, "দর": s_price, "মোট টাকা": total_stock_amt
-                })
-                st.success(f"স্টকে সফলভাবে {s_desc} যুক্ত হয়েছে!"); st.rerun()
+            
+            if submitted_stock:
+                if s_desc:
+                    total_stock_amt = s_qty * s_price
+                    new_sl_stock = len(st.session_state.shop_stock) + 1
+                    st.session_state.shop_stock.append({
+                        "ক্রমিক নং": new_sl_stock, "পণ্যের বিবরণ": s_desc, "পরিমান": s_qty, "দর": s_price, "মোট টাকা": total_stock_amt
+                    })
+                    st.success(f"স্টকে সফলভাবে {s_desc} যুক্ত হয়েছে!")
+                    st.rerun()
+                else:
+                    st.error("দয়া করে পণ্যের নাম বা বিবরণ প্রদান করুন।")
 
         st.write("### 📋 বর্তমানে মজুদ মালামালের তালিকা")
         if st.session_state.shop_stock:
             st.dataframe(pd.DataFrame(st.session_state.shop_stock), use_container_width=True, hide_index=True)
+            
             st.write("### 🗑️ স্টক পণ্য ডিলিট করুন")
             col_sdel1, col_sdel2 = st.columns([2, 1])
-            with col_sdel1: delete_stock_id = st.number_input("ডিলিট করার জন্য পণ্যের ক্রমিক নং লিখুন:", min_value=1, max_value=200, step=1, key="s_del_id")
+            with col_sdel1: delete_stock_id = st.number_input("ডিলিট করার জন্য পণ্যের ক্রমিক নং লিখুন:", min_value=1, max_value=500, step=1, key="s_del_id")
             with col_sdel2:
                 st.markdown("<br>", unsafe_allow_html=True)
                 delete_stock_btn = st.button("❌ পণ্য মুছুন", type="primary", use_container_width=True, key="s_del_btn")
             if delete_stock_btn:
                 st.session_state.shop_stock = [item for item in st.session_state.shop_stock if item["ক্রমিক নং"] != delete_stock_id]
                 for idx, item in enumerate(st.session_state.shop_stock): item["ক্রমিক নং"] = idx + 1
-                st.toast("পণ্যটি স্টক থেকে মুছে ফেলা হয়েছে।"); st.rerun()
+                st.success("পণ্যটি স্টক থেকে সফলভাবে মুছে ফেলা হয়েছে।")
+                st.rerun()
 
     # --- পাসওয়ার্ড সংরক্ষণ ---
     elif st.session_state.current_menu == "Password Save":
         st.title("🔐 শিক্ষা প্রতিষ্ঠানের পাসওয়ার্ড সংরক্ষণ ব্যবস্থা")
-        
         with st.form("Add Institution Password", clear_on_submit=True):
             st.write("### ➕ নতুন শিক্ষা প্রতিষ্ঠানের পাসওয়ার্ড যুক্ত করুন")
             inst_name = st.text_input("শিক্ষা প্রতিষ্ঠানের নাম")
             col_p1, col_p2 = st.columns(2)
-            
             with col_p1: entry_pass = st.text_input("এন্ট্রি পাসওয়ার্ড")
             with col_p2: confirm_pass = st.text_input("কনফার্ম পাসওয়ার্ড")
-            
             submitted_pass = st.form_submit_button(label="💾 পাসওয়ার্ড সংরক্ষণ করুন")
+            
             if submitted_pass:
                 if inst_name and (entry_pass or confirm_pass):
-                    new_sl_pass = len(st.session_state.saved_passwords) + 1 if st.session_state.saved_passwords else 1
+                    new_sl_pass = len(st.session_state.saved_passwords) + 1
                     st.session_state.saved_passwords.append({
                         "ক্রমিক নং": new_sl_pass, 
                         "শিক্ষা প্রতিষ্ঠানের নাম": inst_name, 
@@ -265,7 +279,7 @@ else:
                     st.success("পাসওয়ার্ড সফলভাবে সংরক্ষিত হয়েছে!")
                     st.rerun()
                 else:
-                    st.error("দয়া করে প্রতিষ্ঠানের নাম এবং অন্তত একটি পাসওয়ার্ড ইনপুট দিন।")
+                    st.error("দয়া করে প্রতিষ্ঠানের নাম এবং পাসওয়ার্ড ইনপুট দিন।")
 
         st.write("### 📋 সংরক্ষিত পাসওয়ার্ডের তালিকা")
         if st.session_state.saved_passwords:
@@ -280,10 +294,10 @@ else:
             if delete_pass_btn:
                 st.session_state.saved_passwords = [item for item in st.session_state.saved_passwords if item["ক্রমিক নং"] != delete_pass_id]
                 for idx, item in enumerate(st.session_state.saved_passwords): item["ক্রমিক নং"] = idx + 1
-                st.toast("পাসওয়ার্ড তালিকা থেকে মুছে ফেলা হয়েছে।")
+                st.success("পাসওয়ার্ড তালিকা থেকে সফলভাবে মুছে ফেলা হয়েছে।")
                 st.rerun()
 
-    # --- 🧾 সেল ইনভয়েস (Sell Invoice) ---
+    # --- 🧾 সেল ইনভয়েস ---
     elif st.session_state.current_menu == "Sell Invoice":
         st.title("🧾 পয়েন্ট অব সেল ও ইনভয়েস (A5 সাইজ)")
         
