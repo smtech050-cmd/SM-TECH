@@ -23,11 +23,10 @@ if "customer_dues" not in st.session_state:
 
 if "shop_stock" not in st.session_state:
     st.session_state.shop_stock = [
-        {"ক্রমিক নং": 1, "পণ্যের বিবরণ": "512GB NVMe SSD", "পরিমান": 10, "দর": 4200, "মোট টাকা": 42000},
-        {"ক্রমিক নং": 2, "পণ্যের বিবরণ": "DDR4 8GB RAM", "পরিমান": 15, "দর": 2400, "মোট টাকা": 36000}
+        {"क्रमिक नং": 1, "পণ্যের বিবরণ": "512GB NVMe SSD", "পরিমান": 10, "দর": 4200, "মোট টাকা": 42000},
+        {"क्रमিক नং": 2, "পণ্যের বিবরণ": "DDR4 8GB RAM", "পরিমান": 15, "দর": 2400, "মোট টাকা": 36000}
     ]
 
-# পাসওয়ার্ড সংরক্ষণের প্রাথমিক ডাটা
 if "saved_passwords" not in st.session_state:
     st.session_state.saved_passwords = [
         {"ক্রমিক নং": 1, "শিক্ষা প্রতিষ্ঠানের নাম": "Sreebardi Govt. College", "এন্ট্রি পাসওয়ার্ড": "sreebardi@2026", "কনফার্ম পাসওয়ার্ড": "board@xyz2026"}
@@ -37,57 +36,64 @@ if "invoice_items" not in st.session_state:
     st.session_state.invoice_items = []
 
 # ==========================================
-# 🎨 গ্লোবাল থিম ও সাইডবার প্রিমিয়াম বাটন CSS
+# 🎨 গ্লোবাল থিম: ক্লাসিক সাদা ও লাল মেনুবার CSS
 # ==========================================
 custom_css = """
 <style>
+    /* মূল ব্যাকগ্রাউন্ড সাদা */
     [data-testid="stAppViewContainer"] {
-        background: radial-gradient(circle at center, #001f4d 0%, #000a1a 100%);
-        color: white;
+        background-color: #ffffff !important;
+        color: #111111 !important;
     }
     [data-testid="stHeader"] {
         background: transparent;
     }
+    /* মেনুবার সম্পূর্ণ লাল */
     [data-testid="stSidebar"] {
-        background-color: #030f26 !important;
-        border-right: 1px solid #002b80;
+        background-color: #cc0000 !important;
+        border-right: 2px solid #990000;
     }
     .panel-header {
         font-size: 20px;
-        color: #e0e0e0;
+        color: #ffffff;
         text-align: center;
         margin-bottom: 20px;
-        border-bottom: 1px solid #0055ff;
+        border-bottom: 2px solid #ff4d4d;
         padding-bottom: 10px;
-    }
-    .stTextInput label, .stNumberInput label, .stFileUploader label {
-        color: #a0c0ff !important;
         font-weight: bold;
     }
-    .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
-        color: #ffffff !important;
+    /* টেক্সট ফিল্ড লেবেল কালো */
+    .stTextInput label, .stNumberInput label, .stFileUploader label {
+        color: #222222 !important;
+        font-weight: bold;
     }
-    div.stButton > button {
-        background-color: #0b3c95 !important;
+    /* শিরোনামগুলো কালো */
+    .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4 {
+        color: #111111 !important;
+    }
+    /* সাইডবার বাটন স্টাইল */
+    div.stSidebar div.stButton > button {
+        background-color: #b30000 !important;
         color: white !important;
         border: none !important;
-        border-left: 5px solid #00a2ff !important;
-        padding: 15px 20px !important;
+        border-left: 5px solid #ff4d4d !important;
+        padding: 12px 15px !important;
         text-align: left !important;
-        font-size: 16px !important;
+        font-size: 15px !important;
         font-weight: bold !important;
-        border-radius: 8px !important;
-        margin-bottom: 10px !important;
+        border-radius: 6px !important;
+        margin-bottom: 8px !important;
         width: 100% !important;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
+        transition: all 0.2s ease;
     }
-    div.stButton > button:hover {
-        background-color: #0044cc !important;
-        border-left: 5px solid #00ffcc !important;
-        box-shadow: 0px 4px 15px rgba(0, 162, 255, 0.4);
-        transform: scale(1.02);
+    div.stSidebar div.stButton > button:hover {
+        background-color: #ff1a1a !important;
+        border-left: 5px solid #ffffff !important;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    /* ডাটাফ্রেম এর লেখার কালার এডজাস্টমেন্ট */
+    .stDataFrame {
+        background-color: #ffffff !important;
     }
 </style>
 """
@@ -97,18 +103,19 @@ st.markdown(custom_css, unsafe_allow_html=True)
 # 🛑 ১. লগইন স্ক্রিন রেন্ডারিং
 # ==========================================
 if not st.session_state.logged_in:
-    _, col_center, _ = st.columns([1, 2, 1])
+    _, col_center, _ = st.columns([1, 1.5, 1])
     with col_center:
         st.markdown('<br><br>', unsafe_allow_html=True)
         st.markdown('''
             <div style="text-align: center; margin-bottom: 20px;">
                 <span style="font-size: 50px;">🔒</span>
-                <span style="font-size: 36px; font-weight: bold; color: white;">SM-TECH - </span>
-                <span style="font-size: 36px; font-weight: bold; color: #00a2ff;">Admin Login</span>
+                <span style="font-size: 36px; font-weight: bold; color: #111;">SM-TECH - </span>
+                <span style="font-size: 36px; font-weight: bold; color: #cc0000;">Admin Login</span>
             </div>
         ''', unsafe_allow_html=True)
         with st.container(border=True):
-            st.markdown('<div class="panel-header">অ্যাডমিন প্যানেল প্রবেশ করুন</div>', unsafe_allow_html=True)
+            st.markdown('<div style="font-size: 18px; font-weight: bold; text-align: center; color: #cc0000; padding-bottom:10px; border-bottom:1px solid #ddd;">অ্যাডমিন প্যানেল প্রবেশ করুন</div>', unsafe_allow_html=True)
+            st.markdown('<br>', unsafe_allow_html=True)
             username = st.text_input("Username (ইউজারনেম)", placeholder="ইউজারনেম লিখুন...")
             password = st.text_input("Password (পাসওয়ার্ড)", type="password", placeholder="পাসওয়ার্ড লিখুন...")
             st.markdown('<br>', unsafe_allow_html=True)
@@ -127,16 +134,16 @@ if not st.session_state.logged_in:
 else:
     with st.sidebar:
         st.markdown('''
-            <div style="display: flex; align-items: center; margin-bottom: 10px;">
-                <span style="font-size: 32px; margin-right: 10px;">⚙️</span>
-                <span style="font-size: 28px; font-weight: bold; color: white;">SM-TECH</span>
+            <div style="display: flex; align-items: center; margin-bottom: 10px; padding-left: 5px;">
+                <span style="font-size: 28px; margin-right: 10px;">⚙️</span>
+                <span style="font-size: 24px; font-weight: bold; color: white;">SM-TECH</span>
             </div>
         ''', unsafe_allow_html=True)
         if st.button("🔒 Logout / লগআউট", key="logout_btn"):
             st.session_state.logged_in = False
             st.rerun()
         st.write("---")
-        st.markdown("<h3 style='color:#a0c0ff; font-size:18px;'>Select Menu</h3>", unsafe_allow_html=True)
+        st.markdown("<h3 style='color:white; font-size:16px; margin-left:5px;'>মেনু নির্বাচন করুন</h3>", unsafe_allow_html=True)
         if st.button("⬜  Dashboard", use_container_width=True):
             st.session_state.current_menu = "Dashboard"; st.rerun()
         if st.button("👥  Customer & Repair", use_container_width=True):
@@ -148,16 +155,20 @@ else:
         if st.button("🔐  Password Save", use_container_width=True):
             st.session_state.current_menu = "Password Save"; st.rerun()
 
-    # --- ড্যাশবোর্ড মডিউল ---
+    # --- ড্যাশবোর্ড মডিউল (সংশোধিত লেখা ও আইকন) ---
     if st.session_state.current_menu == "Dashboard":
-        st.title("🖥️  ரிපੇয়ার ও POS ড্যাশবোর্ড")
+        st.title("🖥️  ড্যাশবোর্ড")
         st.subheader("এসএম-টেক কম্পিউটার ও আইটি সল্যুশন")
+        st.write("---")
+        
         col1, col2, col3 = st.columns(3)
         total_due_amount = sum(item.get("বাকি", 0) for item in st.session_state.customer_dues)
         total_stock_value = sum(item.get("মোট টাকা", 0) for item in st.session_state.shop_stock)
+        
         col1.metric("মোট বাকির হিসাব (কাস্টমার)", f"{len(st.session_state.customer_dues)} জন")
         col2.metric("মোট বাকি টাকা", f"{total_due_amount} BDT")
         col3.metric("স্টক পণ্যের মোট মূল্য", f"{total_stock_value} BDT")
+        
         st.write("### 📑 কাস্টমার বাকির সংক্ষিপ্ত বিবরণ")
         st.dataframe(pd.DataFrame(st.session_state.customer_dues), use_container_width=True, hide_index=True)
 
@@ -215,7 +226,7 @@ else:
                 })
                 st.success(f"স্টকে সফলভাবে {s_desc} যুক্ত হয়েছে!"); st.rerun()
 
-        st.write("### 📋 blackberry বর্তমানে মজুদ মালামালের তালিকা")
+        st.write("### 📋 বর্তমানে মজুদ মালামালের তালিকা")
         if st.session_state.shop_stock:
             st.dataframe(pd.DataFrame(st.session_state.shop_stock), use_container_width=True, hide_index=True)
             st.write("### 🗑️ স্টক পণ্য ডিলিট করুন")
@@ -229,7 +240,7 @@ else:
                 for idx, item in enumerate(st.session_state.shop_stock): item["ক্রমিক নং"] = idx + 1
                 st.toast("পণ্যটি স্টক থেকে মুছে ফেলা হয়েছে।"); st.rerun()
 
-    # --- 🔐 পাসওয়ার্ড সংরক্ষণ (সংশোধিত মডিউল) ---
+    # --- পাসওয়ার্ড সংরক্ষণ ---
     elif st.session_state.current_menu == "Password Save":
         st.title("🔐 শিক্ষা প্রতিষ্ঠানের পাসওয়ার্ড সংরক্ষণ ব্যবস্থা")
         
@@ -238,7 +249,6 @@ else:
             inst_name = st.text_input("শিক্ষা প্রতিষ্ঠানের নাম")
             col_p1, col_p2 = st.columns(2)
             
-            # টাইপ টেক্সট করে দেওয়া হয়েছে যেন সরাসরি পাসওয়ার্ড দেখা ও আলাদা টাইপ করা যায়
             with col_p1: entry_pass = st.text_input("এন্ট্রি পাসওয়ার্ড")
             with col_p2: confirm_pass = st.text_input("কনফার্ম পাসওয়ার্ড")
             
@@ -259,10 +269,8 @@ else:
 
         st.write("### 📋 সংরক্ষিত পাসওয়ার্ডের তালিকা")
         if st.session_state.saved_passwords:
-            # স্পষ্ট কলাম আকারে প্রদর্শনের জন্য ডেটাফ্রেম ভিউ
             st.dataframe(pd.DataFrame(st.session_state.saved_passwords), use_container_width=True, hide_index=True)
             
-            # পাসওয়ার্ড এন্ট্রি ডিলিট করার ব্যবস্থা
             st.write("### 🗑️ সংরক্ষিত পাসওয়ার্ড মুছুন")
             col_pdel1, col_pdel2 = st.columns([2, 1])
             with col_pdel1: delete_pass_id = st.number_input("ডিলিট করার জন্য ক্রমিক নং লিখুন:", min_value=1, max_value=500, step=1, key="p_del_id")
