@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import datetime
 import base64
+from weasyprint import HTML
 
 # পেজ কনফিগারেশন
 st.set_page_config(page_title="SM-TECH | Admin System", layout="wide")
@@ -16,14 +17,14 @@ if "logged_in" not in st.session_state:
 if "current_menu" not in st.session_state:
     st.session_state.current_menu = "Dashboard"
 
-# কাস্টমার বাকির হিসাব সেশন স্টেট (শুধুমাত্র প্রথমবার লোড হবে)
+# কাস্টমার বাকির হিসাব সেশন স্টেট (স্থায়ী সংরক্ষণ)
 if "customer_dues" not in st.session_state:
     st.session_state.customer_dues = [
         {"ক্রমিক নং": 1, "কাস্টমার নাম": "Abir Rahman", "কাজের বিবরণ": "Windows Setup & Cleaning", "পরিমান": 1, "দর": 500, "মোট টাকা": 500, "আদায়": 300, "বাকি": 200},
         {"ক্রমিক নং": 2, "কাস্টমার নাম": "Sristi", "কাজের বিবরণ": "Asus Motherboard Repair", "পরিমান": 1, "দর": 2500, "মোট টাকা": 2500, "আদায়": 1500, "বাকি": 1000}
     ]
 
-# স্টক পণ্যের হিসাব সেশন স্টেট (স্থায়ী সংরক্ষণের ফিক্স)
+# স্টক পণ্যের হিসাব সেশন স্টেট (স্থায়ী সংরক্ষণ)
 if "shop_stock" not in st.session_state:
     st.session_state.shop_stock = [
         {"ক্রমিক নং": 1, "পণ্যের বিবরণ": "512GB NVMe SSD", "পরিমান": 10, "দর": 4200, "মোট টাকা": 42000},
@@ -163,7 +164,6 @@ else:
         st.write("---")
         st.markdown("<h3 style='color:#a0c0ff; font-size:18px;'>Select Menu</h3>", unsafe_allow_html=True)
         
-        # আইকন সমৃদ্ধ প্রিমিয়াম স্টাইল বাটনসমূহ
         if st.button("⬜  Dashboard", use_container_width=True):
             st.session_state.current_menu = "Dashboard"
             st.rerun()
@@ -263,7 +263,6 @@ else:
     elif st.session_state.current_menu == "Stock product":
         st.title("📦 দোকানের স্টক পণ্য ম্যানেজমেন্ট")
         
-        # clear_on_submit=True দেওয়া হয়েছে যাতে এন্ট্রি করার পর ইনপুট বক্স ফাঁকা হয়ে যায়
         with st.form("Add Shop Stock", clear_on_submit=True):
             st.write("### ➕ নতুন স্টক পণ্য যুক্ত করুন")
             s_desc = st.text_input("পণ্যের বিবরণ / নাম")
@@ -280,7 +279,6 @@ else:
                 total_stock_amt = s_qty * s_price
                 new_sl_stock = len(st.session_state.shop_stock) + 1 if st.session_state.shop_stock else 1
                 
-                # সেশন স্টেটে নতুন পণ্য যুক্ত করা হচ্ছে (পেজ রিলোড হলেও মুছবে না)
                 st.session_state.shop_stock.append({
                     "ক্রমিক নং": new_sl_stock,
                     "পণ্যের বিবরণ": s_desc,
@@ -359,7 +357,7 @@ else:
                 delete_pass_btn = st.button("❌ ডাটা মুছুন", type="primary", use_container_width=True, key="pass_del_btn")
             
             if delete_pass_btn:
-                st.session_state.saved_passwords = [item for idx, item in enumerate(st.session_state.saved_passwords) if item["ক্রমিক নং"] != delete_pass_id]
+                st.session_state.saved_passwords = [item for idx, item in enumerate(st.session_state.saved_passwords) if item["क्रमিক নং"] != delete_pass_id]
                 for idx, item in enumerate(st.session_state.saved_passwords):
                     item["ক্রমিক নং"] = idx + 1
                 st.toast("তালিকা থেকে সফলভাবে মুছে ফেলা হয়েছে।")
@@ -419,7 +417,7 @@ else:
         
         st.write("---")
         
-        if st.button("📄 ইনভয়েস প্রিভিউ দেখুন", type="primary", use_container_width=True):
+        if st.button("📄 ইনভয়েস প্রিভিউ ও PDF ডাউনলোড করুন", type="primary", use_container_width=True):
             if not st.session_state.invoice_items:
                 st.warning("Please add at least one item first! আগে লিস্টে পণ্য যোগ করুন।")
             else:
@@ -453,100 +451,125 @@ else:
                     </tr>
                     """
                 
-                invoice_html = f"""
-                <div style="background-color: #f0f2f5; padding: 20px; display: flex; justify-content: center;">
-                <div id="print-area" style="
-                    border: 3px solid #1e3a8a; 
-                    padding: 18px; 
-                    background-color: white; 
-                    color: black; 
-                    font-family: 'Arial', sans-serif; 
-                    width: 5in; 
-                    height: 7in; 
-                    border-radius: 4px;
-                    box-sizing: border-box;
-                    position: relative;
-                    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-                ">
+                # WeasyPrint সমর্থিত নিখুঁত HTML ফরম্যাট (৫"x৭" সাইজ পেজ মিডিয়াসহ)
+                invoice_html_for_pdf = f"""
+                <html>
+                <head>
+                <style>
+                    @page {{
+                        size: 5in 7in;
+                        margin: 0.25in;
+                    }}
+                    body {{
+                        font-family: 'Arial', sans-serif;
+                        color: black;
+                        margin: 0;
+                        padding: 0;
+                    }}
+                    .invoice-box {{
+                        border: 3px solid #1e3a8a; 
+                        padding: 10px; 
+                        background-color: white; 
+                        box-sizing: border-box;
+                        height: 100%;
+                        position: relative;
+                    }}
+                </style>
+                </head>
+                <body>
+                <div class="invoice-box">
                     <table style="width: 100%; border-collapse: collapse; margin-bottom: 5px;">
                         <tr>
                             <td style="width: 20%; vertical-align: middle; text-align: left;">
-                                {'<img src="' + logo_base64 + '" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">' if logo_base64 else '<div style="width: 60px; height: 60px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #777;">No Logo</div>'}
+                                {'<img src="' + logo_base64 + '" style="width: 55px; height: 55px; border-radius: 50%;">' if logo_base64 else '<div style="width: 55px; height: 55px; background: #e2e8f0; border-radius: 50%; text-align: center; line-height: 55px; font-size: 9px; color: #777;">No Logo</div>'}
                             </td>
-                            <td style="width: 48%; vertical-align: middle; padding-left: 8px;">
-                                <span style="font-size: 30px; font-weight: 900; color: #1e3a8a; font-family: 'Arial Black', Impact, sans-serif; line-height: 1.1; display: block; letter-spacing: -0.5px;">SM-TECH</span>
-                                <span style="font-size: 8.5px; font-weight: 800; color: #059669; letter-spacing: 0.8px; display: block; margin-top: 2px;">COMPUTER & IT SOLUTION</span>
-                                <span style="font-size: 8px; font-style: italic; color: #555; display: block; margin-top: 2px;">Smart Technology-Trusted Service</span>
+                            <td style="width: 48%; vertical-align: middle; padding-left: 5px;">
+                                <span style="font-size: 26px; font-weight: 900; color: #1e3a8a; font-family: sans-serif; line-height: 1.1; display: block;">SM-TECH</span>
+                                <span style="font-size: 8px; font-weight: 800; color: #059669; letter-spacing: 0.5px; display: block; margin-top: 2px;">COMPUTER & IT SOLUTION</span>
                             </td>
-                            <td style="width: 32%; text-align: right; font-size: 11px; line-height: 1.4; vertical-align: middle; font-weight: bold; color: #111;">
-                                <span style="font-size: 14px; font-weight: 900; color: #1e3a8a; display: block; margin-bottom: 2px;">S.m. Ibrahim</span>
-                                <span style="font-size: 10px; color: #555; display: block; margin-top: -3px; margin-bottom: 2px; font-weight: normal;">Owner</span>
-                                <span style="font-size: 11.5px; font-weight: 800; display: block; letter-spacing: 0.2px;">01940-556114</span>
-                                <span style="font-size: 11.5px; font-weight: 800; display: block; letter-spacing: 0.2px;">01810-499166</span>
+                            <td style="width: 32%; text-align: right; font-size: 10px; line-height: 1.3; vertical-align: middle; font-weight: bold; color: #111;">
+                                <span style="font-size: 13px; font-weight: 900; color: #1e3a8a; display: block;">S.m. Ibrahim</span>
+                                <span style="font-size: 9px; color: #555; display: block; font-weight: normal;">Owner</span>
+                                <span style="font-size: 10.5px; font-weight: 800; display: block;">01940-556114</span>
+                                <span style="font-size: 10.5px; font-weight: 800; display: block;">01810-499166</span>
                             </td>
                         </tr>
                     </table>
                     
-                    <div style="border-top: 2.5px solid #1e3a8a; margin-top: 8px; margin-bottom: 12px;"></div>
+                    <div style="border-top: 2.5px solid #1e3a8a; margin-top: 5px; margin-bottom: 8px;"></div>
                     
-                    <table style="width: 100%; font-size: 11px; margin-bottom: 12px; line-height: 1.4;">
+                    <table style="width: 100%; font-size: 10px; margin-bottom: 10px; line-height: 1.3;">
                         <tr>
                             <td style="width: 55%; vertical-align: top;">
-                                <span style="background-color: #1e3a8a; color: white; padding: 3px 7px; font-weight: bold; font-size: 9.5px; border-radius: 2px; display: inline-block; margin-bottom: 4px;">Bill To</span>
+                                <span style="background-color: #1e3a8a; color: white; padding: 2px 5px; font-weight: bold; font-size: 9px; border-radius: 2px; display: inline-block;">Bill To</span>
                                 <div style="margin-top: 4px;"><b>Name:</b> {cust_name}</div>
                                 <div style="margin-top: 2px;"><b>Address:</b> {cust_address}</div>
                             </td>
                             <td style="width: 45%; text-align: right; vertical-align: top;">
-                                <span style="background-color: #1e3a8a; color: white; padding: 3px 12px; font-weight: bold; font-size: 10.5px; letter-spacing: 0.5px; border-radius: 2px; display: inline-block; margin-bottom: 4px;">INVOICE</span>
+                                <span style="background-color: #1e3a8a; color: white; padding: 2px 10px; font-weight: bold; font-size: 10px; border-radius: 2px; display: inline-block;">INVOICE</span>
                                 <div style="margin-top: 4px;"><b>Invoice No:</b> # {inv_custom_num}</div>
                                 <div style="margin-top: 2px;"><b>Date:</b> {current_date}</div>
                             </td>
                         </tr>
                     </table>
                     
-                    <table style="width: 100%; border-collapse: collapse; font-size: 11px; border: 1px solid #1e3a8a;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 10px; border: 1px solid #1e3a8a;">
                         <thead>
-                            <tr style="background-color: #1e3a8a; color: white; text-align: center; font-weight: bold; font-size: 10px;">
-                                <th style="border: 1px solid #1e3a8a; padding: 6px 4px; width: 8%;">S.L</th>
-                                <th style="border: 1px solid #1e3a8a; padding: 6px 6px; width: 52%;">DESCRIPTION</th>
-                                <th style="border: 1px solid #1e3a8a; padding: 6px 4px; width: 10%;">QTY</th>
-                                <th style="border: 1px solid #1e3a8a; padding: 6px 4px; width: 14%;">U.PRICE</th>
-                                <th style="border: 1px solid #1e3a8a; padding: 6px 4px; width: 16%;">AMOUNT</th>
+                            <tr style="background-color: #1e3a8a; color: white; text-align: center; font-weight: bold; font-size: 9px;">
+                                <th style="border: 1px solid #1e3a8a; padding: 5px 3px; width: 8%;">S.L</th>
+                                <th style="border: 1px solid #1e3a8a; padding: 5px 5px; width: 52%;">DESCRIPTION</th>
+                                <th style="border: 1px solid #1e3a8a; padding: 5px 3px; width: 10%;">QTY</th>
+                                <th style="border: 1px solid #1e3a8a; padding: 5px 3px; width: 14%;">U.PRICE</th>
+                                <th style="border: 1px solid #1e3a8a; padding: 5px 3px; width: 16%;">AMOUNT</th>
                             </tr>
                         </thead>
                         <tbody>
                             {rows_html}
                             <tr>
                                 <td colspan="3" style="border: 1px solid #1e3a8a;"></td>
-                                <td style="border: 1px solid #1e3a8a; padding: 6px; text-align: center; font-weight: bold; background-color: #1e3a8a; color: white; font-size: 10px;">SUB TOTAL</td>
-                                <td style="border: 1px solid #1e3a8a; padding: 6px; text-align: center; font-weight: bold; background-color: #f3f4f6; font-size: 11px;">{total_calculated} BDT</td>
+                                <td style="border: 1px solid #1e3a8a; padding: 5px; text-align: center; font-weight: bold; background-color: #1e3a8a; color: white; font-size: 9px;">SUB TOTAL</td>
+                                <td style="border: 1px solid #1e3a8a; padding: 5px; text-align: center; font-weight: bold; background-color: #f3f4f6; font-size: 10px;">{total_calculated} BDT</td>
                             </tr>
                         </tbody>
                     </table>
                     
-                    <table style="width: 100%; position: absolute; bottom: 18px; left: 18px; width: calc(100% - 36px); font-size: 10px;">
+                    <table style="width: 100%; margin-top: 35px; font-size: 9px;">
                         <tr>
                             <td style="width: 50%; vertical-align: bottom;">
                                 <div style="border: 1px solid #1e3a8a; display: inline-block; border-radius: 2px; background-color: white;">
-                                    <div style="background-color: #1e3a8a; color: white; padding: 2px 6px; font-weight: bold; font-size: 8.5px;">Payment Methods</div>
-                                    <div style="padding: 3px 6px; font-weight: bold; color: #222; font-size: 9.5px;">Cash | Bkash | Nagad | Bank</div>
+                                    <div style="background-color: #1e3a8a; color: white; padding: 1px 4px; font-weight: bold; font-size: 8px;">Payment Methods</div>
+                                    <div style="padding: 2px 4px; font-weight: bold; color: #222; font-size: 9px;">Cash | Bkash | Nagad | Bank</div>
                                 </div>
                             </td>
                             <td style="width: 50%; text-align: right; vertical-align: bottom;">
-                                <div style="display: inline-block; text-align: center; width: 150px;">
-                                    <div style="border-top: 1px solid #000; margin-bottom: 3px;"></div>
-                                    <b>Authorised Signature</b><br>
-                                    <span style="font-size: 8.5px; color: #444;">SM-TECH Computer & IT Solutions</span>
+                                <div style="display: inline-block; text-align: center; width: 130px;">
+                                    <div style="border-top: 1px solid #000; margin-bottom: 2px;"></div>
+                                    <b>Authorised Signature</b>
                                 </div>
                             </td>
                         </tr>
                     </table>
                 </div>
-                </div>
+                </body>
+                </html>
                 """
                 
-                st.markdown(invoice_html, unsafe_allow_html=True)
+                # ওয়েব ইন্টারফেসে প্রিভিউ দেখানোর জন্য
+                st.markdown("#### 📄 Invoice Preview (প্রিভিউ):")
+                st.markdown(f"""
+                <div style="background-color: #f0f2f5; padding: 15px; display: flex; justify-content: center;">
+                    <iframe srcdoc='{invoice_html_for_pdf}' style="width: 5.2in; height: 7.2in; border: none; background: white;"></iframe>
+                </div>
+                """, unsafe_allow_html=True)
                 
-                b64_invoice = base64.b64encode(invoice_html.encode()).decode()
-                href = f'<a href="data:text/html;base64,{b64_invoice}" download="Invoice_{inv_custom_num}.html" style="display: block; text-align: center; background-color: #059669; color: white; padding: 12px; font-weight: bold; text-decoration: none; border-radius: 6px; margin-top: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">📥 Download 5"x7" Invoice File</a>'
-                st.markdown(href, unsafe_allow_html=True)
+                # HTML থেকে WeasyPrint ব্যবহার করে সরাসরি PDF জেনারেট করা হচ্ছে
+                pdf_bytes = HTML(string=invoice_html_for_pdf).write_pdf()
+                
+                # স্ট্রিমলিটের নেটিভ ডাউনলোড বাটন যুক্ত করা হলো
+                st.download_button(
+                    label="📥 Download 5\"x7\" Invoice PDF",
+                    data=pdf_bytes,
+                    file_name=f"Invoice_{inv_custom_num}.pdf",
+                    mime="application/pdf",
+                    use_container_width=True
+                )
