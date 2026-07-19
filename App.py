@@ -36,7 +36,7 @@ if "invoice_items" not in st.session_state:
     st.session_state.invoice_items = []
 
 # ==========================================
-# 🎨 গ্লোবাল থিম: সাদা ব্যাকগ্রাউন্ড এবং লাল বক্স মেনু বাটন CSS
+# 🎨 গ্লোবাল থিম: ছবির মতো সম্পূর্ণ লাল বক্স ও সাদা ব্যাকগ্রাউন্ড CSS
 # ==========================================
 custom_css = """
 <style>
@@ -50,7 +50,7 @@ custom_css = """
     }
     /* সাইডবারের বর্ডার ও টেক্সট অ্যাডজাস্টমেন্ট */
     [data-testid="stSidebar"] {
-        border-right: 1px solid #e0e0e0;
+        border-right: 1px solid #eaeaea;
     }
     /* টেক্সট ফিল্ড লেবেল কালো */
     .stTextInput label, .stNumberInput label, .stFileUploader label {
@@ -62,36 +62,26 @@ custom_css = """
         color: #111111 !important;
     }
     
-    /* সাইডবার মেনু বাটনগুলো লাল রঙের বক্স আকারে */
+    /* সাইডবার মেনু বাটন ও লগআউট বাটন (সবগুলোই ছবির মতো লাল বক্স আকারে) */
     div.stSidebar div.stButton > button {
-        background-color: #cc0000 !important;
+        background-color: #d60000 !important;
         color: #ffffff !important;
-        border: 1px solid #b30000 !important;
-        padding: 12px 15px !important;
+        border: none !important;
+        padding: 14px 18px !important;
         text-align: left !important;
-        font-size: 15px !important;
+        font-size: 16px !important;
         font-weight: bold !important;
-        border-radius: 8px !important;
-        margin-bottom: 10px !important;
+        border-radius: 12px !important; /* সুন্দর রাউন্ডেড বক্স */
+        margin-bottom: 12px !important;
         width: 100% !important;
-        box-shadow: 0px 2px 5px rgba(204, 0, 0, 0.2);
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15) !important; /* ছবির মতো ড্রপ শ্যাডো */
         transition: all 0.2s ease;
     }
     /* হোভার করলে একটু গাঢ় লাল হবে */
     div.stSidebar div.stButton > button:hover {
-        background-color: #a30000 !important;
-        border-color: #8a0000 !important;
-        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
-    }
-    
-    /* লগআউট বাটন আলাদা করার জন্য ডার্ক গ্রে স্টাইল */
-    div.stSidebar div.stButton:first-child > button {
-        background-color: #333333 !important;
-        color: #ffffff !important;
-        border: 1px solid #222222 !important;
-    }
-    div.stSidebar div.stButton:first-child > button:hover {
-        background-color: #1a1a1a !important;
+        background-color: #bd0000 !important;
+        box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.2) !important;
+        transform: translateY(-1px);
     }
     
     .stDataFrame {
@@ -135,17 +125,24 @@ if not st.session_state.logged_in:
 # ==========================================
 else:
     with st.sidebar:
+        # টাইটেল ও গিয়ার আইকন লাল রঙের টেক্সট দিয়ে ছবির মতো
         st.markdown('''
-            <div style="display: flex; align-items: center; margin-bottom: 10px; padding-left: 5px;">
-                <span style="font-size: 28px; margin-right: 10px;">⚙️</span>
-                <span style="font-size: 24px; font-weight: bold; color: #111111;">SM-TECH</span>
+            <div style="display: flex; align-items: center; margin-top: 15px; margin-bottom: 15px; padding-left: 5px;">
+                <span style="font-size: 32px; margin-right: 12px; color: #cc0000;">⚙️</span>
+                <span style="font-size: 30px; font-weight: 900; color: #cc0000; letter-spacing: 0.5px;">SM-TECH</span>
             </div>
         ''', unsafe_allow_html=True)
+        
+        # লগআউট বাটন (ছবির মতো লাল বক্স আকারে সবার উপরে)
         if st.button("🔒 Logout / লগআউট", key="logout_btn"):
             st.session_state.logged_in = False
             st.rerun()
+            
         st.write("---")
-        st.markdown("<h3 style='color:#222222; font-size:16px; margin-left:5px;'>মেনু নির্বাচন করুন</h3>", unsafe_allow_html=True)
+        
+        # "মেনু নির্বাচন করুন" লেখাটি ছবির মতো লাল কালার
+        st.markdown("<h3 style='color:#cc0000; font-size:20px; font-weight:bold; margin-left:5px; margin-bottom:15px;'>মেনু নির্বাচন করুন</h3>", unsafe_allow_html=True)
+        
         if st.button("⬜  Dashboard", use_container_width=True):
             st.session_state.current_menu = "Dashboard"; st.rerun()
         if st.button("👥  Customer & Repair", use_container_width=True):
@@ -212,7 +209,7 @@ else:
                 st.markdown("<br>", unsafe_allow_html=True)
                 delete_btn = st.button("❌ এন্ট্রি মুছুন", type="primary", use_container_width=True)
             if delete_btn:
-                st.session_state.customer_dues = [item for item in st.session_state.customer_dues if item["क्रमিক নং"] != delete_id]
+                st.session_state.customer_dues = [item for item in st.session_state.customer_dues if item["ক্রমিক নং"] != delete_id]
                 for idx, item in enumerate(st.session_state.customer_dues): item["ক্রমিক নং"] = idx + 1
                 st.success("তালিকা সফলভাবে আপডেট করা হয়েছে।")
                 st.rerun()
