@@ -36,7 +36,7 @@ if "invoice_items" not in st.session_state:
     st.session_state.invoice_items = []
 
 # ==========================================
-# 🎨 গ্লোবাল থিম: ছবির মতো সম্পূর্ণ লাল বক্স ও সাদা ব্যাকগ্রাউন্ড CSS
+# 🎨 গ্লোবাল থিম: লগইন বাটন ও সাইডবার বাটনে হুবহু লাল বক্স ও সাদা টেক্সট CSS
 # ==========================================
 custom_css = """
 <style>
@@ -62,26 +62,32 @@ custom_css = """
         color: #111111 !important;
     }
     
-    /* সাইডবার মেনু বাটন ও লগআউট বাটন (সবগুলোই ছবির মতো লাল বক্স আকারে) */
-    div.stSidebar div.stButton > button {
+    /* 🔴 অ্যাপের সমস্ত বাটন (লগইন বাটন এবং সাইডবার মেনু বাটন) লাল বক্স এবং সাদা টেক্সট করার স্টাইল */
+    div.stButton > button {
         background-color: #d60000 !important;
         color: #ffffff !important;
         border: none !important;
         padding: 14px 18px !important;
-        text-align: left !important;
         font-size: 16px !important;
         font-weight: bold !important;
-        border-radius: 12px !important; /* সুন্দর রাউন্ডেড বক্স */
-        margin-bottom: 12px !important;
+        border-radius: 12px !important; /* ছবির মতো সুন্দর রাউন্ডেড কোনা */
         width: 100% !important;
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15) !important; /* ছবির মতো ড্রপ শ্যাডো */
         transition: all 0.2s ease;
     }
+    
     /* হোভার করলে একটু গাঢ় লাল হবে */
-    div.stSidebar div.stButton > button:hover {
+    div.stButton > button:hover {
         background-color: #bd0000 !important;
+        color: #ffffff !important;
         box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.2) !important;
         transform: translateY(-1px);
+    }
+    
+    /* সাইডবার মেনু বাটনগুলোর টেক্সট বামে এলাইন করার জন্য */
+    div.stSidebar div.stButton > button {
+        text-align: left !important;
+        margin-bottom: 12px !important;
     }
     
     .stDataFrame {
@@ -95,23 +101,30 @@ st.markdown(custom_css, unsafe_allow_html=True)
 # 🛑 ১. লগইন স্ক্রিন রেন্ডারিং
 # ==========================================
 if not st.session_state.logged_in:
-    _, col_center, _ = st.columns([1, 1.5, 1])
+    _, col_center, _ = st.columns([1, 1.4, 1])
     with col_center:
         st.markdown('<br><br>', unsafe_allow_html=True)
+        # লোগো এবং শিরোনাম একদম বামের ছবির মতো
         st.markdown('''
-            <div style="text-align: center; margin-bottom: 20px;">
-                <span style="font-size: 50px;">🔒</span>
-                <span style="font-size: 36px; font-weight: bold; color: #111;">SM-TECH - </span>
-                <span style="font-size: 36px; font-weight: bold; color: #cc0000;">Admin Login</span>
+            <div style="text-align: center; margin-bottom: 25px;">
+                <div style="font-size: 40px; font-weight: 900; color: #111111; font-family: sans-serif;">
+                    🔒 SM-TECH - <span style="color: #d60000;">Admin</span>
+                </div>
+                <div style="font-size: 38px; font-weight: 900; color: #d60000; margin-top: 5px; font-family: sans-serif;">
+                    Login
+                </div>
             </div>
         ''', unsafe_allow_html=True)
-        with st.container(border=True):
-            st.markdown('<div style="font-size: 18px; font-weight: bold; text-align: center; color: #cc0000; padding-bottom:10px; border-bottom:1px solid #ddd;">অ্যাডমিন প্যানেল প্রবেশ করুন</div>', unsafe_allow_html=True)
-            st.markdown('<br>', unsafe_allow_html=True)
+        
+        with st.container(border=False):
+            st.markdown('<div style="font-size: 20px; font-weight: bold; text-align: center; color: #d60000; margin-bottom: 20px;">অ্যাডমিন প্যানেল প্রবেশ করুন</div>', unsafe_allow_html=True)
+            
             username = st.text_input("Username (ইউজারনেম)", placeholder="ইউজারনেম লিখুন...")
             password = st.text_input("Password (পাসওয়ার্ড)", type="password", placeholder="পাসওয়ার্ড লিখুন...")
             st.markdown('<br>', unsafe_allow_html=True)
-            login_btn = st.button("🔓 লগইন করুন", use_container_width=True)
+            
+            # এই লগইন বাটনটি এখন সিএসএস এর কারণে ছবির মতো লাল বক্স ও সাদা টেক্সট দেখাবে
+            login_btn = st.button("🔒 লগইন করুন", use_container_width=True)
             if login_btn:
                 if username == "admin" and password == "1234":
                     st.session_state.logged_in = True
@@ -128,8 +141,8 @@ else:
         # টাইটেল ও গিয়ার আইকন লাল রঙের টেক্সট দিয়ে ছবির মতো
         st.markdown('''
             <div style="display: flex; align-items: center; margin-top: 15px; margin-bottom: 15px; padding-left: 5px;">
-                <span style="font-size: 32px; margin-right: 12px; color: #cc0000;">⚙️</span>
-                <span style="font-size: 30px; font-weight: 900; color: #cc0000; letter-spacing: 0.5px;">SM-TECH</span>
+                <span style="font-size: 32px; margin-right: 12px; color: #d60000;">⚙️</span>
+                <span style="font-size: 30px; font-weight: 900; color: #d60000; letter-spacing: 0.5px;">SM-TECH</span>
             </div>
         ''', unsafe_allow_html=True)
         
@@ -141,7 +154,7 @@ else:
         st.write("---")
         
         # "মেনু নির্বাচন করুন" লেখাটি ছবির মতো লাল কালার
-        st.markdown("<h3 style='color:#cc0000; font-size:20px; font-weight:bold; margin-left:5px; margin-bottom:15px;'>মেনু নির্বাচন করুন</h3>", unsafe_allow_html=True)
+        st.markdown("<h3 style='color:#d60000; font-size:20px; font-weight:bold; margin-left:5px; margin-bottom:15px;'>মেনু নির্বাচন করুন</h3>", unsafe_allow_html=True)
         
         if st.button("⬜  Dashboard", use_container_width=True):
             st.session_state.current_menu = "Dashboard"; st.rerun()
@@ -207,7 +220,7 @@ else:
             with col_del1: delete_id = st.number_input("ডিলিট করার জন্য ক্রমিক নং লিখুন:", min_value=1, max_value=500, step=1)
             with col_del2: 
                 st.markdown("<br>", unsafe_allow_html=True)
-                delete_btn = st.button("❌ এন্ট্রি মুছুন", type="primary", use_container_width=True)
+                delete_btn = st.button("❌ এন্ট্রি মুছুন", use_container_width=True)
             if delete_btn:
                 st.session_state.customer_dues = [item for item in st.session_state.customer_dues if item["ক্রমিক নং"] != delete_id]
                 for idx, item in enumerate(st.session_state.customer_dues): item["ক্রমিক নং"] = idx + 1
@@ -246,7 +259,7 @@ else:
             with col_sdel1: delete_stock_id = st.number_input("ডিলিট করার জন্য পণ্যের ক্রমিক নং লিখুন:", min_value=1, max_value=500, step=1, key="s_del_id")
             with col_sdel2:
                 st.markdown("<br>", unsafe_allow_html=True)
-                delete_stock_btn = st.button("❌ পণ্য মুছুন", type="primary", use_container_width=True, key="s_del_btn")
+                delete_stock_btn = st.button("❌ পণ্য মুছুন", use_container_width=True, key="s_del_btn")
             if delete_stock_btn:
                 st.session_state.shop_stock = [item for item in st.session_state.shop_stock if item["ক্রমিক নং"] != delete_stock_id]
                 for idx, item in enumerate(st.session_state.shop_stock): item["ক্রমিক নং"] = idx + 1
@@ -287,7 +300,7 @@ else:
             with col_pdel1: delete_pass_id = st.number_input("ডিলিট করার জন্য ক্রমিক নং লিখুন:", min_value=1, max_value=500, step=1, key="p_del_id")
             with col_pdel2:
                 st.markdown("<br>", unsafe_allow_html=True)
-                delete_pass_btn = st.button("❌ পাসওয়ার্ড মুছুন", type="primary", use_container_width=True, key="p_del_btn")
+                delete_pass_btn = st.button("❌ পাসওয়ার্ড মুছুন", use_container_width=True, key="p_del_btn")
             if delete_pass_btn:
                 st.session_state.saved_passwords = [item for item in st.session_state.saved_passwords if item["ক্রমিক নং"] != delete_pass_id]
                 for idx, item in enumerate(st.session_state.saved_passwords): item["ক্রমিক নং"] = idx + 1
@@ -334,7 +347,7 @@ else:
         
         st.write("---")
         
-        if st.button("📄 ইনভয়েস প্রিভিউ জেনারেট করুন", type="primary", use_container_width=True):
+        if st.button("📄 ইনভয়েস প্রিভিউ জেনারেট করুন", use_container_width=True):
             if not st.session_state.invoice_items:
                 st.warning("আগে লিস্টে পণ্য যোগ করুন।")
             else:
