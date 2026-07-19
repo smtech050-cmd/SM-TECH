@@ -30,6 +30,12 @@ if "shop_stock" not in st.session_state:
         {"ক্রমিক নং": 2, "পণ্যের বিবরণ": "DDR4 8GB RAM", "পরিমান": 15, "দর": 2400, "মোট টাকা": 36000}
     ]
 
+# পাসওয়ার্ড সংরক্ষণের জন্য সেশন স্টেট
+if "saved_passwords" not in st.session_state:
+    st.session_state.saved_passwords = [
+        {"ক্রমিক নং": 1, "শিক্ষা প্রতিষ্ঠানের নাম": "Sreebardi Govt. College", "এন্ট্রি পাসওয়ার্ড": "sreebardi@2026", "কনফার্ম পাসওয়ার্ড": "sreebardi@2026"}
+    ]
+
 if "invoice_items" not in st.session_state:
     st.session_state.invoice_items = []
 
@@ -87,7 +93,7 @@ custom_css = """
         align-items: center;
     }
     
-    /* বাটন হোভার (মাউস আনলে যেমন দেখাবে) */
+    /* বাটন হোভার */
     div.stButton > button:hover {
         background-color: #0044cc !important;
         border-left: 5px solid #00ffcc !important;
@@ -95,7 +101,7 @@ custom_css = """
         transform: scale(1.02);
     }
     
-    /* একটিভ বাটন (যে পেজে এখন আছেন) */
+    /* একটিভ বাটন */
     div.stButton > button:focus, div.stButton > button:active {
         background-color: #0044cc !important;
         border-left: 5px solid #00ffcc !important;
@@ -172,6 +178,10 @@ else:
             
         if st.button("💵  Sell Invoice", use_container_width=True):
             st.session_state.current_menu = "Sell Invoice"
+            st.rerun()
+
+        if st.button("🔐  Password Save", use_container_width=True):
+            st.session_state.current_menu = "Password Save"
             st.rerun()
 
     # --- 📊 ড্যাশবোর্ড মডিউল (Dashboard) ---
@@ -300,6 +310,61 @@ else:
                 st.rerun()
         else:
             st.info("স্টকে কোনো পণ্য নেই।")
+
+    # --- 🔐 পাসওয়ার্ড সংরক্ষণ (Password Save) ---
+    elif st.session_state.current_menu == "Password Save":
+        st.title("🔐 শিক্ষা প্রতিষ্ঠানের পাসওয়ার্ড সংরক্ষণ ব্যবস্থা")
+        
+        with st.form("Add Institution Password"):
+            st.write("### ➕ নতুন শিক্ষা প্রতিষ্ঠানের পাসওয়ার্ড যুক্ত করুন")
+            inst_name = st.text_input("শিক্ষা প্রতিষ্ঠানের নাম", placeholder="প্রতিষ্ঠানের নাম লিখুন...")
+            
+            col_p1, col_p2 = st.columns(2)
+            with col_p1:
+                entry_pass = st.text_input("এন্ট্রি পাসওয়ার্ড", type="password", placeholder="পাসওয়ার্ড দিন...")
+            with col_p2:
+                confirm_pass = st.text_input("কনফার্ম পাসওয়ার্ড", type="password", placeholder="পাসওয়ার্ড নিশ্চিত করুন...")
+                
+            submitted_pass = st.form_submit_button(label="💾 পাসওয়ার্ড সংরক্ষণ করুন")
+            
+            if submitted_pass:
+                if not inst_name or not entry_pass or not confirm_pass:
+                    st.error("অনুগ্রহ করে সবকটি ঘর পূরণ করুন।")
+                elif entry_pass != confirm_pass:
+                    st.error("এন্ট্রি পাসওয়ার্ড এবং কনফার্ম পাসওয়ার্ড মেলেনি!")
+                else:
+                    new_sl_pass = len(st.session_state.saved_passwords) + 1 if st.session_state.saved_passwords else 1
+                    st.session_state.saved_passwords.append({
+                        "ক্রমিক নং": new_sl_pass,
+                        "শিক্ষা প্রতিষ্ঠানের নাম": inst_name,
+                        "এন্ট্রি পাসওয়ার্ড": entry_pass,
+                        "কনফার্ম পাসওয়ার্ড": confirm_pass
+                    })
+                    st.success(f"সফলভাবে {inst_name} এর পাসওয়ার্ড সংরক্ষিত হয়েছে!")
+                    st.rerun()
+
+        st.write("### 📋 সংরক্ষিত পাসওয়ার্ডের তালিকা")
+        if st.session_state.saved_passwords:
+            df_passwords = pd.DataFrame(st.session_state.saved_passwords)
+            # সিকিউরিটির জন্য চাইলে এখানে এন্ট্রি পাসওয়ার্ড সাধারণ টেক্সট হিসেবে দেখাবে
+            st.dataframe(df_passwords, use_container_width=True, hide_index=True)
+            
+            st.write("### 🗑️ পাসওয়ার্ড মুছুন")
+            col_pdel1, col_pdel2 = st.columns([2, 1])
+            with col_pdel1:
+                delete_pass_id = st.number_input("ডিলিট করার জন্য ক্রমিক নং লিখুন:", min_value=1, max_value=500, step=1, key="pass_del_id")
+            with col_pdel2:
+                st.markdown("<br>", unsafe_allow_html=True)
+                delete_pass_btn = st.button("❌ ডাটা মুছুন", type="primary", use_container_width=True, key="pass_del_btn")
+            
+            if delete_pass_btn:
+                st.session_state.saved_passwords = [item for idx, item in enumerate(st.session_state.saved_passwords) if (idx + 1) != delete_pass_id]
+                for idx, item in enumerate(st.session_state.saved_passwords):
+                    item["ক্রমিক নং"] = idx + 1
+                st.toast("তালিকা থেকে সফলভাবে মুছে ফেলা হয়েছে।")
+                st.rerun()
+        else:
+            st.info("কোনো পাসওয়ার্ড সংরক্ষিত নেই।")
 
     # --- 🧾 সেল ইনভয়েস (Sell Invoice) ---
     elif st.session_state.current_menu == "Sell Invoice":
