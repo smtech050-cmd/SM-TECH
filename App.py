@@ -7,7 +7,7 @@ import base64
 st.set_page_config(page_title="SM-TECH | Admin System", layout="wide")
 
 # ==========================================
-# 🔐 লগইন ও সেশন স্টেট ইনিশিয়ালাইজেশন
+# 🔐 লগইন ও সেশন স্টেট ইনিশিয়ালাইজেশন (স্থায়ী ডাটা সংরক্ষণ)
 # ==========================================
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
@@ -16,14 +16,14 @@ if "logged_in" not in st.session_state:
 if "current_menu" not in st.session_state:
     st.session_state.current_menu = "Dashboard"
 
-# কাস্টমার বাকির হিসাব সেশন স্টেট
+# কাস্টমার বাকির হিসাব সেশন স্টেট (শুধুমাত্র প্রথমবার লোড হবে)
 if "customer_dues" not in st.session_state:
     st.session_state.customer_dues = [
         {"ক্রমিক নং": 1, "কাস্টমার নাম": "Abir Rahman", "কাজের বিবরণ": "Windows Setup & Cleaning", "পরিমান": 1, "দর": 500, "মোট টাকা": 500, "আদায়": 300, "বাকি": 200},
         {"ক্রমিক নং": 2, "কাস্টমার নাম": "Sristi", "কাজের বিবরণ": "Asus Motherboard Repair", "পরিমান": 1, "দর": 2500, "মোট টাকা": 2500, "আদায়": 1500, "বাকি": 1000}
     ]
 
-# স্টক পণ্যের হিসাব সেশন স্টেট
+# স্টক পণ্যের হিসাব সেশন স্টেট (স্থায়ী সংরক্ষণের ফিক্স)
 if "shop_stock" not in st.session_state:
     st.session_state.shop_stock = [
         {"ক্রমিক নং": 1, "পণ্যের বিবরণ": "512GB NVMe SSD", "পরিমান": 10, "দর": 4200, "মোট টাকা": 42000},
@@ -204,7 +204,7 @@ else:
     elif st.session_state.current_menu == "Customer & Repair":
         st.title("💸 কাস্টমার বাকির হিসাব ও রিপেয়ার")
         
-        with st.form("Add Customer Due"):
+        with st.form("Add Customer Due", clear_on_submit=True):
             st.write("### ➕ নতুন বাকির হিসাব যুক্ত করুন")
             c_name = st.text_input("কাস্টমার নাম")
             c_desc = st.text_input("কাজের বিবরণ")
@@ -225,7 +225,7 @@ else:
                 new_sl = len(st.session_state.customer_dues) + 1 if st.session_state.customer_dues else 1
                 
                 st.session_state.customer_dues.append({
-                    "क्रमिक নং": new_sl,
+                    "ক্রমিক নং": new_sl,
                     "কাস্টমার নাম": c_name,
                     "কাজের বিবরণ": c_desc,
                     "পরিমান": c_qty,
@@ -251,7 +251,7 @@ else:
                 delete_btn = st.button("❌ এন্ট্রি মুছুন", type="primary", use_container_width=True)
             
             if delete_btn:
-                st.session_state.customer_dues = [item for idx, item in enumerate(st.session_state.customer_dues) if (idx + 1) != delete_id]
+                st.session_state.customer_dues = [item for idx, item in enumerate(st.session_state.customer_dues) if item["ক্রমিক নং"] != delete_id]
                 for idx, item in enumerate(st.session_state.customer_dues):
                     item["ক্রমিক নং"] = idx + 1
                 st.toast("তালিকা সফলভাবে আপডেট করা হয়েছে।")
@@ -263,7 +263,8 @@ else:
     elif st.session_state.current_menu == "Stock product":
         st.title("📦 দোকানের স্টক পণ্য ম্যানেজমেন্ট")
         
-        with st.form("Add Shop Stock"):
+        # clear_on_submit=True দেওয়া হয়েছে যাতে এন্ট্রি করার পর ইনপুট বক্স ফাঁকা হয়ে যায়
+        with st.form("Add Shop Stock", clear_on_submit=True):
             st.write("### ➕ নতুন স্টক পণ্য যুক্ত করুন")
             s_desc = st.text_input("পণ্যের বিবরণ / নাম")
             
@@ -279,6 +280,7 @@ else:
                 total_stock_amt = s_qty * s_price
                 new_sl_stock = len(st.session_state.shop_stock) + 1 if st.session_state.shop_stock else 1
                 
+                # সেশন স্টেটে নতুন পণ্য যুক্ত করা হচ্ছে (পেজ রিলোড হলেও মুছবে না)
                 st.session_state.shop_stock.append({
                     "ক্রমিক নং": new_sl_stock,
                     "পণ্যের বিবরণ": s_desc,
@@ -303,7 +305,7 @@ else:
                 delete_stock_btn = st.button("❌ পণ্য মুছুন", type="primary", use_container_width=True, key="stock_del_btn")
             
             if delete_stock_btn:
-                st.session_state.shop_stock = [item for idx, item in enumerate(st.session_state.shop_stock) if (idx + 1) != delete_stock_id]
+                st.session_state.shop_stock = [item for idx, item in enumerate(st.session_state.shop_stock) if item["ক্রমিক নং"] != delete_stock_id]
                 for idx, item in enumerate(st.session_state.shop_stock):
                     item["ক্রমিক নং"] = idx + 1
                 st.toast("পণ্যটি স্টক থেকে মুছে ফেলা হয়েছে।")
@@ -315,7 +317,7 @@ else:
     elif st.session_state.current_menu == "Password Save":
         st.title("🔐 শিক্ষা প্রতিষ্ঠানের পাসওয়ার্ড সংরক্ষণ ব্যবস্থা")
         
-        with st.form("Add Institution Password"):
+        with st.form("Add Institution Password", clear_on_submit=True):
             st.write("### ➕ নতুন শিক্ষা প্রতিষ্ঠানের পাসওয়ার্ড যুক্ত করুন")
             inst_name = st.text_input("শিক্ষা প্রতিষ্ঠানের নাম", placeholder="প্রতিষ্ঠানের নাম লিখুন...")
             
@@ -346,7 +348,6 @@ else:
         st.write("### 📋 সংরক্ষিত পাসওয়ার্ডের তালিকা")
         if st.session_state.saved_passwords:
             df_passwords = pd.DataFrame(st.session_state.saved_passwords)
-            # সিকিউরিটির জন্য চাইলে এখানে এন্ট্রি পাসওয়ার্ড সাধারণ টেক্সট হিসেবে দেখাবে
             st.dataframe(df_passwords, use_container_width=True, hide_index=True)
             
             st.write("### 🗑️ পাসওয়ার্ড মুছুন")
@@ -358,7 +359,7 @@ else:
                 delete_pass_btn = st.button("❌ ডাটা মুছুন", type="primary", use_container_width=True, key="pass_del_btn")
             
             if delete_pass_btn:
-                st.session_state.saved_passwords = [item for idx, item in enumerate(st.session_state.saved_passwords) if (idx + 1) != delete_pass_id]
+                st.session_state.saved_passwords = [item for idx, item in enumerate(st.session_state.saved_passwords) if item["ক্রমিক নং"] != delete_pass_id]
                 for idx, item in enumerate(st.session_state.saved_passwords):
                     item["ক্রমিক নং"] = idx + 1
                 st.toast("তালিকা থেকে সফলভাবে মুছে ফেলা হয়েছে।")
