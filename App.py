@@ -7,7 +7,7 @@ import base64
 st.set_page_config(page_title="SM-TECH | Admin System", layout="wide")
 
 # ==========================================
-# 🔐 লগইন ও সেশন স্টেট ইনিশিয়ালাইজেশন (স্থায়ী ডাটা সংরক্ষণ)
+# 🔐 লগইন ও সেশন স্টেট ইনিশিয়ালাইজেশন
 # ==========================================
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
@@ -17,14 +17,12 @@ if "current_menu" not in st.session_state:
 
 if "customer_dues" not in st.session_state:
     st.session_state.customer_dues = [
-        {"ক্রমিক নং": 1, "কাস্টমার নাম": "Abir Rahman", "কাজের বিবরণ": "Windows Setup & Cleaning", "পরিমান": 1, "দর": 500, "মোট টাকা": 500, "আদায়": 300, "বাকি": 200},
-        {"ক্রমিক নং": 2, "কাস্টমার নাম": "Sristi", "কাজের বিবরণ": "Asus Motherboard Repair", "পরিমান": 1, "দর": 2500, "মোট টাকা": 2500, "আদায়": 1500, "বাকি": 1000}
+        {"ক্রমিক নং": 1, "কাস্টমার নাম": "Abir Rahman", "কাজের বিবরণ": "Windows Setup", "পরিমান": 1, "দর": 500, "মোট টাকা": 500, "আদায়": 300, "বাকি": 200}
     ]
 
 if "shop_stock" not in st.session_state:
     st.session_state.shop_stock = [
-        {"क्रमिक নং": 1, "পণ্যের বিবরণ": "512GB NVMe SSD", "পরিমান": 10, "দর": 4200, "মোট টাকা": 42000},
-        {"ক্রমিক নং": 2, "পণ্যের বিবরণ": "DDR4 8GB RAM", "পরিমান": 15, "দর": 2400, "মোট টাকা": 36000}
+        {"ক্রমিক নং": 1, "পণ্যের বিবরণ": "512GB NVMe SSD", "পরিমান": 10, "দর": 4200, "মোট টাকা": 42000}
     ]
 
 if "saved_passwords" not in st.session_state:
@@ -36,39 +34,54 @@ if "invoice_items" not in st.session_state:
     st.session_state.invoice_items = []
 
 # ==========================================
-# 🎨 গ্লোবাল থিম: ইনপুট বক্সের কালো রঙ দূর করে সাদা করার CSS
+# 🎨 গ্লোবাল থিম: ডার্ক মোড ওভাররাইড করে ইনপুট বক্স সাদা করার ১০০% কার্যকরী CSS
 # ==========================================
 custom_css = """
 <style>
-    /* মূল অ্যাপ এবং সাইডবার ব্যাকগ্রাউন্ড সম্পূর্ণ সাদা */
+    /* মূল অ্যাপ ব্যাকগ্রাউন্ড সম্পূর্ণ সাদা */
     [data-testid="stAppViewContainer"], [data-testid="stSidebar"] {
         background-color: #ffffff !important;
         color: #111111 !important;
     }
-    [data-testid="stHeader"] {
-        background: transparent;
-    }
     
-    /* ✍️ ইনপুট ফিল্ডের কালো ব্যাকগ্রাউন্ড পরিবর্তন করে সাদা করার স্টাইল */
-    div[data-baseweb="input"] {
+    /* ✍️ ইনপুট বক্স ১০০% সাদা করার জন্য স্ট্রং CSS */
+    div[data-baseweb="input"], 
+    div[data-baseweb="base-input"] {
         background-color: #ffffff !important;
-        border: 1px solid #cccccc !important;
         border-radius: 8px !important;
     }
     
+    .stTextInput div[data-baseweb="input"] {
+        border: 1px solid #cccccc !important;
+    }
+
     /* ইনপুট বক্সের ভেতরের লেখার কালার কালো */
-    div[data-baseweb="input"] input {
-        color: #111111 !important;
+    .stTextInput input, 
+    .stNumberInput input {
+        color: #000000 !important;
         background-color: #ffffff !important;
+        -webkit-text-fill-color: #000000 !important;
+    }
+    
+    /* প্লেসহোল্ডার কালার */
+    input::placeholder {
+        color: #777777 !important;
+        -webkit-text-fill-color: #777777 !important;
+    }
+
+    /* পাসওয়ার্ড দেখার চোখের আইকন কালো করা */
+    div[data-baseweb="input"] svg {
+        fill: #333333 !important;
+        color: #333333 !important;
     }
     
     /* টেক্সট ফিল্ড লেবেল কালো */
-    .stTextInput label, .stNumberInput label, .stFileUploader label {
+    .stTextInput label, .stNumberInput label {
         color: #222222 !important;
-        font-weight: bold;
+        font-weight: bold !important;
     }
     
-    /* 🔴 লগইন বাতন লাল বক্স এবং সাদা টেক্সট */
+    /* 🔴 লগইন ও সাইডবার বাটন লাল বক্স এবং সাদা টেক্সট */
     div.stButton > button {
         background-color: #d60000 !important;
         color: #ffffff !important;
@@ -84,8 +97,12 @@ custom_css = """
     
     div.stButton > button:hover {
         background-color: #bd0000 !important;
-        color: #ffffff !important;
         box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.2) !important;
+    }
+    
+    /* বাটনের ভিতরের টেক্সট নিশ্চিত সাদা করার জন্য */
+    div.stButton p {
+        color: #ffffff !important; 
     }
     
     div.stSidebar div.stButton > button {
@@ -160,131 +177,87 @@ else:
         if st.button("🔐  Password Save", use_container_width=True):
             st.session_state.current_menu = "Password Save"; st.rerun()
 
-    # --- ড্যাশবোর্ড মডিউল ---
+    # ড্যাশবোর্ড মডিউল
     if st.session_state.current_menu == "Dashboard":
         st.title("🖥️  ড্যাশবোর্ড")
-        st.subheader("এসএম-টেক কম্পিউটার ও আইটি সল্যুশন")
         st.write("---")
-        
         col1, col2, col3 = st.columns(3)
-        total_due_amount = sum(item.get("বাকি", 0) for item in st.session_state.customer_dues)
-        total_stock_value = sum(item.get("মোট টাকা", 0) for item in st.session_state.shop_stock)
-        
-        col1.metric("মোট বাকির হিসাব (কাস্টমার)", f"{len(st.session_state.customer_dues)} জন")
-        col2.metric("মোট বাকি টাকা", f"{total_due_amount} BDT")
-        col3.metric("স্টক পণ্যের মোট মূল্য", f"{total_stock_value} BDT")
-        
-        st.write("### 📑 কাস্টমার বাকির সংক্ষিপ্ত বিবরণ")
-        st.dataframe(pd.DataFrame(st.session_state.customer_dues), use_container_width=True, hide_index=True)
+        total_due = sum(item.get("বাকি", 0) for item in st.session_state.customer_dues)
+        total_stock = sum(item.get("মোট টাকা", 0) for item in st.session_state.shop_stock)
+        col1.metric("মোট কাস্টমার", f"{len(st.session_state.customer_dues)} জন")
+        col2.metric("মোট বাকি টাকা", f"{total_due} BDT")
+        col3.metric("স্টক পণ্যের মূল্য", f"{total_stock} BDT")
+        st.dataframe(pd.DataFrame(st.session_state.customer_dues), use_container_width=True)
 
-    # --- কাস্টমার ও রিপেয়ার ---
+    # কাস্টমার ও রিপেয়ার
     elif st.session_state.current_menu == "Customer & Repair":
-        st.title("👥 কাস্টমার বাকির হিসাব ও রিপেয়ার")
+        st.title("👥 কাস্টমার বাকির হিসাব")
         with st.form("Add Customer Due", clear_on_submit=True):
-            st.write("### ➕ নতুন বাকির হিসাব যুক্ত করুন")
             c_name = st.text_input("কাস্টমার নাম")
             c_desc = st.text_input("কাজের বিবরণ")
             col_c1, col_c2, col_c3 = st.columns(3)
-            with col_c1: c_qty = st.number_input("পরিমান", min_value=1, value=1, step=1)
-            with col_c2: c_price = st.number_input("দর (টাকা)", min_value=0, value=0, step=50)
-            with col_c3: c_paid = st.number_input("আদায় (টাকা)", min_value=0, value=0, step=50)
-            submitted = st.form_submit_button(label="💾 লিস্টে যুক্ত করুন")
-            
-            if submitted:
-                if c_name and c_desc:
-                    total_amt = c_qty * c_price
-                    due_amt = total_amt - c_paid
-                    new_sl = len(st.session_state.customer_dues) + 1
-                    st.session_state.customer_dues.append({
-                        "ক্রমিক নং": new_sl, "কাস্টমার নাম": c_name, "কাজের বিবরণ": c_desc,
-                        "পরিমান": c_qty, "দর": c_price, "মোট টাকা": total_amt, "আদায়": c_paid, "বাকি": due_amt
-                    })
-                    st.success(f"সফলভাবে {c_name} এর বাকির হিসাব যুক্ত হয়েছে!")
-                    st.rerun()
+            with col_c1: c_qty = st.number_input("পরিমান", min_value=1, value=1)
+            with col_c2: c_price = st.number_input("দর (টাকা)", min_value=0, value=0)
+            with col_c3: c_paid = st.number_input("আদায় (টাকা)", min_value=0, value=0)
+            if st.form_submit_button("💾 লিস্টে যুক্ত করুন") and c_name:
+                st.session_state.customer_dues.append({
+                    "ক্রমিক নং": len(st.session_state.customer_dues) + 1, "কাস্টমার নাম": c_name, "কাজের বিবরণ": c_desc,
+                    "পরিমান": c_qty, "দর": c_price, "মোট টাকা": c_qty*c_price, "আদায়": c_paid, "বাকি": (c_qty*c_price)-c_paid
+                })
+                st.rerun()
+        st.dataframe(pd.DataFrame(st.session_state.customer_dues), use_container_width=True)
 
-        st.write("### 📋 বর্তমান কাস্টমার বাকির তালিকা")
-        if st.session_state.customer_dues:
-            st.dataframe(pd.DataFrame(st.session_state.customer_dues), use_container_width=True, hide_index=True)
-
-    # --- স্টক পণ্য ---
+    # স্টক পণ্য
     elif st.session_state.current_menu == "Stock product":
-        st.title("📦 দোকানের স্টক পণ্য ম্যানেজমেন্ট")
+        st.title("📦 স্টক পণ্য ম্যানেজমেন্ট")
         with st.form("Add Shop Stock", clear_on_submit=True):
-            st.write("### ➕ নতুন স্টক পণ্য যুক্ত করুন")
             s_desc = st.text_input("পণ্যের বিবরণ / নাম")
             col_s1, col_s2 = st.columns(2)
-            with col_s1: s_qty = st.number_input("পরিমান", min_value=1, value=1, step=1)
-            with col_s2: s_price = st.number_input("দর (টাকা)", min_value=0, value=0, step=50)
-            submitted_stock = st.form_submit_button(label="📥 স্টকে যুক্ত করুন")
-            
-            if submitted_stock:
-                if s_desc:
-                    total_stock_amt = s_qty * s_price
-                    new_sl_stock = len(st.session_state.shop_stock) + 1
-                    st.session_state.shop_stock.append({
-                        "ক্রমিক নং": new_sl_stock, "পণ্যের বিবরণ": s_desc, "পরিমান": s_qty, "দর": s_price, "মোট টাকা": total_stock_amt
-                    })
-                    st.success(f"স্টকে সফলভাবে {s_desc} যুক্ত হয়েছে!")
-                    st.rerun()
+            with col_s1: s_qty = st.number_input("পরিমান", min_value=1, value=1)
+            with col_s2: s_price = st.number_input("দর (টাকা)", min_value=0, value=0)
+            if st.form_submit_button("📥 স্টকে যুক্ত করুন") and s_desc:
+                st.session_state.shop_stock.append({
+                    "ক্রমিক নং": len(st.session_state.shop_stock) + 1, "পণ্যের বিবরণ": s_desc, "পরিমান": s_qty, "দর": s_price, "মোট টাকা": s_qty*s_price
+                })
+                st.rerun()
+        st.dataframe(pd.DataFrame(st.session_state.shop_stock), use_container_width=True)
 
-        st.write("### 📋 বর্তমানে মজুদ মালামালের তালিকা")
-        if st.session_state.shop_stock:
-            st.dataframe(pd.DataFrame(st.session_state.shop_stock), use_container_width=True, hide_index=True)
-
-    # --- পাসওয়ার্ড সংরক্ষণ ---
+    # পাসওয়ার্ড সংরক্ষণ
     elif st.session_state.current_menu == "Password Save":
-        st.title("🔐 শিক্ষা প্রতিষ্ঠানের পাসওয়ার্ড সংরক্ষণ ব্যবস্থা")
-        with st.form("Add Institution Password", clear_on_submit=True):
-            st.write("### ➕ নতুন শিক্ষা প্রতিষ্ঠানের পাসওয়ার্ড যুক্ত করুন")
-            inst_name = st.text_input("শিক্ষা প্রতিষ্ঠানের নাম")
+        st.title("🔐 পাসওয়ার্ড সংরক্ষণ")
+        with st.form("Add Password", clear_on_submit=True):
+            inst_name = st.text_input("প্রতিষ্ঠানের নাম")
             col_p1, col_p2 = st.columns(2)
             with col_p1: entry_pass = st.text_input("এন্ট্রি পাসওয়ার্ড")
             with col_p2: confirm_pass = st.text_input("কনফার্ম পাসওয়ার্ড")
-            submitted_pass = st.form_submit_button(label="💾 পাসওয়ার্ড সংরক্ষণ করুন")
-            
-            if submitted_pass:
-                if inst_name and (entry_pass or confirm_pass):
-                    new_sl_pass = len(st.session_state.saved_passwords) + 1
-                    st.session_state.saved_passwords.append({
-                        "ক্রমিক নং": new_sl_pass, "শিক্ষা প্রতিষ্ঠানের নাম": inst_name, "এন্ট্রি পাসওয়ার্ড": entry_pass, "কনফার্ম পাসওয়ার্ড": confirm_pass
-                    })
-                    st.success("পাসওয়ার্ড সফলভাবে সংরক্ষিত হয়েছে!")
-                    st.rerun()
+            if st.form_submit_button("💾 সংরক্ষণ করুন") and inst_name:
+                st.session_state.saved_passwords.append({
+                    "ক্রমিক নং": len(st.session_state.saved_passwords) + 1, "শিক্ষা প্রতিষ্ঠানের নাম": inst_name, "এন্ট্রি পাসওয়ার্ড": entry_pass, "কনফার্ম পাসওয়ার্ড": confirm_pass
+                })
+                st.rerun()
+        st.dataframe(pd.DataFrame(st.session_state.saved_passwords), use_container_width=True)
 
-        st.write("### 📋 সংরক্ষিত পাসওয়ার্ডের তালিকা")
-        if st.session_state.saved_passwords:
-            st.dataframe(pd.DataFrame(st.session_state.saved_passwords), use_container_width=True, hide_index=True)
-
-    # --- 🧾 সেল ইনভয়েস ---
+    # সেল ইনভয়েস
     elif st.session_state.current_menu == "Sell Invoice":
-        st.title("🧾 পয়েন্ট অব সেল ও ইনভয়েস (A5 সাইজ)")
-        
-        uploaded_logo = st.file_uploader("🖼️ দোকানের লোগো আপলোড করুন", type=["png", "jpg", "jpeg"])
-        logo_base64 = ""
-        if uploaded_logo is not None:
-            bytes_data = uploaded_logo.read()
-            logo_base64 = f"data:image/png;base64,{base64.b64encode(bytes_data).decode()}"
-        
-        st.markdown("### 👤 Customer Info")
+        st.title("🧾 পয়েন্ট অব সেল ও ইনভয়েস")
         col_in1, col_in2, col_in3 = st.columns([1.5, 2, 2])
         with col_in1: inv_custom_num = st.text_input("Invoice No", value="1001")
         with col_in2: cust_name = st.text_input("কাস্টমারের নাম", value="খুচরা কাস্টমার")
         with col_in3: cust_address = st.text_input("Address", value="Dhaka, Bangladesh")
             
-        st.write("---")
-        st.markdown("### 🛒 Add Items to Invoice")
         col_item1, col_item2, col_item3 = st.columns([3, 1, 1.5])
-        with col_item1: prod_desc = st.text_input("Product Name / Description", placeholder="যেমন: DDR4 8GB RAM")
-        with col_item2: prod_qty = st.number_input("QTY", min_value=1, value=1, step=1)
-        with col_item3: prod_price = st.number_input("Unit Price (BDT)", min_value=0, value=500, step=50)
+        with col_item1: prod_desc = st.text_input("Product Name / Description")
+        with col_item2: prod_qty = st.number_input("QTY", min_value=1, value=1)
+        with col_item3: prod_price = st.number_input("Unit Price", min_value=0, value=500)
             
-        if st.button("➕ Add Item to List", use_container_width=True):
-            if prod_desc:
-                st.session_state.invoice_items.append({
-                    "Description": prod_desc, "Qty": prod_qty, "Price": prod_price, "Amount": prod_qty * prod_price
-                })
-                st.toast("আইটেম যুক্ত হয়েছে!")
-                st.rerun()
+        if st.button("➕ Add Item", use_container_width=True) and prod_desc:
+            st.session_state.invoice_items.append({
+                "Description": prod_desc, "Qty": prod_qty, "Price": prod_price, "Amount": prod_qty * prod_price
+            })
+            st.rerun()
                 
         if st.session_state.invoice_items:
             st.dataframe(pd.DataFrame(st.session_state.invoice_items), use_container_width=True)
+            if st.button("🗑️ Clear All"):
+                st.session_state.invoice_items = []
+                st.rerun()
