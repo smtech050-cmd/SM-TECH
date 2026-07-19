@@ -27,9 +27,10 @@ if "shop_stock" not in st.session_state:
         {"ক্রমিক নং": 2, "পণ্যের বিবরণ": "DDR4 8GB RAM", "পরিমান": 15, "দর": 2400, "মোট টাকা": 36000}
     ]
 
+# পাসওয়ার্ড সংরক্ষণের প্রাথমিক ডাটা
 if "saved_passwords" not in st.session_state:
     st.session_state.saved_passwords = [
-        {"ক্রমিক নং": 1, "শিক্ষা প্রতিষ্ঠানের নাম": "Sreebardi Govt. College", "এন্ট্রি পাসওয়ার্ড": "sreebardi@2026", "কনফার্ম পাসওয়ার্ড": "sreebardi@2026"}
+        {"ক্রমিক নং": 1, "শিক্ষা প্রতিষ্ঠানের নাম": "Sreebardi Govt. College", "এন্ট্রি পাসওয়ার্ড": "sreebardi@2026", "কনফার্ম পাসওয়ার্ড": "board@xyz2026"}
     ]
 
 if "invoice_items" not in st.session_state:
@@ -149,7 +150,7 @@ else:
 
     # --- ড্যাশবোর্ড মডিউল ---
     if st.session_state.current_menu == "Dashboard":
-        st.title("🖥️ রিপেয়ার ও POS ড্যাশবোর্ড")
+        st.title("🖥️  ரிපੇয়ার ও POS ড্যাশবোর্ড")
         st.subheader("এসএম-টেক কম্পিউটার ও আইটি সল্যুশন")
         col1, col2, col3 = st.columns(3)
         total_due_amount = sum(item.get("বাকি", 0) for item in st.session_state.customer_dues)
@@ -214,7 +215,7 @@ else:
                 })
                 st.success(f"স্টকে সফলভাবে {s_desc} যুক্ত হয়েছে!"); st.rerun()
 
-        st.write("### 📋 বর্তমানে মজুদ মালামালের তালিকা")
+        st.write("### 📋 blackberry বর্তমানে মজুদ মালামালের তালিকা")
         if st.session_state.shop_stock:
             st.dataframe(pd.DataFrame(st.session_state.shop_stock), use_container_width=True, hide_index=True)
             st.write("### 🗑️ স্টক পণ্য ডিলিট করুন")
@@ -228,34 +229,56 @@ else:
                 for idx, item in enumerate(st.session_state.shop_stock): item["ক্রমিক নং"] = idx + 1
                 st.toast("পণ্যটি স্টক থেকে মুছে ফেলা হয়েছে।"); st.rerun()
 
-    # --- পাসওয়ার্ড সংরক্ষণ ---
+    # --- 🔐 পাসওয়ার্ড সংরক্ষণ (সংশোধিত মডিউল) ---
     elif st.session_state.current_menu == "Password Save":
         st.title("🔐 শিক্ষা প্রতিষ্ঠানের পাসওয়ার্ড সংরক্ষণ ব্যবস্থা")
+        
         with st.form("Add Institution Password", clear_on_submit=True):
             st.write("### ➕ নতুন শিক্ষা প্রতিষ্ঠানের পাসওয়ার্ড যুক্ত করুন")
             inst_name = st.text_input("শিক্ষা প্রতিষ্ঠানের নাম")
             col_p1, col_p2 = st.columns(2)
-            with col_p1: entry_pass = st.text_input("এন্ট্রি পাসওয়ার্ড", type="password")
-            with col_p2: confirm_pass = st.text_input("কনফার্ম পাসওয়ার্ড", type="password")
+            
+            # টাইপ টেক্সট করে দেওয়া হয়েছে যেন সরাসরি পাসওয়ার্ড দেখা ও আলাদা টাইপ করা যায়
+            with col_p1: entry_pass = st.text_input("এন্ট্রি পাসওয়ার্ড")
+            with col_p2: confirm_pass = st.text_input("কনফার্ম পাসওয়ার্ড")
+            
             submitted_pass = st.form_submit_button(label="💾 পাসওয়ার্ড সংরক্ষণ করুন")
             if submitted_pass:
-                if entry_pass != confirm_pass: st.error("পাসওয়ার্ড মেলেনি!")
-                elif inst_name and entry_pass:
+                if inst_name and (entry_pass or confirm_pass):
                     new_sl_pass = len(st.session_state.saved_passwords) + 1 if st.session_state.saved_passwords else 1
                     st.session_state.saved_passwords.append({
-                        "ক্রমিক নং": new_sl_pass, "শিক্ষা প্রতিষ্ঠানের নাম": inst_name, "এন্ট্রি পাসওয়ার্ড": entry_pass, "কনফার্ম পাসওয়ার্ড": confirm_pass
+                        "ক্রমিক নং": new_sl_pass, 
+                        "শিক্ষা প্রতিষ্ঠানের নাম": inst_name, 
+                        "এন্ট্রি পাসওয়ার্ড": entry_pass, 
+                        "কনফার্ম পাসওয়ার্ড": confirm_pass
                     })
-                    st.success("পাসওয়ার্ড সংরক্ষিত হয়েছে!"); st.rerun()
+                    st.success("পাসওয়ার্ড সফলভাবে সংরক্ষিত হয়েছে!")
+                    st.rerun()
+                else:
+                    st.error("দয়া করে প্রতিষ্ঠানের নাম এবং অন্তত একটি পাসওয়ার্ড ইনপুট দিন।")
 
         st.write("### 📋 সংরক্ষিত পাসওয়ার্ডের তালিকা")
         if st.session_state.saved_passwords:
+            # স্পষ্ট কলাম আকারে প্রদর্শনের জন্য ডেটাফ্রেম ভিউ
             st.dataframe(pd.DataFrame(st.session_state.saved_passwords), use_container_width=True, hide_index=True)
+            
+            # পাসওয়ার্ড এন্ট্রি ডিলিট করার ব্যবস্থা
+            st.write("### 🗑️ সংরক্ষিত পাসওয়ার্ড মুছুন")
+            col_pdel1, col_pdel2 = st.columns([2, 1])
+            with col_pdel1: delete_pass_id = st.number_input("ডিলিট করার জন্য ক্রমিক নং লিখুন:", min_value=1, max_value=500, step=1, key="p_del_id")
+            with col_pdel2:
+                st.markdown("<br>", unsafe_allow_html=True)
+                delete_pass_btn = st.button("❌ পাসওয়ার্ড মুছুন", type="primary", use_container_width=True, key="p_del_btn")
+            if delete_pass_btn:
+                st.session_state.saved_passwords = [item for item in st.session_state.saved_passwords if item["ক্রমিক নং"] != delete_pass_id]
+                for idx, item in enumerate(st.session_state.saved_passwords): item["ক্রমিক নং"] = idx + 1
+                st.toast("পাসওয়ার্ড তালিকা থেকে মুছে ফেলা হয়েছে।")
+                st.rerun()
 
     # --- 🧾 সেল ইনভয়েস (Sell Invoice) ---
     elif st.session_state.current_menu == "Sell Invoice":
         st.title("🧾 পয়েন্ট অব সেল ও ইনভয়েস (A5 সাইজ)")
         
-        # 📸 লোগো আপলোড অপশন যুক্ত করা হলো
         uploaded_logo = st.file_uploader("🖼️ দোকানের লোগো আপলোড করুন (লোগো থাকলে সিলেক্ট করুন)", type=["png", "jpg", "jpeg"])
         logo_base64 = ""
         if uploaded_logo is not None:
@@ -312,7 +335,6 @@ else:
                     </tr>
                     """
                 
-                # A5 সাইজের খালি ঘর সুন্দর রাখার জন্য ব্যালেন্সিং রো
                 remaining_rows = 12 - len(st.session_state.invoice_items)
                 for i in range(max(0, remaining_rows)):
                     sl_blank = len(st.session_state.invoice_items) + i + 1
@@ -326,65 +348,21 @@ else:
                     </tr>
                     """
                 
-                # নিখুঁত A5 সাইজ প্রিন্ট ও ডাউনলোডার কোড (জাভাস্ক্রিপ্ট ইন্টারফেসসহ)
                 invoice_a5_html = f"""
                 <html>
                 <head>
-                <!-- html2pdf লাইব্রেরি যুক্ত করা হয়েছে নিখুঁত ডাউনলোডের জন্য -->
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
                 <style>
                     @media print {{
-                        @page {{
-                            size: A5;
-                            margin: 8mm;
-                        }}
-                        body {{
-                            background: white;
-                            color: black;
-                        }}
-                        .no-print {{
-                            display: none !important;
-                        }}
-                        .invoice-container {{
-                            box-shadow: none !important;
-                            margin: 0 !important;
-                            border: 3px solid #1e3a8a !important;
-                        }}
+                        @page {{ size: A5; margin: 8mm; }}
+                        body {{ background: white; color: black; }}
+                        .no-print {{ display: none !important; }}
+                        .invoice-container {{ box-shadow: none !important; margin: 0 !important; border: 3px solid #1e3a8a !important; }}
                     }}
-                    body {{
-                        font-family: 'Arial', sans-serif;
-                        margin: 0;
-                        padding: 10px;
-                        background-color: #f0f2f5;
-                    }}
-                    .invoice-container {{
-                        width: 148mm;
-                        height: 210mm;
-                        margin: 0 auto;
-                        border: 3px solid #1e3a8a; 
-                        padding: 15px; 
-                        background-color: white; 
-                        box-sizing: border-box;
-                        position: relative;
-                        box-shadow: 0px 4px 15px rgba(0,0,0,0.15);
-                    }}
-                    .btn-group {{
-                        width: 148mm;
-                        margin: 5px auto 15px auto;
-                        display: flex;
-                        gap: 10px;
-                    }}
-                    .action-btn {{
-                        flex: 1;
-                        padding: 12px;
-                        font-size: 15px;
-                        font-weight: bold;
-                        border: none;
-                        border-radius: 6px;
-                        cursor: pointer;
-                        box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
-                        transition: 0.2s;
-                    }}
+                    body {{ font-family: 'Arial', sans-serif; margin: 0; padding: 10px; background-color: #f0f2f5; }}
+                    .invoice-container {{ width: 148mm; height: 210mm; margin: 0 auto; border: 3px solid #1e3a8a; padding: 15px; background-color: white; box-sizing: border-box; position: relative; box-shadow: 0px 4px 15px rgba(0,0,0,0.15); }}
+                    .btn-group {{ width: 148mm; margin: 5px auto 15px auto; display: flex; gap: 10px; }}
+                    .action-btn {{ flex: 1; padding: 12px; font-size: 15px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; box-shadow: 0px 4px 8px rgba(0,0,0,0.1); transition: 0.2s; }}
                     .dl-btn {{ background-color: #00ffcc; color: #000; }}
                     .pr-btn {{ background-color: #1e3a8a; color: white; }}
                     .action-btn:hover {{ opacity: 0.9; transform: scale(1.01); }}
@@ -487,5 +465,4 @@ else:
                 """
                 
                 st.markdown("#### 📄 A5 Invoice Live Preview:")
-                # আইফ্রেম লোড
                 st.components.v1.html(invoice_a5_html, height=920, scrolling=True)
