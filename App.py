@@ -1,8 +1,6 @@
 import streamlit as st
 import pandas as pd
 import datetime
-import base64
-from weasyprint import HTML
 
 # পেজ কনফিগারেশন
 st.set_page_config(page_title="SM-TECH | Admin System", layout="wide")
@@ -289,7 +287,7 @@ else:
                 st.success(f"স্টকে সফলভাবে {s_desc} যুক্ত হয়েছে!")
                 st.rerun()
 
-        st.write("### 📋 বর্তমানে মজুদ মালামালের তালিকা")
+        st.write("### 📋 windmills বর্তমানে মজুদ মালামালের তালিকা")
         if st.session_state.shop_stock:
             df_stock = pd.DataFrame(st.session_state.shop_stock)
             st.dataframe(df_stock, use_container_width=True, hide_index=True)
@@ -357,7 +355,7 @@ else:
                 delete_pass_btn = st.button("❌ ডাটা মুছুন", type="primary", use_container_width=True, key="pass_del_btn")
             
             if delete_pass_btn:
-                st.session_state.saved_passwords = [item for idx, item in enumerate(st.session_state.saved_passwords) if item["क्रमিক নং"] != delete_pass_id]
+                st.session_state.saved_passwords = [item for idx, item in enumerate(st.session_state.saved_passwords) if item["ক্রমিক নং"] != delete_pass_id]
                 for idx, item in enumerate(st.session_state.saved_passwords):
                     item["ক্রমিক নং"] = idx + 1
                 st.toast("তালিকা থেকে সফলভাবে মুছে ফেলা হয়েছে।")
@@ -368,12 +366,6 @@ else:
     # --- 🧾 সেল ইনভয়েস (Sell Invoice) ---
     elif st.session_state.current_menu == "Sell Invoice":
         st.title("🧾 পয়েন্ট অব সেল ও ইনভয়েস")
-        
-        uploaded_logo = st.file_uploader("Upload Shop Logo / দোকানের লোগো আপলোড করুন (Optional)", type=["png", "jpg", "jpeg"])
-        logo_base64 = ""
-        if uploaded_logo is not None:
-            bytes_data = uploaded_logo.read()
-            logo_base64 = f"data:image/png;base64,{base64.b64encode(bytes_data).decode()}"
         
         st.markdown("### 👤 Customer Info")
         col_in1, col_in2, col_in3 = st.columns([1.5, 2, 2])
@@ -417,7 +409,7 @@ else:
         
         st.write("---")
         
-        if st.button("📄 ইনভয়েস প্রিভিউ ও PDF ডাউনলোড করুন", type="primary", use_container_width=True):
+        if st.button("📄 ইনভয়েস প্রিভিউ ও প্রিন্ট/PDF ডাউনলোড করুন", type="primary", use_container_width=True):
             if not st.session_state.invoice_items:
                 st.warning("Please add at least one item first! আগে লিস্টে পণ্য যোগ করুন।")
             else:
@@ -451,41 +443,65 @@ else:
                     </tr>
                     """
                 
-                # WeasyPrint সমর্থিত নিখুঁত HTML ফরম্যাট (৫"x৭" সাইজ পেজ মিডিয়াসহ)
-                invoice_html_for_pdf = f"""
+                invoice_print_html = f"""
                 <html>
                 <head>
                 <style>
-                    @page {{
-                        size: 5in 7in;
-                        margin: 0.25in;
+                    @media print {{
+                        @page {{
+                            size: 5in 7in;
+                            margin: 0.25in;
+                        }}
+                        body {{
+                            background: white;
+                            color: black;
+                        }}
+                        .no-print {{
+                            display: none !important;
+                        }}
                     }}
                     body {{
                         font-family: 'Arial', sans-serif;
-                        color: black;
                         margin: 0;
                         padding: 0;
+                        background-color: #f0f2f5;
                     }}
                     .invoice-box {{
+                        max-width: 5in;
+                        height: 7in;
+                        margin: 10px auto;
                         border: 3px solid #1e3a8a; 
-                        padding: 10px; 
+                        padding: 12px; 
                         background-color: white; 
                         box-sizing: border-box;
-                        height: 100%;
                         position: relative;
+                        box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+                    }}
+                    .print-btn {{
+                        background-color: #00ffcc;
+                        color: #030f26;
+                        border: none;
+                        padding: 10px 20px;
+                        font-size: 16px;
+                        font-weight: bold;
+                        border-radius: 5px;
+                        cursor: pointer;
+                        margin-bottom: 10px;
+                        width: 100%;
+                        box-shadow: 0px 4px 10px rgba(0,255,204,0.3);
                     }}
                 </style>
                 </head>
                 <body>
+                <div style="max-width: 5in; margin: auto;" class="no-print">
+                    <button class="print-btn" onclick="window.print()">📥 এখানে ক্লিক করে সরাসরি PDF / জিপিইজি আকারে সেভ বা প্রিন্ট করুন</button>
+                </div>
                 <div class="invoice-box">
                     <table style="width: 100%; border-collapse: collapse; margin-bottom: 5px;">
                         <tr>
-                            <td style="width: 20%; vertical-align: middle; text-align: left;">
-                                {'<img src="' + logo_base64 + '" style="width: 55px; height: 55px; border-radius: 50%;">' if logo_base64 else '<div style="width: 55px; height: 55px; background: #e2e8f0; border-radius: 50%; text-align: center; line-height: 55px; font-size: 9px; color: #777;">No Logo</div>'}
-                            </td>
-                            <td style="width: 48%; vertical-align: middle; padding-left: 5px;">
-                                <span style="font-size: 26px; font-weight: 900; color: #1e3a8a; font-family: sans-serif; line-height: 1.1; display: block;">SM-TECH</span>
-                                <span style="font-size: 8px; font-weight: 800; color: #059669; letter-spacing: 0.5px; display: block; margin-top: 2px;">COMPUTER & IT SOLUTION</span>
+                            <td style="width: 68%; vertical-align: middle;">
+                                <span style="font-size: 28px; font-weight: 900; color: #1e3a8a; font-family: sans-serif; line-height: 1.1; display: block;">SM-TECH</span>
+                                <span style="font-size: 8.5px; font-weight: 800; color: #059669; letter-spacing: 0.5px; display: block; margin-top: 2px;">COMPUTER & IT SOLUTION</span>
                             </td>
                             <td style="width: 32%; text-align: right; font-size: 10px; line-height: 1.3; vertical-align: middle; font-weight: bold; color: #111;">
                                 <span style="font-size: 13px; font-weight: 900; color: #1e3a8a; display: block;">S.m. Ibrahim</span>
@@ -554,22 +570,6 @@ else:
                 </html>
                 """
                 
-                # ওয়েব ইন্টারফেসে প্রিভিউ দেখানোর জন্য
-                st.markdown("#### 📄 Invoice Preview (প্রিভিউ):")
-                st.markdown(f"""
-                <div style="background-color: #f0f2f5; padding: 15px; display: flex; justify-content: center;">
-                    <iframe srcdoc='{invoice_html_for_pdf}' style="width: 5.2in; height: 7.2in; border: none; background: white;"></iframe>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                # HTML থেকে WeasyPrint ব্যবহার করে সরাসরি PDF জেনারেট করা হচ্ছে
-                pdf_bytes = HTML(string=invoice_html_for_pdf).write_pdf()
-                
-                # স্ট্রিমলিটের নেটিভ ডাউনলোড বাটন যুক্ত করা হলো
-                st.download_button(
-                    label="📥 Download 5\"x7\" Invoice PDF",
-                    data=pdf_bytes,
-                    file_name=f"Invoice_{inv_custom_num}.pdf",
-                    mime="application/pdf",
-                    use_container_width=True
-                )
+                st.markdown("#### 📄 Invoice Preview & Live Print Downloader:")
+                # আইফ্রেমের মাধ্যমে সরাসরি স্ক্রিনে রেন্ডার ও বাটন অ্যাকশন ট্রিগার
+                st.components.v1.html(invoice_print_html, height=750, scrolling=True)
