@@ -26,6 +26,32 @@ components.html(
 st.set_page_config(page_title="SM-TECH | Admin System", layout="wide")
 
 # ==========================================
+# 🔢 সংখ্যাকে কথায় রূপান্তর করার ফাংশন (ইংরেজিতে)
+# ==========================================
+def number_to_words(number):
+    words = {
+        0: 'Zero', 1: 'One', 2: 'Two', 3: 'Three', 4: 'Four', 5: 'Five', 6: 'Six', 7: 'Seven', 8: 'Eight', 9: 'Nine',
+        10: 'Ten', 11: 'Eleven', 12: 'Twelve', 13: 'Thirteen', 14: 'Fourteen', 15: 'Fifteen', 16: 'Sixteen',
+        17: 'Seventeen', 18: 'Eighteen', 19: 'Nineteen', 20: 'Twenty', 30: 'Thirty', 40: 'Forty', 50: 'Fifty',
+        60: 'Sixty', 70: 'Seventy', 80: 'Eighty', 90: 'Ninety'
+    }
+    if number == 0:
+        return 'Zero'
+    
+    if number < 20:
+        return words[number]
+    elif number < 100:
+        return words[number // 10 * 10] + (' ' + words[number % 10] if number % 10 > 0 else '')
+    elif number < 1000:
+        return words[number // 100] + ' Hundred' + (' and ' + number_to_words(number % 100) if number % 100 > 0 else '')
+    elif number < 100000:
+        return number_to_words(number // 1000) + ' Thousand' + (' ' + number_to_words(number % 1000) if number % 1000 > 0 else '')
+    elif number < 10000000:
+        return number_to_words(number // 100000) + ' Lakh' + (' ' + number_to_words(number % 100000) if number % 100000 > 0 else '')
+    else:
+        return str(number)
+
+# ==========================================
 # 🔐 লগইন ও সেশন স্টেট ইনিশিয়ালাইজেশন
 # ==========================================
 if "logged_in" not in st.session_state:
@@ -53,54 +79,38 @@ if "invoice_items" not in st.session_state:
     st.session_state.invoice_items = []
 
 # ==========================================
-# 🎨 গ্লোবাল থিম: ডার্ক মোড ওভাররাইড করে ইনপুট বক্স সাদা করার ১০০% কার্যকরী CSS
+# 🎨 গ্লোবাল থিম: CSS
 # ==========================================
 custom_css = """
 <style>
-    /* মূল অ্যাপ ব্যাকগ্রাউন্ড সম্পূর্ণ সাদা */
     [data-testid="stAppViewContainer"], [data-testid="stSidebar"] {
         background-color: #ffffff !important;
         color: #111111 !important;
     }
-    
-    /* ✍️ ইনপুট বক্স ১০০% সাদা করার জন্য স্ট্রং CSS */
-    div[data-baseweb="input"], 
-    div[data-baseweb="base-input"] {
+    div[data-baseweb="input"], div[data-baseweb="base-input"] {
         background-color: #ffffff !important;
         border-radius: 8px !important;
     }
-    
     .stTextInput div[data-baseweb="input"] {
         border: 1px solid #cccccc !important;
     }
-
-    /* ইনপুট বক্সের ভেতরের লেখার কালার কালো */
-    .stTextInput input, 
-    .stNumberInput input {
+    .stTextInput input, .stNumberInput input {
         color: #000000 !important;
         background-color: #ffffff !important;
         -webkit-text-fill-color: #000000 !important;
     }
-    
-    /* প্লেসহোল্ডার কালার */
     input::placeholder {
         color: #777777 !important;
         -webkit-text-fill-color: #777777 !important;
     }
-
-    /* পাসওয়ার্ড দেখার চোখের আইকন কালো করা */
     div[data-baseweb="input"] svg {
         fill: #333333 !important;
         color: #333333 !important;
     }
-    
-    /* টেক্সট ফিল্ড লেবেল কালো */
     .stTextInput label, .stNumberInput label {
         color: #222222 !important;
         font-weight: bold !important;
     }
-    
-    /* 🔴 লগইন ও সাইডবার বাটন লাল বক্স এবং সাদা টেক্সট */
     div.stButton > button {
         background-color: #d60000 !important;
         color: #ffffff !important;
@@ -113,17 +123,13 @@ custom_css = """
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15) !important;
         transition: all 0.2s ease;
     }
-    
     div.stButton > button:hover {
         background-color: #bd0000 !important;
         box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.2) !important;
     }
-    
-    /* বাটনের ভিতরের টেক্সট নিশ্চিত সাদা করার জন্য */
     div.stButton p {
         color: #ffffff !important; 
     }
-    
     div.stSidebar div.stButton > button {
         text-align: left !important;
         margin-bottom: 12px !important;
@@ -208,7 +214,7 @@ else:
         col1, col2, col3 = st.columns(3)
         total_due = sum(item.get("বাকি", 0) for item in st.session_state.customer_dues)
         total_stock = sum(item.get("মোট টাকা", 0) for item in st.session_state.shop_stock)
-        col1.metric("মোট কাস্টমার", f"{len(st.session_state.customer_dues)} Zen")
+        col1.metric("মোট কাস্টমার", f"{len(st.session_state.customer_dues)} জন")
         col2.metric("মোট বাকি টাকা", f"{total_due} BDT")
         col3.metric("স্টক পণ্যের মূল্য", f"{total_stock} BDT")
         st.dataframe(pd.DataFrame(st.session_state.customer_dues), use_container_width=True)
@@ -261,7 +267,7 @@ else:
                 st.rerun()
         st.dataframe(pd.DataFrame(st.session_state.saved_passwords), use_container_width=True)
 
-    # সেল ইনভয়েস
+    # সেল ইনভয়েস (আইকন ও কথায় লেখার আপডেট)
     elif st.session_state.current_menu == "Sell Invoice":
         st.title("🧾 ইনভয়েস")
         col_in1, col_in2, col_in3 = st.columns([1.5, 2, 2])
@@ -285,19 +291,33 @@ else:
             
             # মোট হিসাব বের করা
             total_amt = sum(item["Amount"] for item in st.session_state.invoice_items)
+            amount_in_words = number_to_words(total_amt) + " BDT Only."
             
-            # A5 সাইজ প্রিন্ট করার জন্য HTML এবং JavaScript তৈরি
+            # ১২টি রো গ্রিড মেইনটেইন করা
             table_rows = ""
-            for idx, item in enumerate(st.session_state.invoice_items, 1):
-                table_rows += f"""
-                <tr>
-                    <td>{idx}</td>
-                    <td>{item['Description']}</td>
-                    <td>{item['Qty']}</td>
-                    <td>{item['Price']}</td>
-                    <td>{item['Amount']}</td>
-                </tr>
-                """
+            max_rows = 12
+            for idx in range(max_rows):
+                if idx < len(st.session_state.invoice_items):
+                    item = st.session_state.invoice_items[idx]
+                    table_rows += f"""
+                    <tr class="item-row">
+                        <td style="text-align: center;">{idx + 1}</td>
+                        <td>{item['Description']}</td>
+                        <td style="text-align: center;">{item['Qty']}</td>
+                        <td style="text-align: right; padding-right: 8px;">{item['Price']}/-</td>
+                        <td style="text-align: right; padding-right: 8px;">{item['Amount']}/-</td>
+                    </tr>
+                    """
+                else:
+                    table_rows += """
+                    <tr class="item-row blank-row">
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    """
             
             invoice_html = f"""
             <html>
@@ -305,113 +325,271 @@ else:
                 <style>
                     @page {{
                         size: A5 portrait;
-                        margin: 10mm;
+                        margin: 0;
                     }}
                     body {{
                         font-family: 'Arial', sans-serif;
-                        color: #333;
-                        font-size: 12px;
+                        color: #1a237e;
+                        font-size: 11px;
                         margin: 0;
                         padding: 0;
+                        background-color: #fff;
                     }}
-                    .invoice-box {{
-                        max-width: 100%;
+                    .pad-container {{
+                        width: 140mm;
+                        height: 202mm;
+                        padding: 8mm;
+                        box-sizing: border-box;
+                        position: relative;
+                        border: 2px solid #1a237e;
                         margin: auto;
                     }}
-                    .logo-container {{
-                        text-align: center;
-                        margin-bottom: 5px;
-                    }}
-                    .logo-container img {{
-                        max-width: 140px;
-                        height: auto;
-                    }}
-                    .header {{
-                        text-align: center;
-                        margin-bottom: 15px;
-                        border-bottom: 2px solid #d60000;
-                        padding-bottom: 5px;
-                    }}
-                    .info-table {{
-                        width: 100%;
-                        margin-bottom: 15px;
-                        line-height: 1.4;
-                    }}
-                    .items-table {{
+                    .header-table {{
                         width: 100%;
                         border-collapse: collapse;
-                        margin-bottom: 15px;
+                        margin-bottom: 5px;
                     }}
-                    .items-table th {{
-                        background-color: #f2f2f2;
-                        border: 1px solid #ddd;
-                        padding: 6px;
-                        text-align: left;
+                    .logo-area img {{
+                        max-width: 180px;
+                        height: auto;
                     }}
-                    .items-table td {{
-                        border: 1px solid #ddd;
-                        padding: 6px;
-                    }}
-                    .total-section {{
+                    .owner-info {{
                         text-align: right;
+                        font-size: 11px;
+                        color: #1a237e;
+                        line-height: 1.3;
+                    }}
+                    .owner-name {{
                         font-size: 14px;
                         font-weight: bold;
-                        margin-top: 10px;
-                        padding-top: 5px;
-                        border-top: 1px solid #333;
                     }}
-                    .footer {{
-                        margin-top: 30px;
+                    .tagline {{
                         text-align: center;
+                        font-size: 11px;
+                        font-weight: bold;
+                        color: #000;
+                        margin-top: -5px;
+                        margin-bottom: 8px;
+                    }}
+                    .bill-section {{
+                        width: 100%;
+                        margin-bottom: 10px;
+                    }}
+                    .bill-to-badge {{
+                        background-color: #1a237e;
+                        color: white;
+                        padding: 2px 6px;
+                        font-weight: bold;
+                        border-radius: 3px 3px 0 0;
+                        display: inline-block;
+                    }}
+                    .invoice-badge {{
+                        background-color: #1a237e;
+                        color: white;
+                        padding: 3px 12px;
+                        font-weight: bold;
+                        letter-spacing: 1px;
+                        font-size: 13px;
+                        float: right;
+                    }}
+                    .customer-details {{
+                        width: 100%;
+                        margin-top: 2px;
+                    }}
+                    .dot-line {{
+                        border-bottom: 1px dotted #1a237e;
+                        padding-bottom: 2px;
+                        color: #000;
+                    }}
+                    .main-table {{
+                        width: 100%;
+                        border-collapse: collapse;
+                        border: 1px solid #1a237e;
+                    }}
+                    .main-table th {{
+                        background-color: #1a237e;
+                        color: white;
+                        font-weight: bold;
+                        text-align: center;
+                        padding: 5px;
+                        font-size: 11px;
+                        border: 1px solid #1a237e;
+                    }}
+                    .item-row td {{
+                        border-left: 1px solid #1a237e;
+                        border-right: 1px solid #1a237e;
+                        border-bottom: 1px solid #e0e0e0;
+                        padding: 5px;
+                        height: 22px;
+                        color: #000;
+                    }}
+                    .blank-row td {{
+                        height: 22px;
+                        border-bottom: 1px solid #e0e0e0;
+                    }}
+                    .subtotal-box {{
+                        background-color: #1a237e;
+                        color: white;
+                        font-weight: bold;
+                        padding: 5px;
+                        text-align: center;
+                    }}
+                    .amount-words {{
+                        margin-top: 10px;
+                        color: #1a237e;
+                        font-weight: bold;
+                        font-size: 11px;
+                    }}
+                    .words-text {{
+                        color: #000;
+                        font-weight: normal;
+                        border-bottom: 1px dotted #1a237e;
+                    }}
+                    .footer-section {{
+                        position: absolute;
+                        bottom: 8mm;
+                        left: 8mm;
+                        right: 8mm;
+                        width: 88%;
+                    }}
+                    .payment-methods-box {{
+                        border: 1px solid #1a237e;
+                        display: inline-block;
+                        width: 58%;
+                        vertical-align: bottom;
+                        border-radius: 4px;
+                        overflow: hidden;
+                    }}
+                    .pm-title {{
+                        background-color: #1a237e;
+                        color: white;
+                        font-weight: bold;
+                        padding: 4px;
+                        font-size: 11px;
+                        text-align: center;
+                    }}
+                    .pm-options-container {{
+                        padding: 6px 4px;
+                        text-align: center;
+                        background-color: #ffffff;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        gap: 10px;
+                    }}
+                    .method-item {{
+                        display: flex;
+                        align-items: center;
                         font-size: 10px;
-                        color: #777;
+                        font-weight: bold;
+                        color: #000;
+                    }}
+                    .method-icon {{
+                        height: 14px;
+                        width: auto;
+                        margin-right: 3px;
+                        vertical-align: middle;
+                    }}
+                    .signature-block {{
+                        float: right;
+                        text-align: center;
+                        width: 38%;
+                        margin-top: 15px;
+                        color: #1a237e;
+                    }}
+                    .sig-line {{
+                        border-top: 1px solid #1a237e;
+                        margin-bottom: 4px;
                     }}
                 </style>
             </head>
             <body>
-                <div class="invoice-box">
-                    <div class="logo-container">
-                        <img src="https://raw.githubusercontent.com/smtech050-cmd/SM-TECH/main/IMG_20260717_214948.png" alt="Logo">
-                    </div>
-                    <div class="header">
-                        <p style="margin: 3px 0; font-weight: bold;">Computer Repair & Tech Services</p>
-                    </div>
-                    <table class="info-table">
+                <div class="pad-container">
+                    <table class="header-table">
                         <tr>
-                            <td><strong>Invoice No:</strong> {inv_custom_num}</td>
-                            <td style="text-align: right;"><strong>Date:</strong> {datetime.date.today().strftime('%d-%m-%Y')}</td>
-                        </tr>
-                        <tr>
-                            <td colspan="2"><strong>Customer:</strong> {cust_name}</td>
-                        </tr>
-                        <tr>
-                            <td colspan="2"><strong>Address:</strong> {cust_address}</td>
+                            <td class="logo-area" style="width: 60%;">
+                                <img src="https://raw.githubusercontent.com/smtech050-cmd/SM-TECH/main/IMG_20260717_214948.png" alt="SM-TECH">
+                            </td>
+                            <td class="owner-info">
+                                <span class="owner-name">S.m. Ibrahim</span><br>
+                                Owner<br>
+                                01940-556114<br>
+                                01810-499166
+                            </td>
                         </tr>
                     </table>
                     
-                    <table class="items-table">
+                    <div class="tagline">Smart Technology-Trusted Service</div>
+                    
+                    <div class="bill-section">
+                        <span class="bill-to-badge">Bill To</span>
+                        <span class="invoice-badge">INVOICE</span>
+                        
+                        <table class="customer-details">
+                            <tr>
+                                <td style="width: 65%;"><strong>Name:</strong> <span class="dot-line">{cust_name}</span></td>
+                                <td><strong>Invoice No:</strong> <span class="dot-line">{inv_custom_num}</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Address:</strong> <span class="dot-line">{cust_address}</span></td>
+                                <td><strong>Date:</strong> <span class="dot-line">{datetime.date.today().strftime('%d-%m-%Y')}</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <table class="main-table">
                         <thead>
                             <tr>
-                                <th style="width: 8%;">SL</th>
-                                <th>Description</th>
-                                <th style="width: 12%;">Qty</th>
-                                <th style="width: 18%;">Price</th>
-                                <th style="width: 20%;">Amount</th>
+                                <th style="width: 8%;">S.L</th>
+                                <th style="width: 50%;">DESCRIPTION</th>
+                                <th style="width: 10%;">QTY</th>
+                                <th style="width: 14%;">U.PRICE</th>
+                                <th style="width: 18%;">AMOUNT</th>
                             </tr>
                         </thead>
                         <tbody>
                             {table_rows}
+                            <tr>
+                                <td colspan="3" style="border: none;"></td>
+                                <td class="subtotal-box">SUB TOTAL</td>
+                                <td style="text-align: right; padding-right: 8px; font-weight: bold; border: 1px solid #1a237e; background-color: #f5f5f5; color:#000;">{total_amt}/-</td>
+                            </tr>
                         </tbody>
                     </table>
                     
-                    <div class="total-section">
-                        Total Amount: {total_amt} BDT
+                    <!-- কথায় লেখার ফিল্ড -->
+                    <div class="amount-words">
+                        Amount In Words: <span class="words-text">{amount_in_words}</span>
                     </div>
                     
-                    <div class="footer">
-                        Thank you for your business!
+                    <div class="footer-section">
+                        <!-- ক্যাশ, বিকাশ, নগদ এবং ব্যাংক সবগুলোর আইকন সহ পেমেন্ট মেথড বক্স -->
+                        <div class="payment-methods-box">
+                            <div class="pm-title">Payment Methods</div>
+                            <div class="pm-options-container">
+                                <div class="method-item">
+                                    <img class="method-icon" src="https://img.icons8.com/color/48/banknotes.png" alt="Cash"> Cash
+                                </div>
+                                <div class="method-item">
+                                    <img class="method-icon" src="https://www.logo.wine/a/logo/BKash/BKash-Icon-Logo.wine.svg" alt="bKash"> Bkash
+                                </div>
+                                <div class="method-item">
+                                    <img class="method-icon" src="https://www.logo.wine/a/logo/Nagad/Nagad-Vertical-Logo.wine.svg" alt="Nagad"> Nagad
+                                </div>
+                                <div class="method-item">
+                                    <img class="method-icon" src="https://img.icons8.com/color/48/museum.png" alt="Bank"> Bank
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="signature-block">
+                            <div class="sig-line"></div>
+                            <strong>Authorised Signature</strong><br>
+                            <span style="font-size: 10px;">SM-TECH<br>Computer & IT Solutions</span>
+                        </div>
                     </div>
                 </div>
+                
                 <script>
                     window.onload = function() {{
                         window.print();
@@ -425,7 +603,6 @@ else:
             b64_html = base64.b64encode(invoice_html.encode('utf-8')).decode('utf-8')
             iframe_src = f"data:text/html;base64,{b64_html}"
             
-            # প্রিন্ট করার জন্য বাটন এবং ইনজেকশন মেকানিজম
             col_action1, col_action2 = st.columns(2)
             with col_action1:
                 if st.button("🖨️ Print PDF (A5)", use_container_width=True):
