@@ -136,12 +136,9 @@ st.markdown(custom_css, unsafe_allow_html=True)
 # 🛑 ১. লগইন স্ক্রিন রেন্ডারিং
 # ==========================================
 if not st.session_state.logged_in:
-    # লোগোটিকে বড় করার জন্য দুই পাশের কলাম ছোট করে মাঝখানের কলাম বড় করা হয়েছে
     _, col_center, _ = st.columns([0.5, 2.4, 0.5])
     with col_center:
         st.markdown('<br>', unsafe_allow_html=True)
-        
-        # লোগো সাইজ বড় করার জন্য কাস্টম CSS স্টাইল
         st.markdown(
             """
             <style>
@@ -156,8 +153,6 @@ if not st.session_state.logged_in:
             """,
             unsafe_allow_html=True
         )
-        
-        # বড় আকারে কাস্টম লোগো প্রদর্শন
         st.image("https://raw.githubusercontent.com/smtech050-cmd/SM-TECH/main/IMG_20260717_214948.png", use_container_width=True)
         
         with st.container(border=False):
@@ -213,7 +208,7 @@ else:
         col1, col2, col3 = st.columns(3)
         total_due = sum(item.get("বাকি", 0) for item in st.session_state.customer_dues)
         total_stock = sum(item.get("মোট টাকা", 0) for item in st.session_state.shop_stock)
-        col1.metric("মোট কাস্টমার", f"{len(st.session_state.customer_dues)} জন")
+        col1.metric("মোট কাস্টমার", f"{len(st.session_state.customer_dues)} Zen")
         col2.metric("মোট বাকি টাকা", f"{total_due} BDT")
         col3.metric("স্টক পণ্যের মূল্য", f"{total_stock} BDT")
         st.dataframe(pd.DataFrame(st.session_state.customer_dues), use_container_width=True)
@@ -268,7 +263,7 @@ else:
 
     # সেল ইনভয়েস
     elif st.session_state.current_menu == "Sell Invoice":
-        st.title("🧾 পয়েন্ট অব সেল ও ইনভয়েস")
+        st.title("🧾 ইনভয়েস")
         col_in1, col_in2, col_in3 = st.columns([1.5, 2, 2])
         with col_in1: inv_custom_num = st.text_input("Invoice No", value="1001")
         with col_in2: cust_name = st.text_input("কাস্টমারের নাম", value="খুচরা কাস্টমার")
@@ -287,6 +282,168 @@ else:
                 
         if st.session_state.invoice_items:
             st.dataframe(pd.DataFrame(st.session_state.invoice_items), use_container_width=True)
-            if st.button("🗑️ Clear All"):
-                st.session_state.invoice_items = []
-                st.rerun()
+            
+            # মোট হিসাব বের করা
+            total_amt = sum(item["Amount"] for item in st.session_state.invoice_items)
+            
+            # A5 সাইজ প্রিন্ট করার জন্য HTML এবং JavaScript তৈরি
+            table_rows = ""
+            for idx, item in enumerate(st.session_state.invoice_items, 1):
+                table_rows += f"""
+                <tr>
+                    <td>{idx}</td>
+                    <td>{item['Description']}</td>
+                    <td>{item['Qty']}</td>
+                    <td>{item['Price']}</td>
+                    <td>{item['Amount']}</td>
+                </tr>
+                """
+            
+            invoice_html = f"""
+            <html>
+            <head>
+                <style>
+                    @page {{
+                        size: A5 portrait;
+                        margin: 10mm;
+                    }}
+                    body {{
+                        font-family: 'Arial', sans-serif;
+                        color: #333;
+                        font-size: 12px;
+                        margin: 0;
+                        padding: 0;
+                    }}
+                    .invoice-box {{
+                        max-width: 100%;
+                        margin: auto;
+                    }}
+                    .logo-container {{
+                        text-align: center;
+                        margin-bottom: 5px;
+                    }}
+                    .logo-container img {{
+                        max-width: 140px;
+                        height: auto;
+                    }}
+                    .header {{
+                        text-align: center;
+                        margin-bottom: 15px;
+                        border-bottom: 2px solid #d60000;
+                        padding-bottom: 5px;
+                    }}
+                    .info-table {{
+                        width: 100%;
+                        margin-bottom: 15px;
+                        line-height: 1.4;
+                    }}
+                    .items-table {{
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin-bottom: 15px;
+                    }}
+                    .items-table th {{
+                        background-color: #f2f2f2;
+                        border: 1px solid #ddd;
+                        padding: 6px;
+                        text-align: left;
+                    }}
+                    .items-table td {{
+                        border: 1px solid #ddd;
+                        padding: 6px;
+                    }}
+                    .total-section {{
+                        text-align: right;
+                        font-size: 14px;
+                        font-weight: bold;
+                        margin-top: 10px;
+                        padding-top: 5px;
+                        border-top: 1px solid #333;
+                    }}
+                    .footer {{
+                        margin-top: 30px;
+                        text-align: center;
+                        font-size: 10px;
+                        color: #777;
+                    }}
+                </style>
+            </head>
+            <body>
+                <div class="invoice-box">
+                    <div class="logo-container">
+                        <img src="https://raw.githubusercontent.com/smtech050-cmd/SM-TECH/main/IMG_20260717_214948.png" alt="Logo">
+                    </div>
+                    <div class="header">
+                        <p style="margin: 3px 0; font-weight: bold;">Computer Repair & Tech Services</p>
+                    </div>
+                    <table class="info-table">
+                        <tr>
+                            <td><strong>Invoice No:</strong> {inv_custom_num}</td>
+                            <td style="text-align: right;"><strong>Date:</strong> {datetime.date.today().strftime('%d-%m-%Y')}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><strong>Customer:</strong> {cust_name}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><strong>Address:</strong> {cust_address}</td>
+                        </tr>
+                    </table>
+                    
+                    <table class="items-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 8%;">SL</th>
+                                <th>Description</th>
+                                <th style="width: 12%;">Qty</th>
+                                <th style="width: 18%;">Price</th>
+                                <th style="width: 20%;">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {table_rows}
+                        </tbody>
+                    </table>
+                    
+                    <div class="total-section">
+                        Total Amount: {total_amt} BDT
+                    </div>
+                    
+                    <div class="footer">
+                        Thank you for your business!
+                    </div>
+                </div>
+                <script>
+                    window.onload = function() {{
+                        window.print();
+                    }}
+                </script>
+            </body>
+            </html>
+            """
+            
+            # HTML ডেটা এনকোড করা
+            b64_html = base64.b64encode(invoice_html.encode('utf-8')).decode('utf-8')
+            iframe_src = f"data:text/html;base64,{b64_html}"
+            
+            # প্রিন্ট করার জন্য বাটন এবং ইনজেকশন মেকানিজম
+            col_action1, col_action2 = st.columns(2)
+            with col_action1:
+                if st.button("🖨️ Print PDF (A5)", use_container_width=True):
+                    components.html(
+                        f"""
+                        <iframe src="{iframe_src}" style="display:none;" id="printFrame"></iframe>
+                        <script>
+                            var frame = document.getElementById('printFrame');
+                            frame.onload = function() {{
+                                frame.contentWindow.focus();
+                                frame.contentWindow.print();
+                            }};
+                        </script>
+                        """,
+                        height=0,
+                    )
+                    st.success("প্রিন্ট কমান্ড পাঠানো হয়েছে!")
+            with col_action2:
+                if st.button("🗑️ Clear All", use_container_width=True):
+                    st.session_state.invoice_items = []
+                    st.rerun()
