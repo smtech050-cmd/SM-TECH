@@ -1,0 +1,21 @@
+{
+  "short_name": "SM-TECH",
+  "name": "SM-TECH Computer & IT Solutions",
+  "description": "Professional computer repair and IT solutions service.",
+  "icons": [
+    {
+      "src": "favicon_192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "favicon_512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff"
+}
