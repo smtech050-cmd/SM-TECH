@@ -267,7 +267,7 @@ else:
                 st.rerun()
         st.dataframe(pd.DataFrame(st.session_state.saved_passwords), use_container_width=True)
 
-    # সেল ইনভয়েস (লোগো সাইজ ও পজিশন ফিক্সড করা হয়েছে)
+    # সেল ইনভয়েস (লোগোর সাথে বড় SM-TECH লেখা যুক্ত করা হয়েছে)
     elif st.session_state.current_menu == "Sell Invoice":
         st.title("🧾 ইনভয়েস")
         col_in1, col_in2, col_in3 = st.columns([1.5, 2, 2])
@@ -349,10 +349,34 @@ else:
                         border-collapse: collapse;
                         margin-bottom: 2px;
                     }}
-                    .logo-area img {{
-                        max-height: 52px;
+                    .logo-block {{
+                        display: flex;
+                        align-items: center;
+                    }}
+                    .logo-block img {{
+                        max-height: 48px;
                         width: auto;
-                        display: block;
+                        margin-right: 8px;
+                    }}
+                    .logo-text-box {{
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                    }}
+                    .brand-title {{
+                        font-size: 26px;
+                        font-weight: 900;
+                        color: #1a237e;
+                        line-height: 1;
+                        letter-spacing: 0.5px;
+                        margin: 0;
+                    }}
+                    .brand-subtitle {{
+                        font-size: 9px;
+                        font-weight: bold;
+                        color: #2e7d32;
+                        letter-spacing: 0.3px;
+                        margin-top: 2px;
                     }}
                     .owner-info {{
                         text-align: right;
@@ -508,8 +532,14 @@ else:
                 <div class="pad-container">
                     <table class="header-table">
                         <tr>
-                            <td class="logo-area" style="width: 60%; vertical-align: middle;">
-                                <img src="https://raw.githubusercontent.com/smtech050-cmd/SM-TECH/main/IMG_20260717_214948.png" alt="SM-TECH">
+                            <td style="width: 65%; vertical-align: middle;">
+                                <div class="logo-block">
+                                    <img src="https://raw.githubusercontent.com/smtech050-cmd/SM-TECH/main/IMG_20260717_214948.png" alt="SM-TECH">
+                                    <div class="logo-text-box">
+                                        <div class="brand-title">SM-TECH</div>
+                                        <div class="brand-subtitle">COMPUTER & IT SOLUTION</div>
+                                    </div>
+                                </div>
                             </td>
                             <td class="owner-info">
                                 <span class="owner-name">S.m. Ibrahim</span><br>
