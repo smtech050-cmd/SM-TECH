@@ -36,17 +36,17 @@ if "current_menu" not in st.session_state:
 
 if "customer_dues" not in st.session_state:
     st.session_state.customer_dues = [
-        {"ক্রমিক নং": 1, "কাস্টমার নাম": "Abir Rahman", "কাজের বিবরণ": "Windows Setup", "পরিমান": 1, "দর": 500, "মোট টাকা": 500, "আদায়": 300, "বাকি": 200}
+        {"क्रमिक নং": 1, "কাস্টমার নাম": "Abir Rahman", "কাজের বিবরণ": "Windows Setup", "পরিমান": 1, "দর": 500, "মোট টাকা": 500, "আদায়": 300, "বাকি": 200}
     ]
 
 if "shop_stock" not in st.session_state:
     st.session_state.shop_stock = [
-        {"ক্রমিক নং": 1, "পণ্যের বিবরণ": "512GB NVMe SSD", "পরিমান": 10, "দর": 4200, "মোট টাকা": 42000}
+        {"क्रमिक নং": 1, "পণ্যের বিবরণ": "512GB NVMe SSD", "পরিমান": 10, "দর": 4200, "মোট টাকা": 42000}
     ]
 
 if "saved_passwords" not in st.session_state:
     st.session_state.saved_passwords = [
-        {"ক্রমিক নং": 1, "শিক্ষা প্রতিষ্ঠানের নাম": "Sreebardi Govt. College", "এন্ট্রি পাসওয়ার্ড": "sreebardi@2026", "কনফার্ম পাসওয়ার্ড": "board@xyz2026"}
+        {"क्रमिक নং": 1, "শিক্ষা প্রতিষ্ঠানের নাম": "Sreebardi Govt. College", "এন্ট্রি পাসওয়ার্ড": "sreebardi@2026", "কনফার্ম পাসওয়ার্ড": "board@xyz2026"}
     ]
 
 if "invoice_items" not in st.session_state:
@@ -136,22 +136,32 @@ st.markdown(custom_css, unsafe_allow_html=True)
 # 🛑 ১. লগইন স্ক্রিন রেন্ডারিং
 # ==========================================
 if not st.session_state.logged_in:
-    _, col_center, _ = st.columns([1, 1.4, 1])
+    # লোগোটিকে বড় করার জন্য দুই পাশের কলাম ছোট করে মাঝখানের কলাম বড় করা হয়েছে
+    _, col_center, _ = st.columns([0.5, 2.4, 0.5])
     with col_center:
-        st.markdown('<br><br>', unsafe_allow_html=True)
-        st.markdown('''
-            <div style="text-align: center; margin-bottom: 25px;">
-                <div style="font-size: 40px; font-weight: 900; color: #111111; font-family: sans-serif;">
-                    🔒 SM-TECH - <span style="color: #d60000;">Admin</span>
-                </div>
-                <div style="font-size: 38px; font-weight: 900; color: #d60000; margin-top: 5px; font-family: sans-serif;">
-                    Login
-                </div>
-            </div>
-        ''', unsafe_allow_html=True)
+        st.markdown('<br>', unsafe_allow_html=True)
+        
+        # লোগো সাইজ বড় করার জন্য কাস্টম CSS স্টাইল
+        st.markdown(
+            """
+            <style>
+                div[data-testid="stImage"] img {
+                    width: 85% !important;
+                    max-width: 550px !important;
+                    display: block;
+                    margin-left: auto;
+                    margin-right: auto;
+                }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+        
+        # বড় আকারে কাস্টম লোগো প্রদর্শন
+        st.image("https://raw.githubusercontent.com/smtech050-cmd/SM-TECH/main/IMG_20260717_214948.png", use_container_width=True)
         
         with st.container(border=False):
-            st.markdown('<div style="font-size: 20px; font-weight: bold; text-align: center; color: #d60000; margin-bottom: 20px;">অ্যাডমিন প্যানেল প্রবেশ করুন</div>', unsafe_allow_html=True)
+            st.markdown('<div style="font-size: 22px; font-weight: bold; text-align: center; color: #d60000; margin-top: 15px; margin-bottom: 25px;">অ্যাডমিন প্যানেল প্রবেশ করুন</div>', unsafe_allow_html=True)
             
             username = st.text_input("Username (ইউজারনেম)", placeholder="ইউজারনেম লিখুন...")
             password = st.text_input("Password (পাসওয়ার্ড)", type="password", placeholder="পাসওয়ার্ড লিখুন...")
@@ -220,7 +230,7 @@ else:
             with col_c3: c_paid = st.number_input("আদায় (টাকা)", min_value=0, value=0)
             if st.form_submit_button("💾 লিস্টে যুক্ত করুন") and c_name:
                 st.session_state.customer_dues.append({
-                    "ক্রমিক নং": len(st.session_state.customer_dues) + 1, "কাস্টমার নাম": c_name, "কাজের বিবরণ": c_desc,
+                    "क्रमिक নং": len(st.session_state.customer_dues) + 1, "কাস্টমার নাম": c_name, "কাজের বিবরণ": c_desc,
                     "পরিমান": c_qty, "দর": c_price, "মোট টাকা": c_qty*c_price, "আদায়": c_paid, "বাকি": (c_qty*c_price)-c_paid
                 })
                 st.rerun()
@@ -236,7 +246,7 @@ else:
             with col_s2: s_price = st.number_input("দর (টাকা)", min_value=0, value=0)
             if st.form_submit_button("📥 স্টকে যুক্ত করুন") and s_desc:
                 st.session_state.shop_stock.append({
-                    "ক্রমিক নং": len(st.session_state.shop_stock) + 1, "পণ্যের বিবরণ": s_desc, "পরিমান": s_qty, "দর": s_price, "মোট টাকা": s_qty*s_price
+                    "क्रमिक নং": len(st.session_state.shop_stock) + 1, "পণ্যের বিবরণ": s_desc, "পরিমান": s_qty, "দর": s_price, "মোট টাকা": s_qty*s_price
                 })
                 st.rerun()
         st.dataframe(pd.DataFrame(st.session_state.shop_stock), use_container_width=True)
@@ -251,7 +261,7 @@ else:
             with col_p2: confirm_pass = st.text_input("কনফার্ম পাসওয়ার্ড")
             if st.form_submit_button("💾 সংরক্ষণ করুন") and inst_name:
                 st.session_state.saved_passwords.append({
-                    "ক্রমিক নং": len(st.session_state.saved_passwords) + 1, "শিক্ষা প্রতিষ্ঠানের নাম": inst_name, "এন্ট্রি পাসওয়ার্ড": entry_pass, "কনফার্ম পাসওয়ার্ড": confirm_pass
+                    "क्रमिक নং": len(st.session_state.saved_passwords) + 1, "শিক্ষা প্রতিষ্ঠানের নাম": inst_name, "এন্ট্রি পাসওয়ার্ড": entry_pass, "কনফার্ম পাসওয়ার্ড": confirm_pass
                 })
                 st.rerun()
         st.dataframe(pd.DataFrame(st.session_state.saved_passwords), use_container_width=True)
