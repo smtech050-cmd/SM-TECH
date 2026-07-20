@@ -267,7 +267,7 @@ else:
                 st.rerun()
         st.dataframe(pd.DataFrame(st.session_state.saved_passwords), use_container_width=True)
 
-    # সেল ইনভয়েস (আইকন ও কথায় লেখার আপডেট)
+    # সেল ইনভয়েস (লোগো সাইজ ও পজিশন ফিক্সড করা হয়েছে)
     elif st.session_state.current_menu == "Sell Invoice":
         st.title("🧾 ইনভয়েস")
         col_in1, col_in2, col_in3 = st.columns([1.5, 2, 2])
@@ -347,11 +347,12 @@ else:
                     .header-table {{
                         width: 100%;
                         border-collapse: collapse;
-                        margin-bottom: 5px;
+                        margin-bottom: 2px;
                     }}
                     .logo-area img {{
-                        max-width: 180px;
-                        height: auto;
+                        max-height: 52px;
+                        width: auto;
+                        display: block;
                     }}
                     .owner-info {{
                         text-align: right;
@@ -368,8 +369,8 @@ else:
                         font-size: 11px;
                         font-weight: bold;
                         color: #000;
-                        margin-top: -5px;
-                        margin-bottom: 8px;
+                        margin-top: 2px;
+                        margin-bottom: 12px;
                     }}
                     .bill-section {{
                         width: 100%;
@@ -507,7 +508,7 @@ else:
                 <div class="pad-container">
                     <table class="header-table">
                         <tr>
-                            <td class="logo-area" style="width: 60%;">
+                            <td class="logo-area" style="width: 60%; vertical-align: middle;">
                                 <img src="https://raw.githubusercontent.com/smtech050-cmd/SM-TECH/main/IMG_20260717_214948.png" alt="SM-TECH">
                             </td>
                             <td class="owner-info">
@@ -557,13 +558,11 @@ else:
                         </tbody>
                     </table>
                     
-                    <!-- কথায় লেখার ফিল্ড -->
                     <div class="amount-words">
                         Amount In Words: <span class="words-text">{amount_in_words}</span>
                     </div>
                     
                     <div class="footer-section">
-                        <!-- ক্যাশ, বিকাশ, নগদ এবং ব্যাংক সবগুলোর আইকন সহ পেমেন্ট মেথড বক্স -->
                         <div class="payment-methods-box">
                             <div class="pm-title">Payment Methods</div>
                             <div class="pm-options-container">
