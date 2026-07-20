@@ -4,24 +4,19 @@ import datetime
 import base64
 import streamlit.components.v1 as components
 
-# PWA ম্যানিফেস্ট ও সার্ভিস ওয়ার্কার লিংক ইনজেক্ট করা
+# PWA elements injection
 components.html(
     """
     <script>
-        // manifest.json লিংক যুক্ত করা
         var link = document.createElement('link');
         link.rel = 'manifest';
         link.href = 'https://raw.githubusercontent.com/smtech050-cmd/SM-TECH/main/manifest.json';
         document.head.appendChild(link);
 
-        // Service Worker রেজিস্টার করা
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('https://raw.githubusercontent.com/smtech050-cmd/SM-TECH/main/sw.js')
-            .then(function(reg) {
-                console.log('Service Worker Registered!', reg);
-            }).catch(function(err) {
-                console.log('Service Worker Failed!', err);
-            });
+            .then(function(reg) { console.log('SW Registered'); })
+            .catch(function(err) { console.log('SW Failed', err); });
         }
     </script>
     """,
