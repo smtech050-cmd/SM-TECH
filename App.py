@@ -6,6 +6,22 @@ import datetime
 st.set_page_config(page_title="SM-TECH | Admin System", layout="wide", page_icon="💻")
 
 # ==========================================
+# 🔢 ইংরেজি সংখ্যা থেকে বাংলা অংকে রূপান্তর
+# ==========================================
+def convert_to_bangla_digits(num):
+    en_digits = "0123456789"
+    bn_digits = "০১২৩৪৫৬৭৮৯"
+    
+    # যদি সংখ্যা হয় তবে কমা (,) দিয়ে ফরম্যাট করে টেক্সট করা
+    if isinstance(num, (int, float)):
+        str_num = f"{num:,}"
+    else:
+        str_num = str(num)
+        
+    translation_table = str.maketrans(en_digits, bn_digits)
+    return str_num.translate(translation_table)
+
+# ==========================================
 # 🔢 সংখ্যা থেকে কথায় (Amount in Words)
 # ==========================================
 def number_to_words_en(n):
@@ -29,8 +45,9 @@ def number_to_words_en(n):
 
 def number_to_words_bn(n):
     if n == 0: return "শূন্য টাকা মাত্র"
+    bn_num_str = convert_to_bangla_digits(n)
     en_words = number_to_words_en(n)
-    return f"{n:,} টাকা মাত্র ({en_words})"
+    return f"{bn_num_str} টাকা মাত্র ({en_words})"
 
 # ==========================================
 # 🔐 সেশন স্টেট ইনিশিয়ালাইজেশন
@@ -113,7 +130,7 @@ inv_labels = {
         "inv_no": "ইনভয়েস নং:",
         "date": "তারিখ:",
         "sl": "ক্রঃ নং",
-        "desc": "বিবরণ",
+        "desc": "পণ্যের বিবরণ",
         "qty": "পরিমাণ",
         "price": "দর",
         "amount": "মোট টাকা",
@@ -121,7 +138,10 @@ inv_labels = {
         "subtotal": "মোট (SUB TOTAL)",
         "pay_meth": "PAYMENT METHODS",
         "auth_sig": "অনুমোদিত স্বাক্ষর (Authorised Signature)",
-        "print_btn": "🖨️ প্রিন্ট করুন / Save as PDF (A5)"
+        "print_btn": "🖨️ প্রিন্ট করুন / Save as PDF (A5)",
+        "inp_desc": "পণ্যের বিবরণ / Product Name",
+        "inp_qty": "পরিমাণ / QTY",
+        "inp_price": "দর / Unit Price"
     },
     "English": {
         "bill_to": "Bill To Name:",
@@ -138,7 +158,10 @@ inv_labels = {
         "subtotal": "SUB TOTAL",
         "pay_meth": "PAYMENT METHODS",
         "auth_sig": "Authorised Signature",
-        "print_btn": "🖨️ Print / Save as PDF (A5)"
+        "print_btn": "🖨️ Print / Save as PDF (A5)",
+        "inp_desc": "Product Name / Description",
+        "inp_qty": "QTY",
+        "inp_price": "Unit Price"
     }
 }
 
@@ -313,15 +336,27 @@ else:
     elif st.session_state.current_menu == "Sell Invoice":
         st.title(curr_t["title_inv"])
         
+        # 🔘 ইনভয়েসের ভাষা সিলেক্টর (ইনপুট লেবেলের আগে রাখা হলো)
+        inv_lang_choice = st.radio(
+            "🌐 **ইনভয়েসের ভাষা নির্বাচন করুন (Click to switch Invoice Language):**",
+            ["🇧🇩 বাংলা (Bangla)", "🇬🇧 English"],
+            horizontal=True,
+            index=0 if st.session_state.inv_language == "Bangla" else 1
+        )
+        st.session_state.inv_language = "Bangla" if "🇧🇩" in inv_lang_choice else "English"
+        
+        i_lang = st.session_state.inv_language
+        cur_inv = inv_labels[i_lang]
+
         col_in1, col_in2, col_in3 = st.columns([1.5, 2, 2])
         with col_in1: inv_custom_num = st.text_input("Invoice No", value=f"SM-TECH/{datetime.datetime.now().strftime('%y/%m/%d')}")
         with col_in2: cust_name = st.text_input("Customer Name / কাস্টমারের নাম", value="Super, Kharamura Islamia Dakhil Madrasah")
         with col_in3: cust_address = st.text_input("Address / ঠিকানা", value="Sreebardi")
             
         col_item1, col_item2, col_item3 = st.columns([3, 1, 1.5])
-        with col_item1: prod_desc = st.text_input("Product Name / Description", value="এসএসডি")
-        with col_item2: prod_qty = st.number_input("QTY", min_value=1, value=1)
-        with col_item3: prod_price = st.number_input("Unit Price", min_value=0, value=1500)
+        with col_item1: prod_desc = st.text_input(cur_inv["inp_desc"], value="এসএসডি")
+        with col_item2: prod_qty = st.number_input(cur_inv["inp_qty"], min_value=1, value=1)
+        with col_item3: prod_price = st.number_input(cur_inv["inp_price"], min_value=0, value=1500)
             
         col_btn1, col_btn2 = st.columns([1, 1])
         with col_btn1:
@@ -337,35 +372,36 @@ else:
                     st.rerun()
 
         st.write("---")
-        
-        # 🔘 ইনভয়েসের ভাষা সিলেক্টর
-        inv_lang_choice = st.radio(
-            "🌐 **ইনভয়েসের ভাষা নির্বাচন করুন (Click to switch Invoice Language):**",
-            ["🇧🇩 বাংলা (Bangla)", "🇬🇧 English"],
-            horizontal=True,
-            index=0 if st.session_state.inv_language == "Bangla" else 1
-        )
-        st.session_state.inv_language = "Bangla" if "🇧🇩" in inv_lang_choice else "English"
-        
-        i_lang = st.session_state.inv_language
-        cur_inv = inv_labels[i_lang]
 
         sub_total = sum(item["Amount"] for item in st.session_state.invoice_items)
         amount_in_words = number_to_words_bn(sub_total) if i_lang == "Bangla" else number_to_words_en(sub_total)
         
-        # ৮ লাইনের টেবিল
+        # ৮ লাইনের টেবিল জেনারেট করা (বাংলা মোড ও ইংরেজি মোড অনুযায়ী সংখ্যা ফরম্যাট)
         rows_html = ""
         max_rows = 8
         for i in range(max_rows):
             if i < len(st.session_state.invoice_items):
                 item = st.session_state.invoice_items[i]
+                
+                # ভাষা অনুযায়ী সংখ্যা রূপান্তর
+                if i_lang == "Bangla":
+                    sl_val = convert_to_bangla_digits(i+1)
+                    qty_val = convert_to_bangla_digits(item['Qty'])
+                    price_val = convert_to_bangla_digits(item['Price'])
+                    amount_val = convert_to_bangla_digits(item['Amount'])
+                else:
+                    sl_val = str(i+1)
+                    qty_val = str(item['Qty'])
+                    price_val = f"{item['Price']:,}"
+                    amount_val = f"{item['Amount']:,}"
+
                 rows_html += f"""
                 <tr>
-                    <td style="text-align:center;">{i+1}</td>
+                    <td style="text-align:center;">{sl_val}</td>
                     <td>{item['Description']}</td>
-                    <td style="text-align:center;">{item['Qty']}</td>
-                    <td style="text-align:right;">{item['Price']:,}</td>
-                    <td style="text-align:right;">{item['Amount']:,}</td>
+                    <td style="text-align:center;">{qty_val}</td>
+                    <td style="text-align:right;">{price_val}</td>
+                    <td style="text-align:right;">{amount_val}</td>
                 </tr>
                 """
             else:
@@ -379,7 +415,9 @@ else:
                 </tr>
                 """
 
-        # HTML ইনভয়েস লেআউট (Fixed Payment Methods Duplication Issue)
+        sub_total_display = convert_to_bangla_digits(sub_total) if i_lang == "Bangla" else f"{sub_total:,}"
+
+        # HTML ইনভয়েস লেআউট
         invoice_template = f"""
         <!DOCTYPE html>
         <html>
@@ -623,14 +661,13 @@ else:
                     <tr>
                         <td colspan="3" style="border:1px solid #0d47a1; height: 26px;"><b>{cur_inv['words']}</b> {amount_in_words}</td>
                         <td style="font-weight:bold; text-align:right; background:#0d47a1; color:white;">{cur_inv['subtotal']}</td>
-                        <td style="font-weight:bold; text-align:right; background:#0d47a1; color:white;">{sub_total:,}</td>
+                        <td style="font-weight:bold; text-align:right; background:#0d47a1; color:white;">{sub_total_display}</td>
                     </tr>
                 </tbody>
             </table>
 
             <div class="footer-sec">
                 <div>
-                    <!-- ১, ২, ৩, ৪ পেমেন্ট মেথড (একবার লেখা আসবে এবং কোনো ব্রোকেন ইমেজ থাকবে না) -->
                     <div class="payment-methods">
                         <div class="pay-title">{cur_inv['pay_meth']}</div>
                         <div class="pay-list">
@@ -663,12 +700,21 @@ else:
         </div>
 
         <script>
+            function convertToBanglaDigits(str) {{
+                const enDigits = '0123456789';
+                const bnDigits = '০১২৩৪৫৬৭৮৯';
+                return str.replace(/[0-9]/g, function(w) {{
+                    return bnDigits[enDigits.indexOf(w)];
+                }});
+            }}
+
             function updateDateTime() {{
+                const isBangla = "{i_lang}" === "Bangla";
                 const now = new Date();
                 const day = String(now.getDate()).padStart(2, '0');
                 const month = String(now.getMonth() + 1).padStart(2, '0');
                 const year = now.getFullYear();
-                const formattedDate = `${{day}}/${{month}}/${{year}}`;
+                let formattedDate = `${{day}}/${{month}}/${{year}}`;
                 
                 const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
                 const monthName = monthNames[now.getMonth()];
@@ -679,7 +725,12 @@ else:
                 hours = hours ? hours : 12;
                 const formattedHours = String(hours).padStart(2, '0');
                 
-                const formattedTimeStamp = `${{day}}-${{monthName}}-${{year}} ${{formattedHours}}:${{minutes}} ${{ampm}}`;
+                let formattedTimeStamp = `${{day}}-${{monthName}}-${{year}} ${{formattedHours}}:${{minutes}} ${{ampm}}`;
+
+                if (isBangla) {{
+                    formattedDate = convertToBanglaDigits(formattedDate);
+                    formattedTimeStamp = convertToBanglaDigits(formattedTimeStamp);
+                }}
 
                 document.getElementById('real-time-date').innerText = formattedDate;
                 document.getElementById('real-time-stamp').innerText = formattedTimeStamp;
