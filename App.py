@@ -6,35 +6,34 @@ import datetime
 st.set_page_config(page_title="SM-TECH | Admin System", layout="wide", page_icon="💻")
 
 # ==========================================
-# 🔢 সংখ্যা থেকে কথায় (Amount in Words) রূপান্তর
+# 🔢 সংখ্যা থেকে কথায় (Amount in Words)
 # ==========================================
-def number_to_words(n):
+def number_to_words_en(n):
     units = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
              "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"]
     tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"]
     
-    if n == 0:
-        return "Zero Taka Only"
-    
+    if n == 0: return "Zero Taka Only"
     def convert_below_thousand(num):
-        if num < 20:
-            return units[num]
-        elif num < 100:
-            return tens[num // 10] + (" " + units[num % 10] if num % 10 != 0 else "")
-        else:
-            return units[num // 100] + " Hundred" + (" " + convert_below_thousand(num % 100) if num % 100 != 0 else "")
+        if num < 20: return units[num]
+        elif num < 100: return tens[num // 10] + (" " + units[num % 10] if num % 10 != 0 else "")
+        else: return units[num // 100] + " Hundred" + (" " + convert_below_thousand(num % 100) if num % 100 != 0 else "")
 
     def convert(num):
-        if num < 1000:
-            return convert_below_thousand(num)
-        elif num < 100000:
-            return convert_below_thousand(num // 1000) + " Thousand" + (" " + convert_below_thousand(num % 1000) if num % 1000 != 0 else "")
-        elif num < 10000000:
-            return convert_below_thousand(num // 100000) + " Lakh" + (" " + convert(num % 100000) if num % 100000 != 0 else "")
-        else:
-            return convert_below_thousand(num // 10000000) + " Crore" + (" " + convert(num % 10000000) if num % 10000000 != 0 else "")
+        if num < 1000: return convert_below_thousand(num)
+        elif num < 100000: return convert_below_thousand(num // 1000) + " Thousand" + (" " + convert_below_thousand(num % 1000) if num % 1000 != 0 else "")
+        elif num < 10000000: return convert_below_thousand(num // 100000) + " Lakh" + (" " + convert(num % 100000) if num % 100000 != 0 else "")
+        else: return convert_below_thousand(num // 10000000) + " Crore" + (" " + convert(num % 10000000) if num % 10000000 != 0 else "")
 
     return convert(int(n)).strip() + " Taka Only"
+
+def number_to_words_bn(n):
+    units = ["", "এক", "দুই", "তিন", "চার", "পাঁচ", "ছয়", "সাত", "আট", "নয়", "দশ",
+             "এগারো", "বারো", "তেরো", "চৌদ্দ", "পনেরো", "ষোলো", "সতেরো", "১৮", "১৯"]
+    if n == 0: return "শূন্য টাকা মাত্র"
+    # সাধারণ বাংলা অ্যামাউন্ট ফরম্যাট
+    en_words = number_to_words_en(n)
+    return f"{n:,} টাকা মাত্র ({en_words})"
 
 # ==========================================
 # 🔐 সেশন স্টেট ইনিশিয়ালাইজেশন
@@ -44,6 +43,9 @@ if "logged_in" not in st.session_state:
 
 if "current_menu" not in st.session_state:
     st.session_state.current_menu = "Dashboard"
+
+if "language" not in st.session_state:
+    st.session_state.language = "Bangla"
 
 if "customer_dues" not in st.session_state:
     st.session_state.customer_dues = [
@@ -64,7 +66,72 @@ if "invoice_items" not in st.session_state:
     st.session_state.invoice_items = []
 
 # ==========================================
-# 🛑 ১. কাস্টম সুন্দর লগইন UI
+# 🌐 ডিকশনারি (বাংলা ও ইংরেজি ডিকশনারি)
+# ==========================================
+t = {
+    "Bangla": {
+        "title_dash": "🖥️ ড্যাশবোর্ড",
+        "title_cust": "👥 কাস্টমার বাকির হিসাব",
+        "title_stock": "📦 স্টক পণ্য ম্যানেজমেন্ট",
+        "title_pass": "🔐 পাসওয়ার্ড সংরক্ষণ",
+        "title_inv": "🧾 ইনভয়েস জেনারেটর",
+        "menu_dash": "⬜ ড্যাশবোর্ড",
+        "menu_cust": "👥 কাস্টমার ও রিপেয়ার",
+        "menu_stock": "📦 স্টক প্রোডাক্ট",
+        "menu_inv": "💵 সেল ইনভয়েস",
+        "menu_pass": "🔐 পাসওয়ার্ড সেভ",
+        "total_cust": "মোট কাস্টমার",
+        "total_due": "মোট বাকি টাকা",
+        "stock_val": "স্টক পণ্যের মূল্য",
+        "cust_dir": "কাস্টমার ডিরেক্টরি & রিসেন্ট এন্ট্রি",
+        "logout": "🔒 লগআউট",
+        "bill_to": "বিল প্রাপক:",
+        "address": "ঠিকানা:",
+        "sl": "ক্রঃ নং",
+        "desc": "বিবরণ",
+        "qty": "পরিমাণ",
+        "price": "দর",
+        "amount": "মোট টাকা",
+        "words": "কথায়:",
+        "add_item": "➕ আইটেম যুক্ত করুন",
+        "clear_all": "🗑️ সব মুছে ফেলুন",
+        "print_btn": "🖨️ প্রিন্ট করুন / Save as PDF (A5)"
+    },
+    "English": {
+        "title_dash": "🖥️ Dashboard",
+        "title_cust": "👥 Customer & Repair Dues",
+        "title_stock": "📦 Stock Product Management",
+        "title_pass": "🔐 Password Manager",
+        "title_inv": "🧾 Invoice Generator",
+        "menu_dash": "⬜ Dashboard",
+        "menu_cust": "👥 Customer & Repair",
+        "menu_stock": "📦 Stock Product",
+        "menu_inv": "💵 Sell Invoice",
+        "menu_pass": "🔐 Password Save",
+        "total_cust": "Total Customers",
+        "total_due": "Total Due Amount",
+        "stock_val": "Total Stock Value",
+        "cust_dir": "Customer Directory & Recent Entries",
+        "logout": "🔒 Logout",
+        "bill_to": "Bill To Name:",
+        "address": "Address:",
+        "sl": "S.L",
+        "desc": "DESCRIPTION",
+        "qty": "QTY",
+        "price": "U.PRICE",
+        "amount": "AMOUNT",
+        "words": "Amount In Words:",
+        "add_item": "➕ Add Item",
+        "clear_all": "🗑️ Clear All Items",
+        "print_btn": "🖨️ Print / Save as PDF (A5)"
+    }
+}
+
+lang = st.session_state.language
+curr_t = t[lang]
+
+# ==========================================
+# 🛑 ১. লগইন UI
 # ==========================================
 if not st.session_state.logged_in:
     st.markdown("""
@@ -119,20 +186,19 @@ if not st.session_state.logged_in:
         """, unsafe_allow_html=True)
 
         with st.form("main_login_form"):
-            username = st.text_input("ইউজারনেম", value="admin", placeholder="আপনার ইউজারনেম")
-            password = st.text_input("পাসওয়ার্ড", type="password", value="1234", placeholder="আপনার পাসওয়ার্ড")
-            
-            submit = st.form_submit_button("[➔] লগইন করুন", use_container_width=True)
+            username = st.text_input("ইউজারনেম / Username", value="admin")
+            password = st.text_input("পাসওয়ার্ড / Password", type="password", value="1234")
+            submit = st.form_submit_button("[➔] Login / লগইন", use_container_width=True)
 
             if submit:
                 if username == "admin" and password == "1234":
                     st.session_state.logged_in = True
                     st.rerun()
                 else:
-                    st.error("ভুল ইউজারনেম অথবা পাসওয়ার্ড!")
+                    st.error("Invalid Username or Password!")
 
 # ==========================================
-# 🔓 ২. মূল ড্যাশবোর্ড
+# 🔓 ২. মূল অ্যাপ
 # ==========================================
 else:
     with st.sidebar:
@@ -143,49 +209,55 @@ else:
             </div>
         ''', unsafe_allow_html=True)
         
-        if st.button("🔒 Logout / লগআউট", key="logout_btn"):
+        # 🌐 ভাষা পরিবর্তন অপশন
+        selected_lang = st.selectbox("🌐 Language / ভাষা নির্বাচন করুন", ["Bangla", "English"], index=0 if st.session_state.language == "Bangla" else 1)
+        if selected_lang != st.session_state.language:
+            st.session_state.language = selected_lang
+            st.rerun()
+
+        if st.button(curr_t["logout"], key="logout_btn"):
             st.session_state.logged_in = False
             st.rerun()
             
         st.write("---")
-        st.write("### মেনু নির্বাচন করুন")
+        st.write("### Menu / মেনু")
         
-        if st.button("⬜ Dashboard", use_container_width=True):
+        if st.button(curr_t["menu_dash"], use_container_width=True):
             st.session_state.current_menu = "Dashboard"; st.rerun()
-        if st.button("👥 Customer & Repair", use_container_width=True):
+        if st.button(curr_t["menu_cust"], use_container_width=True):
             st.session_state.current_menu = "Customer & Repair"; st.rerun()
-        if st.button("📦 Stock product", use_container_width=True):
+        if st.button(curr_t["menu_stock"], use_container_width=True):
             st.session_state.current_menu = "Stock product"; st.rerun()
-        if st.button("💵 Sell Invoice", use_container_width=True):
+        if st.button(curr_t["menu_inv"], use_container_width=True):
             st.session_state.current_menu = "Sell Invoice"; st.rerun()
-        if st.button("🔐 Password Save", use_container_width=True):
+        if st.button(curr_t["menu_pass"], use_container_width=True):
             st.session_state.current_menu = "Password Save"; st.rerun()
 
     # ১. ড্যাশবোর্ড
     if st.session_state.current_menu == "Dashboard":
-        st.title("🖥️ ড্যাশবোর্ড")
+        st.title(curr_t["title_dash"])
         st.write("---")
         col1, col2, col3 = st.columns(3)
         total_due = sum(item.get("বাকি", 0) for item in st.session_state.customer_dues)
         total_stock = sum(item.get("মোট টাকা", 0) for item in st.session_state.shop_stock)
-        col1.metric("মোট কাস্টমার", f"{len(st.session_state.customer_dues)} জন")
-        col2.metric("মোট বাকি টাকা", f"{total_due} BDT")
-        col3.metric("স্টক পণ্যের মূল্য", f"{total_stock} BDT")
+        col1.metric(curr_t["total_cust"], f"{len(st.session_state.customer_dues)}")
+        col2.metric(curr_t["total_due"], f"{total_due} BDT")
+        col3.metric(curr_t["stock_val"], f"{total_stock} BDT")
         st.write("<br>", unsafe_allow_html=True)
-        st.subheader("কাস্টমার ডিরেক্টরি & রিসেন্ট এন্ট্রি")
+        st.subheader(curr_t["cust_dir"])
         st.dataframe(pd.DataFrame(st.session_state.customer_dues), use_container_width=True)
 
     # ২. কাস্টমার ও রিপেয়ার
     elif st.session_state.current_menu == "Customer & Repair":
-        st.title("👥 কাস্টমার বাকির হিসাব")
+        st.title(curr_t["title_cust"])
         with st.form("Add Customer Due", clear_on_submit=True):
-            c_name = st.text_input("কাস্টমার নাম")
-            c_desc = st.text_input("কাজের বিবরণ")
+            c_name = st.text_input("কাস্টমার নাম / Name")
+            c_desc = st.text_input("কাজের বিবরণ / Work Description")
             col_c1, col_c2, col_c3 = st.columns(3)
-            with col_c1: c_qty = st.number_input("পরিমান", min_value=1, value=1)
-            with col_c2: c_price = st.number_input("দর (টাকা)", min_value=0, value=0)
-            with col_c3: c_paid = st.number_input("আদায় (টাকা)", min_value=0, value=0)
-            if st.form_submit_button("💾 লিস্টে যুক্ত করুন") and c_name:
+            with col_c1: c_qty = st.number_input("পরিমান / Qty", min_value=1, value=1)
+            with col_c2: c_price = st.number_input("দর / Rate (TK)", min_value=0, value=0)
+            with col_c3: c_paid = st.number_input("আদায় / Paid (TK)", min_value=0, value=0)
+            if st.form_submit_button("💾 Save / সংরক্ষণ করুন") and c_name:
                 st.session_state.customer_dues.append({
                     "ক্রমিক নং": len(st.session_state.customer_dues) + 1, "কাস্টমার নাম": c_name, "কাজের বিবরণ": c_desc,
                     "পরিমান": c_qty, "দর": c_price, "মোট টাকা": c_qty*c_price, "আদায়": c_paid, "বাকি": (c_qty*c_price)-c_paid
@@ -195,13 +267,13 @@ else:
 
     # ৩. স্টক পণ্য
     elif st.session_state.current_menu == "Stock product":
-        st.title("📦 স্টক পণ্য ম্যানেজমেন্ট")
+        st.title(curr_t["title_stock"])
         with st.form("Add Shop Stock", clear_on_submit=True):
-            s_desc = st.text_input("পণ্যের বিবরণ / নাম")
+            s_desc = st.text_input("পণ্যের বিবরণ / Item Name")
             col_s1, col_s2 = st.columns(2)
-            with col_s1: s_qty = st.number_input("পরিমান", min_value=1, value=1)
-            with col_s2: s_price = st.number_input("দর (টাকা)", min_value=0, value=0)
-            if st.form_submit_button("📥 স্টকে যুক্ত করুন") and s_desc:
+            with col_s1: s_qty = st.number_input("পরিমান / Qty", min_value=1, value=1)
+            with col_s2: s_price = st.number_input("দর / Price", min_value=0, value=0)
+            if st.form_submit_button("📥 Add / যোগ করুন") and s_desc:
                 st.session_state.shop_stock.append({
                     "ক্রমিক নং": len(st.session_state.shop_stock) + 1, "পণ্যের বিবরণ": s_desc, "পরিমান": s_qty, "দর": s_price, "মোট টাকা": s_qty*s_price
                 })
@@ -210,13 +282,13 @@ else:
 
     # ৪. পাসওয়ার্ড সংরক্ষণ
     elif st.session_state.current_menu == "Password Save":
-        st.title("🔐 পাসওয়ার্ড সংরক্ষণ")
+        st.title(curr_t["title_pass"])
         with st.form("Add Password", clear_on_submit=True):
-            inst_name = st.text_input("প্রতিষ্ঠানের নাম")
+            inst_name = st.text_input("প্রতিষ্ঠানের নাম / Institution Name")
             col_p1, col_p2 = st.columns(2)
-            with col_p1: entry_pass = st.text_input("এন্ট্রি পাসওয়ার্ড")
-            with col_p2: confirm_pass = st.text_input("কনফার্ম পাসওয়ার্ড")
-            if st.form_submit_button("💾 সংরক্ষণ করুন") and inst_name:
+            with col_p1: entry_pass = st.text_input("এন্ট্রি পাসওয়ার্ড / Entry Password")
+            with col_p2: confirm_pass = st.text_input("কনফার্ম পাসওয়ার্ড / Confirm Password")
+            if st.form_submit_button("💾 Save / সংরক্ষণ করুন") and inst_name:
                 st.session_state.saved_passwords.append({
                     "ক্রমিক নং": len(st.session_state.saved_passwords) + 1, "শিক্ষা প্রতিষ্ঠানের নাম": inst_name, "এন্ট্রি পাসওয়ার্ড": entry_pass, "কনফার্ম পাসওয়ার্ড": confirm_pass
                 })
@@ -225,31 +297,31 @@ else:
 
     # ৫. সেল ইনভয়েস
     elif st.session_state.current_menu == "Sell Invoice":
-        st.title("🧾 ইনভয়েস জেনারেটর")
+        st.title(curr_t["title_inv"])
         
         col_in1, col_in2, col_in3 = st.columns([1.5, 2, 2])
         with col_in1: inv_custom_num = st.text_input("Invoice No", value=f"SM-TECH/{datetime.datetime.now().strftime('%y/%m/%d')}")
-        with col_in2: cust_name = st.text_input("কাস্টমারের নাম", value="Salman")
-        with col_in3: cust_address = st.text_input("Address", value="Dhaka, Bangladesh")
+        with col_in2: cust_name = st.text_input("Customer Name / কাস্টমারের নাম", value="Salman")
+        with col_in3: cust_address = st.text_input("Address / ঠিকানা", value="Dhaka, Bangladesh")
             
         col_item1, col_item2, col_item3 = st.columns([3, 1, 1.5])
         with col_item1: prod_desc = st.text_input("Product Name / Description")
         with col_item2: prod_qty = st.number_input("QTY", min_value=1, value=1)
         with col_item3: prod_price = st.number_input("Unit Price", min_value=0, value=500)
             
-        if st.button("➕ Add Item", use_container_width=True) and prod_desc:
+        if st.button(curr_t["add_item"], use_container_width=True) and prod_desc:
             st.session_state.invoice_items.append({
                 "Description": prod_desc, "Qty": prod_qty, "Price": prod_price, "Amount": prod_qty * prod_price
             })
             st.rerun()
 
         if st.session_state.invoice_items:
-            if st.button("🗑️ Clear All Items"):
+            if st.button(curr_t["clear_all"]):
                 st.session_state.invoice_items = []
                 st.rerun()
 
         sub_total = sum(item["Amount"] for item in st.session_state.invoice_items)
-        amount_in_words = number_to_words(sub_total)
+        amount_in_words = number_to_words_bn(sub_total) if lang == "Bangla" else number_to_words_en(sub_total)
         current_date = datetime.datetime.now().strftime("%d/%m/%Y")
         current_time_stamp = datetime.datetime.now().strftime("%d-%b-%Y %I:%M %p")
         
@@ -279,22 +351,23 @@ else:
                 </tr>
                 """
 
-        # সম্পূর্ণ নীল রঙের ফন্ট এবং বড় SM-TECH লেআউট
+        # সম্পূর্ণ HTML+CSS A5 লেআউট
         invoice_template = f"""
         <!DOCTYPE html>
         <html>
         <head>
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;700;900&display=swap" rel="stylesheet">
         <style>
             @page {{
                 size: A5 portrait;
                 margin: 0;
             }}
             body {{
-                font-family: Arial, sans-serif;
+                font-family: 'Noto Sans Bengali', Arial, sans-serif;
                 margin: 0;
                 padding: 12px;
                 background: #fff;
-                color: #0d47a1; /* সমস্ত লেখা গাঢ় নীল করা হলো */
+                color: #0d47a1;
             }}
             .invoice-box {{
                 border: 2.5px solid #0d47a1;
@@ -324,7 +397,7 @@ else:
                 object-fit: cover;
             }}
             .logo-text {{
-                font-size: 52px; /* টেক্সট দ্বিগুণ বড় করা হয়েছে */
+                font-size: 52px;
                 font-weight: 900;
                 color: #0d47a1;
                 line-height: 0.9;
@@ -416,7 +489,7 @@ else:
         <body>
 
         <div class="print-btn-container">
-            <button class="btn-print" onclick="window.print()">🖨️ প্রিন্ট করুন / Save as PDF (A5)</button>
+            <button class="btn-print" onclick="window.print()">{curr_t['print_btn']}</button>
         </div>
 
         <div class="invoice-box">
@@ -439,8 +512,8 @@ else:
 
             <div class="bill-sec">
                 <div>
-                    <b>Bill To Name:</b> {cust_name}<br>
-                    <b>Address:</b> {cust_address}
+                    <b>{curr_t['bill_to']}</b> {cust_name}<br>
+                    <b>{curr_t['address']}</b> {cust_address}
                 </div>
                 <div style="text-align: right;">
                     <span class="invoice-title">INVOICE</span><br>
@@ -452,17 +525,17 @@ else:
             <table>
                 <thead>
                     <tr>
-                        <th style="width: 8%;">S.L</th>
-                        <th style="width: 48%;">DESCRIPTION</th>
-                        <th style="width: 10%;">QTY</th>
-                        <th style="width: 17%;">U.PRICE</th>
-                        <th style="width: 17%;">AMOUNT</th>
+                        <th style="width: 8%;">{curr_t['sl']}</th>
+                        <th style="width: 48%;">{curr_t['desc']}</th>
+                        <th style="width: 10%;">{curr_t['qty']}</th>
+                        <th style="width: 17%;">{curr_t['price']}</th>
+                        <th style="width: 17%;">{curr_t['amount']}</th>
                     </tr>
                 </thead>
                 <tbody>
                     {rows_html}
                     <tr>
-                        <td colspan="3" style="border:1px solid #0d47a1;"><b>Amount In Words:</b> {amount_in_words}</td>
+                        <td colspan="3" style="border:1px solid #0d47a1;"><b>{curr_t['words']}</b> {amount_in_words}</td>
                         <td style="font-weight:bold; text-align:right; background:#0d47a1; color:white;">SUB TOTAL</td>
                         <td style="font-weight:bold; text-align:right; background:#0d47a1; color:white;">{sub_total:,}</td>
                     </tr>
