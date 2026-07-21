@@ -33,140 +33,82 @@ if "invoice_items" not in st.session_state:
     st.session_state.invoice_items = []
 
 # ==========================================
-# 🛑 ১. ১০০% ফুল স্ক্রিন লগইন UI (Pure HTML/CSS)
+# 🛑 ১. লগইন UI & ব্যাকএন্ড (Fixed Version)
 # ==========================================
 if not st.session_state.logged_in:
-    # Streamlit Header/Footer Hide
+    # Header/Footer লুকিয়ে ডার্ক থিম তৈরি
     st.markdown("""
         <style>
             header[data-testid="stHeader"], footer {visibility: hidden !important; height: 0px !important;}
-            .main .block-container {padding: 0rem !important; max-width: 100% !important;}
-            [data-testid="stAppViewContainer"] {background-color: #080d1a !important; padding: 0 !important;}
+            .main .block-container {padding-top: 3rem !important; max-width: 100% !important;}
+            [data-testid="stAppViewContainer"] {
+                background-color: #080d1a !important;
+                background-image: radial-gradient(circle at 50% 20%, rgba(0, 102, 255, 0.15) 0%, transparent 60%);
+            }
+            
+            /* ফর্মের কার্ড স্টাইল */
+            div[data-testid="stForm"] {
+                background: rgba(13, 22, 41, 0.95) !important;
+                border: 1px solid #1e2e4a !important;
+                border-radius: 24px !important;
+                padding: 30px !important;
+                box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 20px rgba(0, 102, 255, 0.2) !important;
+            }
+
+            /* ইনপুট ফিল্ড স্টাইল */
+            .stTextInput input {
+                background-color: #0b1528 !important;
+                border: 1px solid #1e3a5f !important;
+                color: #38bdf8 !important;
+                border-radius: 10px !important;
+            }
+
+            /* প্রাইমারি বাটন স্টাইল */
+            .stButton > button {
+                background: linear-gradient(90deg, #0052cc 0%, #0066ff 100%) !important;
+                color: white !important;
+                border: none !important;
+                border-radius: 20px !important;
+                font-weight: bold !important;
+                box-shadow: 0 4px 15px rgba(0, 102, 255, 0.4) !important;
+            }
         </style>
     """, unsafe_allow_html=True)
 
-    # HTML Login Form
-    login_html = """
-    <!DOCTYPE html>
-    <html lang="bn">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-      <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body {
-          background-color: #080d1a;
-          background-image: radial-gradient(circle at 50% 20%, rgba(0, 102, 255, 0.2) 0%, transparent 60%), linear-gradient(to bottom, #080d1a 0%, #050811 100%);
-          display: flex; justify-content: center; align-items: center; min-height: 100vh; color: #ffffff; padding: 20px;
-        }
-        .login-card {
-          width: 100%; max-width: 420px; padding: 35px 25px; background: rgba(13, 22, 41, 0.95);
-          border-radius: 28px; box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 20px rgba(0, 102, 255, 0.2);
-          border: 1px solid #1e2e4a; text-align: center; position: relative;
-        }
-        .logo-img-wrapper {
-          width: 110px; height: 110px; border-radius: 50%; background: #ffffff; padding: 3px;
-          box-shadow: 0 0 20px rgba(0, 102, 255, 0.5); border: 2px solid #0066ff; margin: 0 auto 15px auto;
-          display: flex; align-items: center; justify-content: center; overflow: hidden;
-        }
-        .logo-img-wrapper img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-        .brand-title { font-size: 22px; font-weight: 800; color: #ffffff; margin-bottom: 4px; }
-        .brand-title span { color: #1e88e5; }
-        .brand-subtitle { font-size: 11px; color: #94a3b8; letter-spacing: 1.2px; font-weight: 600; margin-bottom: 25px; text-transform: uppercase; }
-        
-        .input-group { position: relative; margin-bottom: 15px; }
-        .input-group i.left-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #38bdf8; font-size: 15px; }
-        .input-group i.right-icon { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 15px; cursor: pointer; }
-        .input-group input {
-          width: 100%; padding: 14px 40px 14px 45px; background-color: #0b1528; border: 1.5px solid #1e3a5f;
-          border-radius: 12px; color: #38bdf8; font-size: 14px; outline: none; transition: 0.3s;
-        }
-        .input-group input:focus { border-color: #0066ff; box-shadow: 0 0 12px rgba(0, 102, 255, 0.3); }
-        .options-row { display: flex; justify-content: space-between; font-size: 12px; color: #94a3b8; margin-bottom: 22px; }
-        .options-row a { color: #38bdf8; text-decoration: none; }
-        
-        .btn-submit {
-          width: 100%; padding: 14px; background: linear-gradient(90deg, #0052cc 0%, #0066ff 100%);
-          color: #ffffff; border: none; border-radius: 25px; font-size: 16px; font-weight: 700; cursor: pointer;
-          box-shadow: 0 4px 15px rgba(0, 102, 255, 0.4); display: flex; align-items: center; justify-content: center; gap: 8px;
-        }
-        .divider { position: relative; text-align: center; font-size: 12px; color: #64748b; margin: 22px 0; }
-        .divider::before, .divider::after { content: ""; position: absolute; top: 50%; width: 22%; height: 1px; background-color: #1e293b; }
-        .divider::before { left: 0; } .divider::after { right: 0; }
-        
-        .social-login { display: flex; gap: 8px; justify-content: center; margin-bottom: 22px; }
-        .social-btn {
-          flex: 1; padding: 10px 6px; background-color: #0b1528; border: 1px solid #1e3a5f; border-radius: 10px;
-          color: #e2e8f0; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
-        }
-        .signup-text { font-size: 13px; color: #94a3b8; }
-        .signup-text a { color: #38bdf8; text-decoration: none; font-weight: 700; }
-      </style>
-    </head>
-    <body>
-      <div class="login-card">
-        <div class="logo-img-wrapper">
-          <img src="https://raw.githubusercontent.com/smtech050-cmd/SM-TECH/main/IMG_20260717_214948.png" alt="SM-TECH Logo">
-        </div>
-        <h2 class="brand-title">Welcome to <span>SM-TECH</span></h2>
-        <p class="brand-subtitle">COMPUTER & IT SOLUTIONS</p>
-
-        <form id="loginForm">
-          <div class="input-group">
-            <i class="fa-solid fa-user left-icon"></i>
-            <input type="text" id="username" placeholder="আপনার মোবাইল নম্বর / ইমেইল" required>
-          </div>
-          <div class="input-group">
-            <i class="fa-solid fa-lock left-icon"></i>
-            <input type="password" id="password" placeholder="পাসওয়ার্ড" required>
-            <i class="fa-solid fa-eye-slash right-icon"></i>
-          </div>
-          <div class="options-row">
-            <label><input type="checkbox"> আমাকে মনে রাখুন</label>
-            <a href="#">পাসওয়ার্ড ভুলে গেছেন?</a>
-          </div>
-          <button type="button" onclick="submitLogin()" class="btn-submit">
-            [➔] লগইন করুন
-          </button>
-        </form>
-
-        <div class="divider">অথবা ওটিপি দিয়ে লগইন</div>
-        <div class="social-login">
-          <button class="social-btn"><i class="fa-brands fa-google" style="color:#ea4335;"></i> Google</button>
-          <button class="social-btn"><i class="fa-brands fa-facebook" style="color:#1877f2;"></i> Facebook</button>
-          <button class="social-btn"><i class="fa-solid fa-envelope-open-text" style="color:#38bdf8;"></i> ওটিপি</button>
-        </div>
-        <p class="signup-text">একাউন্ট নেই? <a href="#">নিবন্ধন করুন (Sign Up)</a></p>
-      </div>
-
-      <script>
-        function submitLogin() {
-          // Streamlit-এ ইউজারনেম পাসওয়ার্ড চেক করার ট্রিক
-          const u = document.getElementById("username").value;
-          const p = document.getElementById("password").value;
-          if(u === "admin" && p === "1234"){
-             window.parent.postMessage({type: 'streamlit:setComponentValue', value: true}, '*');
-          } else {
-             alert("ভুল ইউজারনেম অথবা পাসওয়ার্ড! (ইউজারনেম: admin, পাসওয়ার্ড: 1234)");
-          }
-        }
-      </script>
-    </body>
-    </html>
-    """
+    col1, col2, col3 = st.columns([1, 1.1, 1])
     
-    # HTML রেন্ডারিং
-    st.components.v1.html(login_html, height=750, scrolling=False)
+    with col2:
+        st.markdown("""
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="width: 100px; height: 100px; border-radius: 50%; background: #ffffff; padding: 2px; 
+                            box-shadow: 0 0 20px rgba(0, 102, 255, 0.5); border: 2px solid #0066ff; margin: 0 auto 10px auto;">
+                    <img src="https://raw.githubusercontent.com/smtech050-cmd/SM-TECH/main/IMG_20260717_214948.png" 
+                         style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                </div>
+                <h2 style="color: #ffffff; font-size: 22px; font-weight: 800; margin: 0;">Welcome to <span style="color: #1e88e5;">SM-TECH</span></h2>
+                <p style="color: #94a3b8; font-size: 11px; letter-spacing: 1.2px; font-weight: 600; text-transform: uppercase; margin-top: 3px;">COMPUTER & IT SOLUTIONS</p>
+            </div>
+        """, unsafe_allow_html=True)
 
-    # ব্যাকএন্ড লগইন বাইপাস বোতাম (বিকল্প লগইন)
-    with st.expander("🔑 ডাইরেক্ট সিস্টেম প্রবেশ (Developer Option)"):
-        dev_u = st.text_input("ইউজারনেম", value="admin", key="dev_u")
-        dev_p = st.text_input("পাসওয়ার্ড", type="password", value="1234", key="dev_p")
-        if st.button("লগইন ড্যাশবোর্ড"):
-            if dev_u == "admin" and dev_p == "1234":
-                st.session_state.logged_in = True
-                st.rerun()
+        with st.form("login_form"):
+            username = st.text_input("ইউজারনেম / ইমেইল", value="admin", placeholder="আপনার ইউজারনেম লিখুন")
+            password = st.text_input("পাসওয়ার্ড", type="password", value="1234", placeholder="আপনার পাসওয়ার্ড লিখুন")
+            
+            submit = st.form_submit_button("[➔] লগইন করুন", use_container_width=True)
+            
+            if submit:
+                if username == "admin" and password == "1234":
+                    st.session_state.logged_in = True
+                    st.success("লগইন সফল হয়েছে!")
+                    st.rerun()
+                else:
+                    st.error("ভুল ইউজারনেম অথবা পাসওয়ার্ড! (ডিফল্ট: admin / 1234)")
+
+        st.markdown("""
+            <p style='text-align: center; color: #64748b; font-size: 12px; margin-top: 15px;'>
+                ডিফল্ট লগইন ইউজারনেম: <b style='color:#38bdf8;'>admin</b> | পাসওয়ার্ড: <b style='color:#38bdf8;'>1234</b>
+            </p>
+        """, unsafe_allow_html=True)
 
 # ==========================================
 # 🔓 ২. মূল ড্যাশবোর্ড
@@ -207,7 +149,7 @@ else:
         if st.button("🔐 Password Save", use_container_width=True):
             st.session_state.current_menu = "Password Save"; st.rerun()
 
-    # ড্যাশবোর্ড মডিউল
+    # ১. ড্যাশবোর্ড মডিউল
     if st.session_state.current_menu == "Dashboard":
         st.title("🖥️ ড্যাশবোর্ড")
         st.write("---")
@@ -221,7 +163,7 @@ else:
         st.subheader("কাস্টমার ডিরেক্টরি & রিসেন্ট এন্ট্রি")
         st.dataframe(pd.DataFrame(st.session_state.customer_dues), use_container_width=True)
 
-    # কাস্টমার ও রিপেয়ার
+    # ২. কাস্টমার ও রিপেয়ার
     elif st.session_state.current_menu == "Customer & Repair":
         st.title("👥 কাস্টমার বাকির হিসাব")
         with st.form("Add Customer Due", clear_on_submit=True):
@@ -239,7 +181,7 @@ else:
                 st.rerun()
         st.dataframe(pd.DataFrame(st.session_state.customer_dues), use_container_width=True)
 
-    # স্টক পণ্য
+    # ৩. স্টক পণ্য
     elif st.session_state.current_menu == "Stock product":
         st.title("📦 স্টক পণ্য ম্যানেজমেন্ট")
         with st.form("Add Shop Stock", clear_on_submit=True):
@@ -254,7 +196,7 @@ else:
                 st.rerun()
         st.dataframe(pd.DataFrame(st.session_state.shop_stock), use_container_width=True)
 
-    # পাসওয়ার্ড সংরক্ষণ
+    # ৪. পাসওয়ার্ড সংরক্ষণ
     elif st.session_state.current_menu == "Password Save":
         st.title("🔐 পাসওয়ার্ড সংরক্ষণ")
         with st.form("Add Password", clear_on_submit=True):
@@ -269,7 +211,7 @@ else:
                 st.rerun()
         st.dataframe(pd.DataFrame(st.session_state.saved_passwords), use_container_width=True)
 
-    # সেল ইনভয়েস
+    # ৫. সেল ইনভয়েস
     elif st.session_state.current_menu == "Sell Invoice":
         st.title("🧾 পয়েন্ট অব সেল ও ইনভয়েস")
         col_in1, col_in2, col_in3 = st.columns([1.5, 2, 2])
