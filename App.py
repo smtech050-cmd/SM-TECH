@@ -76,9 +76,9 @@ t = {
         "title_pass": "🔐 পাসওয়ার্ড সংরক্ষণ",
         "title_inv": "🧾 ইনভয়েস জেনারেটর",
         "menu_dash": "⬜ ড্যাশবোর্ড",
-        "menu_cust": "👥 বাকির কাস্টমার নাম",
+        "menu_cust": "👥 কাস্টমার ও রিপেয়ার",
         "menu_stock": "📦 স্টক প্রোডাক্ট",
-        "menu_inv": "💵 ইনভয়েস",
+        "menu_inv": "💵 সেল ইনভয়েস",
         "menu_pass": "🔐 পাসওয়ার্ড সেভ",
         "total_cust": "মোট কাস্টমার",
         "total_due": "মোট বাকি টাকা",
@@ -118,7 +118,7 @@ inv_labels = {
         "price": "দর",
         "amount": "মোট টাকা",
         "words": "কথায়:",
-        "subtotal": "মোট",
+        "subtotal": "মোট (SUB TOTAL)",
         "pay_meth": "PAYMENT METHODS",
         "auth_sig": "অনুমোদিত স্বাক্ষর (Authorised Signature)",
         "print_btn": "🖨️ প্রিন্ট করুন / Save as PDF (A5)"
@@ -353,7 +353,7 @@ else:
         sub_total = sum(item["Amount"] for item in st.session_state.invoice_items)
         amount_in_words = number_to_words_bn(sub_total) if i_lang == "Bangla" else number_to_words_en(sub_total)
         
-        # ৮ লাইনের টেবিল (রো-গুলোর হাইট বাড়িয়ে টেবিলটি ফাকা করা হয়েছে)
+        # ৮ লাইনের টেবিল
         rows_html = ""
         max_rows = 8
         for i in range(max_rows):
@@ -379,7 +379,7 @@ else:
                 </tr>
                 """
 
-        # HTML ইনভয়েস লেআউট (Updated Row Height & Padding to Fill Space Vertically)
+        # HTML ইনভয়েস লেআউট (Fixed Payment Methods Duplication Issue)
         invoice_template = f"""
         <!DOCTYPE html>
         <html>
@@ -496,7 +496,7 @@ else:
             td {{
                 border: 1px solid #0d47a1;
                 padding: 6px 8px;
-                height: 28px; /* কলামের উচ্চতা বড় করা হয়েছে */
+                height: 28px;
                 color: #0d47a1;
             }}
             .footer-sec {{
@@ -537,12 +537,15 @@ else:
             .pay-item {{
                 display: flex;
                 align-items: center;
-                gap: 8px;
+                gap: 6px;
             }}
-            .pay-logo-img {{
-                height: 18px;
-                width: auto;
-                object-fit: contain;
+            .pay-badge {{
+                display: inline-block;
+                padding: 1px 6px;
+                border-radius: 4px;
+                color: white;
+                font-size: 10px;
+                font-weight: 900;
             }}
             .print-btn-container {{
                 text-align: center;
@@ -627,21 +630,21 @@ else:
 
             <div class="footer-sec">
                 <div>
-                    <!-- ১, ২, ৩, ৪ পেমেন্ট মেথড নিশ্চিত লোগো সহ -->
+                    <!-- ১, ২, ৩, ৪ পেমেন্ট মেথড (একবার লেখা আসবে এবং কোনো ব্রোকেন ইমেজ থাকবে না) -->
                     <div class="payment-methods">
                         <div class="pay-title">{cur_inv['pay_meth']}</div>
                         <div class="pay-list">
                             <div class="pay-item">
-                                ১। 💵 <span>Cash</span>
+                                ১। 💵 Cash
                             </div>
                             <div class="pay-item">
-                                ২। <img src="https://img.icons8.com/color/48/bkash.png" class="pay-logo-img" alt="bKash"> <span>Bkash</span>
+                                ২। <span class="pay-badge" style="background:#e2136e;">bKash</span> Bkash
                             </div>
                             <div class="pay-item">
-                                ৩। <img src="https://nagad.com.bd/wp-content/uploads/2021/04/nagad-logo.png" class="pay-logo-img" alt="Nagad"> <span>Nagad</span>
+                                ৩। <span class="pay-badge" style="background:#f7921e;">Nagad</span> Nagad
                             </div>
                             <div class="pay-item">
-                                ৪। <img src="https://img.icons8.com/color/48/bank-building.png" class="pay-logo-img" alt="Bank"> <span>Bank</span>
+                                ৪। 🏦 Bank
                             </div>
                         </div>
                     </div>
