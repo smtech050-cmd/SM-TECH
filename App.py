@@ -1,13 +1,12 @@
 import streamlit as st
 import pandas as pd
 import datetime
-import base64
 
 # পেজ কনফিগারেশন
 st.set_page_config(page_title="SM-TECH | Admin System", layout="wide", page_icon="💻")
 
 # ==========================================
-# 🔐 লগইন ও সেশন স্টেট ইনিশিয়ালাইজেশন
+# 🔐 সেশন স্টেট ইনিশিয়ালাইজেশন
 # ==========================================
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
@@ -34,11 +33,20 @@ if "invoice_items" not in st.session_state:
     st.session_state.invoice_items = []
 
 # ==========================================
-# 🎨 গ্লোবাল থিম ও আধুনিক স্টাইলিং CSS
+# 🎨 ফুল-স্ক্রিন মোড ও রেসপনসিভ CSS
 # ==========================================
 custom_css = """
 <style>
-    /* মূল অ্যাপ ব্যাকগ্রাউন্ড ও থিম সেটআপ */
+    /* 📱 মোবাইল ও সব ডিভাইসে ফুল স্ক্রিন করার মূল প্যাচ */
+    .main .block-container {
+        padding-top: 2rem !important;
+        padding-bottom: 2rem !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+        max-width: 100% !important;
+    }
+
+    /* অ্যাপের মূল ব্যাকগ্রাউন্ড */
     [data-testid="stAppViewContainer"] {
         background-color: #080d1a !important;
         background-image: radial-gradient(circle at 50% 20%, rgba(0, 102, 255, 0.15) 0%, transparent 50%) !important;
@@ -49,45 +57,55 @@ custom_css = """
         background-color: #0b1426 !important;
         border-right: 1px solid #1e2e4a !important;
     }
-    
-    /* ✍️ ইনপুট বক্স স্টাইলিং */
+
+    /* Streamlit Header এবং Footer লুকিয়ে রাখা */
+    header[data-testid="stHeader"], footer {
+        visibility: hidden !important;
+        height: 0px !important;
+    }
+
+    /* ✍️ ইনপুট বক্সের ফুল-উইডথ ও রেসপনসিভ ডিজাইন */
     div[data-baseweb="input"], 
     div[data-baseweb="base-input"] {
         background-color: #0b1528 !important;
-        border-radius: 10px !important;
-        border: 1px solid #1e3a5f !important;
+        border-radius: 12px !important;
+        border: 1.5px solid #1e3a5f !important;
+        width: 100% !important;
     }
 
     .stTextInput input, .stNumberInput input {
         color: #38bdf8 !important;
         background-color: #0b1528 !important;
         -webkit-text-fill-color: #38bdf8 !important;
+        padding: 12px !important;
+        font-size: 15px !important;
     }
     
-    /* প্লেসহোল্ডার কালার */
+    /* প্লেসহোল্ডার টেক্সট */
     input::placeholder {
         color: #64748b !important;
         -webkit-text-fill-color: #64748b !important;
     }
 
-    /* আইকন কালার */
+    /* আইকন ফিল্ড */
     div[data-baseweb="input"] svg {
         fill: #38bdf8 !important;
         color: #38bdf8 !important;
     }
     
-    /* ফিল্ড লেবেল টেক্সট */
+    /* ইনপুট লেবেল */
     .stTextInput label, .stNumberInput label {
         color: #e2e8f0 !important;
         font-weight: 600 !important;
+        font-size: 14px !important;
     }
     
-    /* 🔴 বাটন স্টাইলিং */
+    /* 🔴 বাটন ফুল-উইডথ এবং গ্লোয়িং ফিল্টার */
     div.stButton > button {
         background: linear-gradient(90deg, #0052cc 0%, #0066ff 100%) !important;
         color: #ffffff !important;
         border: none !important;
-        padding: 12px 20px !important;
+        padding: 14px 20px !important;
         font-size: 16px !important;
         font-weight: bold !important;
         border-radius: 25px !important;
@@ -97,16 +115,15 @@ custom_css = """
     }
     
     div.stButton > button:hover {
-        opacity: 0.9 !important;
+        opacity: 0.95 !important;
         box-shadow: 0 6px 20px rgba(0, 102, 255, 0.6) !important;
-        transform: translateY(-1px);
     }
     
     div.stButton p {
         color: #ffffff !important; 
     }
-    
-    /* সাইডবার বাটন স্টাইল */
+
+    /* সাইডবার বাটন */
     div.stSidebar div.stButton > button {
         text-align: left !important;
         margin-bottom: 8px !important;
@@ -116,20 +133,16 @@ custom_css = """
         box-shadow: none !important;
     }
 
-    div.stSidebar div.stButton > button:hover {
-        background: #0066ff !important;
-    }
-
-    /* লোগো ও ব্র্যান্ড অ্যানিমেশন */
+    /* লোগো কনটেইনার */
     .logo-img-wrapper {
-        width: 120px;
-        height: 120px;
+        width: 110px;
+        height: 110px;
         border-radius: 50%;
         background: #ffffff;
-        padding: 4px;
+        padding: 3px;
         box-shadow: 0 0 20px rgba(0, 102, 255, 0.5);
         border: 2px solid #0066ff;
-        margin: 0 auto 15px auto;
+        margin: 0 auto 12px auto;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -143,62 +156,61 @@ custom_css = """
         object-fit: cover;
     }
     
-    /* টেবিল স্টাইলিং */
+    /* টেবিল ডিজাইন */
     div[data-testid="stDataFrame"] {
         background-color: #0d1629 !important;
         border: 1px solid #1e2e4a !important;
         border-radius: 12px !important;
+        width: 100% !important;
     }
 </style>
 """
 st.markdown(custom_css, unsafe_allow_html=True)
 
 # ==========================================
-# 🛑 ১. লগইন স্ক্রিন রেন্ডারিং
+# 🛑 ১. ফুল স্ক্রিন লগইন লেআউট
 # ==========================================
 if not st.session_state.logged_in:
-    _, col_center, _ = st.columns([1, 1.3, 1])
-    with col_center:
-        st.markdown('<br>', unsafe_allow_html=True)
-        
-        # ব্র্যান্ড লোগো এবং টাইটেল ইউজার ইন্টারফেস
+    # মোবাইল এবং ডেসktop উভয়ের জন্য মার্জিন অ্যাডজাস্ট করা কলাম
+    col1, col2, col3 = st.columns([0.05, 0.9, 0.05])
+    
+    with col2:
         st.markdown('''
-            <div style="text-align: center; margin-bottom: 20px;">
+            <div style="text-align: center; margin-top: 15px; margin-bottom: 20px;">
                 <div class="logo-img-wrapper">
                     <img src="https://raw.githubusercontent.com/smtech050-cmd/SM-TECH/main/IMG_20260717_214948.png" alt="SM-TECH Logo">
                 </div>
-                <div style="font-size: 26px; font-weight: 800; color: #ffffff; letter-spacing: 0.5px;">
+                <div style="font-size: 24px; font-weight: 800; color: #ffffff; letter-spacing: 0.5px;">
                     Welcome to <span style="color: #1e88e5;">SM-TECH</span>
                 </div>
-                <div style="font-size: 12px; color: #94a3b8; letter-spacing: 1.2px; font-weight: 600; margin-top: 2px;">
+                <div style="font-size: 11px; color: #94a3b8; letter-spacing: 1.2px; font-weight: 600; margin-top: 3px;">
                     COMPUTER & IT SOLUTIONS
                 </div>
             </div>
         ''', unsafe_allow_html=True)
         
-        with st.container():
-            username = st.text_input("Username (ইউজারনেম)", placeholder="আপনার মোবাইল নম্বর / ইমেইল")
-            password = st.text_input("Password (পাসওয়ার্ড)", type="password", placeholder="পাসওয়ার্ড দিন")
-            st.markdown('<br>', unsafe_allow_html=True)
-            
-            login_btn = st.button("➔ লগইন করুন", use_container_width=True)
-            if login_btn:
-                if username == "admin" and password == "1234":
-                    st.session_state.logged_in = True
-                    st.success("লগইন সফল হয়েছে!")
-                    st.rerun()
-                else:
-                    st.error("ভুল ইউজারনেম অথবা পাসওয়ার্ড! আবার চেষ্টা করুন।")
+        username = st.text_input("Username (ইউজারনেম)", placeholder="আপনার মোবাইল নম্বর / ইমেইল")
+        password = st.text_input("Password (পাসওয়ার্ড)", type="password", placeholder="পাসওয়ার্ড দিন")
+        st.markdown('<br>', unsafe_allow_html=True)
+        
+        login_btn = st.button("➔ লগইন করুন", use_container_width=True)
+        if login_btn:
+            if username == "admin" and password == "1234":
+                st.session_state.logged_in = True
+                st.success("লগইন সফল হয়েছে!")
+                st.rerun()
+            else:
+                st.error("ভুল ইউজারনেম অথবা পাসওয়ার্ড! আবার চেষ্টা করুন।")
 
 # ==========================================
-# 🔓 ২. মূল ড্যাশবোর্ড স্ক্রিন
+# 🔓 ২. মূল ড্যাশবোর্ড
 # ==========================================
 else:
     with st.sidebar:
         st.markdown('''
             <div style="display: flex; align-items: center; margin-top: 10px; margin-bottom: 15px;">
                 <span style="font-size: 28px; margin-right: 10px; color: #38bdf8;">💻</span>
-                <span style="font-size: 24px; font-weight: 900; color: #ffffff; letter-spacing: 0.5px;">SM-TECH</span>
+                <span style="font-size: 22px; font-weight: 900; color: #ffffff;">SM-TECH</span>
             </div>
         ''', unsafe_allow_html=True)
         
