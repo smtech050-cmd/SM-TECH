@@ -33,179 +33,154 @@ if "invoice_items" not in st.session_state:
     st.session_state.invoice_items = []
 
 # ==========================================
-# 🎨 ফুল-স্ক্রিন মোড ও রেসপনসিভ CSS
-# ==========================================
-custom_css = """
-<style>
-    /* 📱 মোবাইল ও সব ডিভাইসে ফুল স্ক্রিন করার মূল প্যাচ */
-    .main .block-container {
-        padding-top: 2rem !important;
-        padding-bottom: 2rem !important;
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
-        max-width: 100% !important;
-    }
-
-    /* অ্যাপের মূল ব্যাকগ্রাউন্ড */
-    [data-testid="stAppViewContainer"] {
-        background-color: #080d1a !important;
-        background-image: radial-gradient(circle at 50% 20%, rgba(0, 102, 255, 0.15) 0%, transparent 50%) !important;
-        color: #ffffff !important;
-    }
-    
-    [data-testid="stSidebar"] {
-        background-color: #0b1426 !important;
-        border-right: 1px solid #1e2e4a !important;
-    }
-
-    /* Streamlit Header এবং Footer লুকিয়ে রাখা */
-    header[data-testid="stHeader"], footer {
-        visibility: hidden !important;
-        height: 0px !important;
-    }
-
-    /* ✍️ ইনপুট বক্সের ফুল-উইডথ ও রেসপনসিভ ডিজাইন */
-    div[data-baseweb="input"], 
-    div[data-baseweb="base-input"] {
-        background-color: #0b1528 !important;
-        border-radius: 12px !important;
-        border: 1.5px solid #1e3a5f !important;
-        width: 100% !important;
-    }
-
-    .stTextInput input, .stNumberInput input {
-        color: #38bdf8 !important;
-        background-color: #0b1528 !important;
-        -webkit-text-fill-color: #38bdf8 !important;
-        padding: 12px !important;
-        font-size: 15px !important;
-    }
-    
-    /* প্লেসহোল্ডার টেক্সট */
-    input::placeholder {
-        color: #64748b !important;
-        -webkit-text-fill-color: #64748b !important;
-    }
-
-    /* আইকন ফিল্ড */
-    div[data-baseweb="input"] svg {
-        fill: #38bdf8 !important;
-        color: #38bdf8 !important;
-    }
-    
-    /* ইনপুট লেবেল */
-    .stTextInput label, .stNumberInput label {
-        color: #e2e8f0 !important;
-        font-weight: 600 !important;
-        font-size: 14px !important;
-    }
-    
-    /* 🔴 বাটন ফুল-উইডথ এবং গ্লোয়িং ফিল্টার */
-    div.stButton > button {
-        background: linear-gradient(90deg, #0052cc 0%, #0066ff 100%) !important;
-        color: #ffffff !important;
-        border: none !important;
-        padding: 14px 20px !important;
-        font-size: 16px !important;
-        font-weight: bold !important;
-        border-radius: 25px !important;
-        width: 100% !important;
-        box-shadow: 0 4px 15px rgba(0, 102, 255, 0.4) !important;
-        transition: all 0.3s ease !important;
-    }
-    
-    div.stButton > button:hover {
-        opacity: 0.95 !important;
-        box-shadow: 0 6px 20px rgba(0, 102, 255, 0.6) !important;
-    }
-    
-    div.stButton p {
-        color: #ffffff !important; 
-    }
-
-    /* সাইডবার বাটন */
-    div.stSidebar div.stButton > button {
-        text-align: left !important;
-        margin-bottom: 8px !important;
-        border-radius: 10px !important;
-        background: #0f1c35 !important;
-        border: 1px solid #1e3a5f !important;
-        box-shadow: none !important;
-    }
-
-    /* লোগো কনটেইনার */
-    .logo-img-wrapper {
-        width: 110px;
-        height: 110px;
-        border-radius: 50%;
-        background: #ffffff;
-        padding: 3px;
-        box-shadow: 0 0 20px rgba(0, 102, 255, 0.5);
-        border: 2px solid #0066ff;
-        margin: 0 auto 12px auto;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-    }
-
-    .logo-img-wrapper img {
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        object-fit: cover;
-    }
-    
-    /* টেবিল ডিজাইন */
-    div[data-testid="stDataFrame"] {
-        background-color: #0d1629 !important;
-        border: 1px solid #1e2e4a !important;
-        border-radius: 12px !important;
-        width: 100% !important;
-    }
-</style>
-"""
-st.markdown(custom_css, unsafe_allow_html=True)
-
-# ==========================================
-# 🛑 ১. ফুল স্ক্রিন লগইন লেআউট
+# 🛑 ১. ১০০% ফুল স্ক্রিন লগইন UI (Pure HTML/CSS)
 # ==========================================
 if not st.session_state.logged_in:
-    # মোবাইল এবং ডেসktop উভয়ের জন্য মার্জিন অ্যাডজাস্ট করা কলাম
-    col1, col2, col3 = st.columns([0.05, 0.9, 0.05])
+    # Streamlit Header/Footer Hide
+    st.markdown("""
+        <style>
+            header[data-testid="stHeader"], footer {visibility: hidden !important; height: 0px !important;}
+            .main .block-container {padding: 0rem !important; max-width: 100% !important;}
+            [data-testid="stAppViewContainer"] {background-color: #080d1a !important; padding: 0 !important;}
+        </style>
+    """, unsafe_allow_html=True)
+
+    # HTML Login Form
+    login_html = """
+    <!DOCTYPE html>
+    <html lang="bn">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+      <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body {
+          background-color: #080d1a;
+          background-image: radial-gradient(circle at 50% 20%, rgba(0, 102, 255, 0.2) 0%, transparent 60%), linear-gradient(to bottom, #080d1a 0%, #050811 100%);
+          display: flex; justify-content: center; align-items: center; min-height: 100vh; color: #ffffff; padding: 20px;
+        }
+        .login-card {
+          width: 100%; max-width: 420px; padding: 35px 25px; background: rgba(13, 22, 41, 0.95);
+          border-radius: 28px; box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 20px rgba(0, 102, 255, 0.2);
+          border: 1px solid #1e2e4a; text-align: center; position: relative;
+        }
+        .logo-img-wrapper {
+          width: 110px; height: 110px; border-radius: 50%; background: #ffffff; padding: 3px;
+          box-shadow: 0 0 20px rgba(0, 102, 255, 0.5); border: 2px solid #0066ff; margin: 0 auto 15px auto;
+          display: flex; align-items: center; justify-content: center; overflow: hidden;
+        }
+        .logo-img-wrapper img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+        .brand-title { font-size: 22px; font-weight: 800; color: #ffffff; margin-bottom: 4px; }
+        .brand-title span { color: #1e88e5; }
+        .brand-subtitle { font-size: 11px; color: #94a3b8; letter-spacing: 1.2px; font-weight: 600; margin-bottom: 25px; text-transform: uppercase; }
+        
+        .input-group { position: relative; margin-bottom: 15px; }
+        .input-group i.left-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #38bdf8; font-size: 15px; }
+        .input-group i.right-icon { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 15px; cursor: pointer; }
+        .input-group input {
+          width: 100%; padding: 14px 40px 14px 45px; background-color: #0b1528; border: 1.5px solid #1e3a5f;
+          border-radius: 12px; color: #38bdf8; font-size: 14px; outline: none; transition: 0.3s;
+        }
+        .input-group input:focus { border-color: #0066ff; box-shadow: 0 0 12px rgba(0, 102, 255, 0.3); }
+        .options-row { display: flex; justify-content: space-between; font-size: 12px; color: #94a3b8; margin-bottom: 22px; }
+        .options-row a { color: #38bdf8; text-decoration: none; }
+        
+        .btn-submit {
+          width: 100%; padding: 14px; background: linear-gradient(90deg, #0052cc 0%, #0066ff 100%);
+          color: #ffffff; border: none; border-radius: 25px; font-size: 16px; font-weight: 700; cursor: pointer;
+          box-shadow: 0 4px 15px rgba(0, 102, 255, 0.4); display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .divider { position: relative; text-align: center; font-size: 12px; color: #64748b; margin: 22px 0; }
+        .divider::before, .divider::after { content: ""; position: absolute; top: 50%; width: 22%; height: 1px; background-color: #1e293b; }
+        .divider::before { left: 0; } .divider::after { right: 0; }
+        
+        .social-login { display: flex; gap: 8px; justify-content: center; margin-bottom: 22px; }
+        .social-btn {
+          flex: 1; padding: 10px 6px; background-color: #0b1528; border: 1px solid #1e3a5f; border-radius: 10px;
+          color: #e2e8f0; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .signup-text { font-size: 13px; color: #94a3b8; }
+        .signup-text a { color: #38bdf8; text-decoration: none; font-weight: 700; }
+      </style>
+    </head>
+    <body>
+      <div class="login-card">
+        <div class="logo-img-wrapper">
+          <img src="https://raw.githubusercontent.com/smtech050-cmd/SM-TECH/main/IMG_20260717_214948.png" alt="SM-TECH Logo">
+        </div>
+        <h2 class="brand-title">Welcome to <span>SM-TECH</span></h2>
+        <p class="brand-subtitle">COMPUTER & IT SOLUTIONS</p>
+
+        <form id="loginForm">
+          <div class="input-group">
+            <i class="fa-solid fa-user left-icon"></i>
+            <input type="text" id="username" placeholder="আপনার মোবাইল নম্বর / ইমেইল" required>
+          </div>
+          <div class="input-group">
+            <i class="fa-solid fa-lock left-icon"></i>
+            <input type="password" id="password" placeholder="পাসওয়ার্ড" required>
+            <i class="fa-solid fa-eye-slash right-icon"></i>
+          </div>
+          <div class="options-row">
+            <label><input type="checkbox"> আমাকে মনে রাখুন</label>
+            <a href="#">পাসওয়ার্ড ভুলে গেছেন?</a>
+          </div>
+          <button type="button" onclick="submitLogin()" class="btn-submit">
+            [➔] লগইন করুন
+          </button>
+        </form>
+
+        <div class="divider">অথবা ওটিপি দিয়ে লগইন</div>
+        <div class="social-login">
+          <button class="social-btn"><i class="fa-brands fa-google" style="color:#ea4335;"></i> Google</button>
+          <button class="social-btn"><i class="fa-brands fa-facebook" style="color:#1877f2;"></i> Facebook</button>
+          <button class="social-btn"><i class="fa-solid fa-envelope-open-text" style="color:#38bdf8;"></i> ওটিপি</button>
+        </div>
+        <p class="signup-text">একাউন্ট নেই? <a href="#">নিবন্ধন করুন (Sign Up)</a></p>
+      </div>
+
+      <script>
+        function submitLogin() {
+          // Streamlit-এ ইউজারনেম পাসওয়ার্ড চেক করার ট্রিক
+          const u = document.getElementById("username").value;
+          const p = document.getElementById("password").value;
+          if(u === "admin" && p === "1234"){
+             window.parent.postMessage({type: 'streamlit:setComponentValue', value: true}, '*');
+          } else {
+             alert("ভুল ইউজারনেম অথবা পাসওয়ার্ড! (ইউজারনেম: admin, পাসওয়ার্ড: 1234)");
+          }
+        }
+      </script>
+    </body>
+    </html>
+    """
     
-    with col2:
-        st.markdown('''
-            <div style="text-align: center; margin-top: 15px; margin-bottom: 20px;">
-                <div class="logo-img-wrapper">
-                    <img src="https://raw.githubusercontent.com/smtech050-cmd/SM-TECH/main/IMG_20260717_214948.png" alt="SM-TECH Logo">
-                </div>
-                <div style="font-size: 24px; font-weight: 800; color: #ffffff; letter-spacing: 0.5px;">
-                    Welcome to <span style="color: #1e88e5;">SM-TECH</span>
-                </div>
-                <div style="font-size: 11px; color: #94a3b8; letter-spacing: 1.2px; font-weight: 600; margin-top: 3px;">
-                    COMPUTER & IT SOLUTIONS
-                </div>
-            </div>
-        ''', unsafe_allow_html=True)
-        
-        username = st.text_input("Username (ইউজারনেম)", placeholder="আপনার মোবাইল নম্বর / ইমেইল")
-        password = st.text_input("Password (পাসওয়ার্ড)", type="password", placeholder="পাসওয়ার্ড দিন")
-        st.markdown('<br>', unsafe_allow_html=True)
-        
-        login_btn = st.button("➔ লগইন করুন", use_container_width=True)
-        if login_btn:
-            if username == "admin" and password == "1234":
+    # HTML রেন্ডারিং
+    st.components.v1.html(login_html, height=750, scrolling=False)
+
+    # ব্যাকএন্ড লগইন বাইপাস বোতাম (বিকল্প লগইন)
+    with st.expander("🔑 ডাইরেক্ট সিস্টেম প্রবেশ (Developer Option)"):
+        dev_u = st.text_input("ইউজারনেম", value="admin", key="dev_u")
+        dev_p = st.text_input("পাসওয়ার্ড", type="password", value="1234", key="dev_p")
+        if st.button("লগইন ড্যাশবোর্ড"):
+            if dev_u == "admin" and dev_p == "1234":
                 st.session_state.logged_in = True
-                st.success("লগইন সফল হয়েছে!")
                 st.rerun()
-            else:
-                st.error("ভুল ইউজারনেম অথবা পাসওয়ার্ড! আবার চেষ্টা করুন।")
 
 # ==========================================
 # 🔓 ২. মূল ড্যাশবোর্ড
 # ==========================================
 else:
+    # ড্যাশবোর্ড থিম CSS
+    st.markdown("""
+        <style>
+            [data-testid="stAppViewContainer"] { background-color: #080d1a !important; color: white !important; }
+            [data-testid="stSidebar"] { background-color: #0b1426 !important; }
+            .stTextInput input, .stNumberInput input { background-color: #0b1528 !important; color: #38bdf8 !important; }
+        </style>
+    """, unsafe_allow_html=True)
+
     with st.sidebar:
         st.markdown('''
             <div style="display: flex; align-items: center; margin-top: 10px; margin-bottom: 15px;">
