@@ -352,8 +352,6 @@ else:
 
         sub_total = sum(item["Amount"] for item in st.session_state.invoice_items)
         amount_in_words = number_to_words_bn(sub_total) if i_lang == "Bangla" else number_to_words_en(sub_total)
-        current_date = datetime.datetime.now().strftime("%d/%m/%Y")
-        current_time_stamp = datetime.datetime.now().strftime("%d-%b-%Y %I:%M %p")
         
         # ১০ লাইনের টেবিল
         rows_html = ""
@@ -381,7 +379,7 @@ else:
                 </tr>
                 """
 
-        # HTML ইনভয়েস লেআউট
+        # HTML ইনভয়েস লেআউট (রিয়েল-টাইম স্ক্রিপ্টসহ)
         invoice_template = f"""
         <!DOCTYPE html>
         <html>
@@ -420,16 +418,16 @@ else:
                 gap: 12px;
             }}
             .logo-img {{
-                width: 85px;
-                height: 85px;
+                width: 95px;
+                height: 95px;
                 border-radius: 50%;
                 background: #ffffff;
-                object-fit: cover;
-                border: 1px solid #0d47a1;
+                object-fit: contain;
+                border: 2px solid #0d47a1;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.15);
             }}
-            /* ১. SM-TECH লেখা লম্বা করা হয়েছে */
             .logo-text {{
-                font-size: 52px;
+                font-size: 56px;
                 font-weight: 900;
                 color: #0d47a1;
                 line-height: 0.85;
@@ -449,9 +447,8 @@ else:
                 text-align: right;
                 color: #0d47a1;
             }}
-            /* ২. মালিকের নাম আরও বড় করা হয়েছে */
             .owner-name {{
-                font-size: 19px;
+                font-size: 20px;
                 font-weight: 900;
                 margin-bottom: 1px;
             }}
@@ -516,19 +513,17 @@ else:
                 font-size: 11px;
                 color: #0d47a1;
             }}
-            
-            /* ৩. পেমেন্ট মেথড (Cash, Bkash, Nagad, AB Bank) লোগোসহ */
             .payment-methods {{
                 border: 1.5px solid #0d47a1;
                 padding: 6px 10px;
-                font-weight: bold;
                 font-size: 11px;
                 color: #0d47a1;
                 border-radius: 4px;
                 background: #ffffff;
+                width: 280px;
             }}
             .pay-title {{
-                font-size: 10px;
+                font-size: 10.5px;
                 font-weight: 800;
                 text-transform: uppercase;
                 margin-bottom: 5px;
@@ -536,23 +531,22 @@ else:
                 padding-bottom: 3px;
                 letter-spacing: 0.5px;
             }}
-            .pay-icons-list {{
-                display: flex;
-                align-items: center;
-                gap: 7px;
+            .pay-grid {{
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 4px 10px;
+                font-weight: bold;
+                font-size: 11px;
             }}
             .pay-item {{
                 display: flex;
                 align-items: center;
-                gap: 3px;
-                font-size: 10.5px;
-                font-weight: bold;
+                gap: 4px;
             }}
             .pay-logo-img {{
-                height: 15px;
+                height: 16px;
                 width: auto;
                 object-fit: contain;
-                vertical-align: middle;
             }}
             .print-btn-container {{
                 text-align: center;
@@ -578,13 +572,13 @@ else:
         <body>
 
         <div class="print-btn-container">
-            <button class="btn-print" onclick="window.print()">{cur_inv['print_btn']}</button>
+            <button class="btn-print" onclick="triggerPrint()">{cur_inv['print_btn']}</button>
         </div>
 
         <div class="invoice-box">
             <div class="header">
                 <div class="logo-section">
-                    <img class="logo-img" src="https://raw.githubusercontent.com/smtech050-cmd/SM-TECH/main/IMG_20260717_214948.png" alt="Logo">
+                    <img class="logo-img" src="https://raw.githubusercontent.com/smtech050-cmd/SM-TECH/main/IMG_20260717_214948.png" alt="SM-TECH Logo">
                     <div>
                         <div class="logo-text">SM-TECH</div>
                         <div class="logo-sub">COMPUTER & IT SOLUTION</div>
@@ -611,7 +605,7 @@ else:
 
                 <div style="text-align: right; width: 32%;">
                     <b>{cur_inv['inv_no']}</b> {inv_custom_num}<br>
-                    <b>{cur_inv['date']}</b> {current_date}
+                    <b>{cur_inv['date']}</b> <span id="real-time-date"></span>
                 </div>
             </div>
 
@@ -637,20 +631,19 @@ else:
 
             <div class="footer-sec">
                 <div>
-                    <!-- Cash, Bkash, Nagad, AB Bank লোগো বক্স -->
                     <div class="payment-methods">
                         <div class="pay-title">{cur_inv['pay_meth']}</div>
-                        <div class="pay-icons-list">
-                            <span class="pay-item">💵 Cash</span> |
-                            <span class="pay-item">
-                                <img src="https://raw.githubusercontent.com/freelogovectors/bKash-Logo-PNG/main/bKash-Logo.png" class="pay-logo-img" alt="bKash"> Bkash
-                            </span> |
-                            <span class="pay-item">
-                                <img src="https://download.logo.wine/logo/Nagad/Nagad-Logo.wine.png" class="pay-logo-img" alt="Nagad"> Nagad
-                            </span> |
-                            <span class="pay-item">
-                                <img src="https://upload.wikimedia.org/wikipedia/en/thumb/8/87/AB_Bank_Logo.svg/1200px-AB_Bank_Logo.svg.png" class="pay-logo-img" alt="AB Bank"> AB Bank
-                            </span>
+                        <div class="pay-grid">
+                            <div class="pay-item">1. 💵 Cash</div>
+                            <div class="pay-item">
+                                2. <img src="https://raw.githubusercontent.com/freelogovectors/bKash-Logo-PNG/main/bKash-Logo.png" class="pay-logo-img" alt="bKash"> Bkash
+                            </div>
+                            <div class="pay-item">
+                                3. <img src="https://download.logo.wine/logo/Nagad/Nagad-Logo.wine.png" class="pay-logo-img" alt="Nagad"> Nagad
+                            </div>
+                            <div class="pay-item">
+                                4. <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/AB_Bank_Logo.svg/1200px-AB_Bank_Logo.svg.png" class="pay-logo-img" alt="AB Bank"> AB Bank
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -662,10 +655,48 @@ else:
             </div>
 
             <div style="position: absolute; bottom: 5px; left: 12px; right: 12px; display: flex; justify-content: space-between; font-size: 8px; color: #0d47a1; font-weight: bold;">
-                <span>Print Date: {current_time_stamp}</span>
+                <span>Print Date: <span id="real-time-stamp"></span></span>
                 <span>Website: smtech.com.bd</span>
             </div>
         </div>
+
+        <!-- Real-Time Date & Time JavaScript Script -->
+        <script>
+            function updateDateTime() {{
+                const now = new Date();
+                
+                // ১. তারিখ জেনারেট (DD/MM/YYYY)
+                const day = String(now.getDate()).padStart(2, '0');
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const year = now.getFullYear();
+                const formattedDate = `${{day}}/${{month}}/${{year}}`;
+                
+                // ২. রিয়েল টাইম স্ট্যাম্প জেনারেট (DD-MMM-YYYY HH:MM AM/PM)
+                const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                const monthName = monthNames[now.getMonth()];
+                let hours = now.getHours();
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                hours = hours % 12;
+                hours = hours ? hours : 12; // 0 কে 12 করা
+                const formattedHours = String(hours).padStart(2, '0');
+                
+                const formattedTimeStamp = `${{day}}-${{monthName}}-${{year}} ${{formattedHours}}:${{minutes}} ${{ampm}}`;
+
+                // HTML এ সেট করা
+                document.getElementById('real-time-date').innerText = formattedDate;
+                document.getElementById('real-time-stamp').innerText = formattedTimeStamp;
+            }}
+
+            // পেজ লোড হলে সময় সেট
+            updateDateTime();
+
+            // প্রিন্ট করার মুহূর্তে সময় তাজা রাখার জন্য
+            function triggerPrint() {{
+                updateDateTime();
+                window.print();
+            }}
+        </script>
 
         </body>
         </html>
