@@ -119,7 +119,7 @@ inv_labels = {
         "amount": "মোট টাকা",
         "words": "কথায়:",
         "subtotal": "মোট (SUB TOTAL)",
-        "pay_meth": "পেমেন্ট মাধ্যম (Payment Methods)",
+        "pay_meth": "PAYMENT METHODS",
         "auth_sig": "অনুমোদিত স্বাক্ষর (Authorised Signature)",
         "print_btn": "🖨️ প্রিন্ট করুন / Save as PDF (A5)"
     },
@@ -136,7 +136,7 @@ inv_labels = {
         "amount": "AMOUNT",
         "words": "Amount In Words:",
         "subtotal": "SUB TOTAL",
-        "pay_meth": "Payment Methods",
+        "pay_meth": "PAYMENT METHODS",
         "auth_sig": "Authorised Signature",
         "print_btn": "🖨️ Print / Save as PDF (A5)"
     }
@@ -315,8 +315,8 @@ else:
         
         col_in1, col_in2, col_in3 = st.columns([1.5, 2, 2])
         with col_in1: inv_custom_num = st.text_input("Invoice No", value=f"SM-TECH/{datetime.datetime.now().strftime('%y/%m/%d')}")
-        with col_in2: cust_name = st.text_input("Customer Name / কাস্টমারের নাম", value="সালমান")
-        with col_in3: cust_address = st.text_input("Address / ঠিকানা", value="শ্রীবরদী")
+        with col_in2: cust_name = st.text_input("Customer Name / কাস্টমারের নাম", value="Super, Kharamura Islamia Dakhil Madrasah")
+        with col_in3: cust_address = st.text_input("Address / ঠিকানা", value="Sreebardi")
             
         col_item1, col_item2, col_item3 = st.columns([3, 1, 1.5])
         with col_item1: prod_desc = st.text_input("Product Name / Description", value="এসএসডি")
@@ -381,7 +381,7 @@ else:
                 </tr>
                 """
 
-        # HTML ইনভয়েস লেআউট (অফিশিয়াল লোগো সহ)
+        # HTML ইনভয়েস লেআউট
         invoice_template = f"""
         <!DOCTYPE html>
         <html>
@@ -427,25 +427,31 @@ else:
                 object-fit: cover;
                 border: 1px solid #0d47a1;
             }}
+            /* ১. SM-TECH লেখা লম্বা করা হয়েছে */
             .logo-text {{
-                font-size: 48px;
+                font-size: 52px;
                 font-weight: 900;
                 color: #0d47a1;
-                line-height: 0.9;
+                line-height: 0.85;
+                transform: scaleX(1.15);
+                transform-origin: left;
+                display: inline-block;
+                letter-spacing: 1px;
             }}
             .logo-sub {{
                 font-size: 14px;
                 font-weight: 800;
                 color: #0d47a1;
                 letter-spacing: 0.8px;
-                margin-top: 3px;
+                margin-top: 5px;
             }}
             .owner-info {{
                 text-align: right;
                 color: #0d47a1;
             }}
+            /* ২. মালিকের নাম আরও বড় করা হয়েছে */
             .owner-name {{
-                font-size: 16px;
+                font-size: 19px;
                 font-weight: 900;
                 margin-bottom: 1px;
             }}
@@ -511,7 +517,7 @@ else:
                 color: #0d47a1;
             }}
             
-            /* বিকাশ ও নগদ লোগো ডিজাইন */
+            /* ৩. পেমেন্ট মেথড (Cash, Bkash, Nagad, AB Bank) লোগোসহ */
             .payment-methods {{
                 border: 1.5px solid #0d47a1;
                 padding: 6px 10px;
@@ -519,30 +525,31 @@ else:
                 font-size: 11px;
                 color: #0d47a1;
                 border-radius: 4px;
-                background: #fdfdfd;
+                background: #ffffff;
             }}
             .pay-title {{
                 font-size: 10px;
+                font-weight: 800;
                 text-transform: uppercase;
-                margin-bottom: 4px;
+                margin-bottom: 5px;
                 border-bottom: 1px dashed #0d47a1;
-                padding-bottom: 2px;
+                padding-bottom: 3px;
+                letter-spacing: 0.5px;
             }}
             .pay-icons-list {{
                 display: flex;
                 align-items: center;
-                gap: 8px;
-                margin-top: 4px;
+                gap: 7px;
             }}
             .pay-item {{
                 display: flex;
                 align-items: center;
                 gap: 3px;
-                font-size: 10px;
+                font-size: 10.5px;
                 font-weight: bold;
             }}
             .pay-logo-img {{
-                height: 16px;
+                height: 15px;
                 width: auto;
                 object-fit: contain;
                 vertical-align: middle;
@@ -593,7 +600,7 @@ else:
             </div>
 
             <div class="bill-sec">
-                <div style="width: 35%;">
+                <div style="width: 38%;">
                     <b>{cur_inv['bill_to']}</b> {cust_name}<br>
                     <b>{cur_inv['address']}</b> {cust_address}
                 </div>
@@ -602,7 +609,7 @@ else:
                     <span class="invoice-title">{cur_inv['inv_title']}</span>
                 </div>
 
-                <div style="text-align: right; width: 35%;">
+                <div style="text-align: right; width: 32%;">
                     <b>{cur_inv['inv_no']}</b> {inv_custom_num}<br>
                     <b>{cur_inv['date']}</b> {current_date}
                 </div>
@@ -630,9 +637,9 @@ else:
 
             <div class="footer-sec">
                 <div>
-                    <!-- বিকাশ ও নগদ অফিশিয়াল লোগো বক্স -->
+                    <!-- Cash, Bkash, Nagad, AB Bank লোগো বক্স -->
                     <div class="payment-methods">
-                        <div class="pay-title"><b>{cur_inv['pay_meth']}</b></div>
+                        <div class="pay-title">{cur_inv['pay_meth']}</div>
                         <div class="pay-icons-list">
                             <span class="pay-item">💵 Cash</span> |
                             <span class="pay-item">
@@ -641,7 +648,9 @@ else:
                             <span class="pay-item">
                                 <img src="https://download.logo.wine/logo/Nagad/Nagad-Logo.wine.png" class="pay-logo-img" alt="Nagad"> Nagad
                             </span> |
-                            <span class="pay-item">🏦 Bank</span>
+                            <span class="pay-item">
+                                <img src="https://upload.wikimedia.org/wikipedia/en/thumb/8/87/AB_Bank_Logo.svg/1200px-AB_Bank_Logo.svg.png" class="pay-logo-img" alt="AB Bank"> AB Bank
+                            </span>
                         </div>
                     </div>
                 </div>
