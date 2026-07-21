@@ -418,15 +418,16 @@ else:
                 gap: 10px;
             }}
             .logo-img {{
-                width: 75px;
-                height: 75px;
+                width: 80px;
+                height: 80px;
                 border-radius: 50%;
                 background: #ffffff;
                 object-fit: contain;
                 border: 2px solid #0d47a1;
             }}
+            /* SM-TECH হেডিং ফন্ট সাইজ বড় করা হলো */
             .logo-text {{
-                font-size: 36px;
+                font-size: 44px;
                 font-weight: 900;
                 color: #0d47a1;
                 line-height: 1;
@@ -509,38 +510,38 @@ else:
                 font-size: 11px;
                 color: #0d47a1;
             }}
+            /* পেমেন্ট মেথড বক্স এবং টেক্সট বড় করা হলো */
             .payment-methods {{
                 border: 1.5px solid #0d47a1;
-                padding: 6px 12px;
-                font-size: 11px;
+                padding: 8px 14px;
                 color: #0d47a1;
-                border-radius: 4px;
+                border-radius: 6px;
                 background: #ffffff;
-                width: 190px;
+                width: 210px;
             }}
             .pay-title {{
-                font-size: 10px;
-                font-weight: 800;
+                font-size: 12px;
+                font-weight: 900;
                 text-transform: uppercase;
-                margin-bottom: 4px;
-                border-bottom: 1px dashed #0d47a1;
-                padding-bottom: 2px;
+                margin-bottom: 6px;
+                border-bottom: 1.5px dashed #0d47a1;
+                padding-bottom: 3px;
                 letter-spacing: 0.5px;
             }}
             .pay-list {{
                 display: flex;
                 flex-direction: column;
-                gap: 2px;
+                gap: 5px;
                 font-weight: bold;
-                font-size: 11px;
+                font-size: 13px;
             }}
             .pay-item {{
                 display: flex;
                 align-items: center;
-                gap: 5px;
+                gap: 6px;
             }}
             .pay-logo-img {{
-                height: 14px;
+                height: 18px;
                 width: auto;
                 object-fit: contain;
             }}
