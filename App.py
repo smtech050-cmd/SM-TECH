@@ -6,6 +6,37 @@ import datetime
 st.set_page_config(page_title="SM-TECH | Admin System", layout="wide", page_icon="💻")
 
 # ==========================================
+# 🔢 সংখ্যা থেকে কথায় (Amount in Words) রূপান্তর
+# ==========================================
+def number_to_words(n):
+    units = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
+             "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"]
+    tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"]
+    
+    if n == 0:
+        return "Zero Taka Only"
+    
+    def convert_below_thousand(num):
+        if num < 20:
+            return units[num]
+        elif num < 100:
+            return tens[num // 10] + (" " + units[num % 10] if num % 10 != 0 else "")
+        else:
+            return units[num // 100] + " Hundred" + (" " + convert_below_thousand(num % 100) if num % 100 != 0 else "")
+
+    def convert(num):
+        if num < 1000:
+            return convert_below_thousand(num)
+        elif num < 100000:
+            return convert_below_thousand(num // 1000) + " Thousand" + (" " + convert_below_thousand(num % 1000) if num % 1000 != 0 else "")
+        elif num < 10000000:
+            return convert_below_thousand(num // 100000) + " Lakh" + (" " + convert(num % 100000) if num % 100000 != 0 else "")
+        else:
+            return convert_below_thousand(num // 10000000) + " Crore" + (" " + convert(num % 10000000) if num % 10000000 != 0 else "")
+
+    return convert(int(n)).strip() + " Taka Only"
+
+# ==========================================
 # 🔐 সেশন স্টেট ইনিশিয়ালাইজেশন
 # ==========================================
 if "logged_in" not in st.session_state:
@@ -36,7 +67,6 @@ if "invoice_items" not in st.session_state:
 # 🛑 ১. কাস্টম সুন্দর লগইন UI
 # ==========================================
 if not st.session_state.logged_in:
-    # Header/Footer Hide & Login Styling
     st.markdown("""
         <style>
             header[data-testid="stHeader"], footer {visibility: hidden !important; height: 0px !important;}
@@ -46,7 +76,6 @@ if not st.session_state.logged_in:
                 background-image: radial-gradient(circle at 50% 20%, rgba(0, 102, 255, 0.2) 0%, transparent 60%);
                 padding: 0 !important;
             }
-            
             div[data-testid="stForm"] {
                 background: rgba(13, 22, 41, 0.95) !important;
                 border: 1px solid #1e2e4a !important;
@@ -100,17 +129,7 @@ if not st.session_state.logged_in:
                     st.session_state.logged_in = True
                     st.rerun()
                 else:
-                    st.error("ভুল ইউজারনেম অথবা পাসওয়ার্ড! (ডিফল্ট: admin / 1234)")
-
-        st.markdown("""
-            <div style="text-align: center; font-size: 12px; color: #64748b; margin: 15px 0;">অথবা ওটিপি দিয়ে লগইন</div>
-            <div style="display: flex; gap: 8px; justify-content: center; margin-bottom: 15px;">
-                <div style="flex:1; padding: 8px; background: #0b1528; border: 1px solid #1e3a5f; border-radius: 10px; text-align: center; color: white; font-size: 12px;">🔴 Google</div>
-                <div style="flex:1; padding: 8px; background: #0b1528; border: 1px solid #1e3a5f; border-radius: 10px; text-align: center; color: white; font-size: 12px;">🔵 Facebook</div>
-                <div style="flex:1; padding: 8px; background: #0b1528; border: 1px solid #1e3a5f; border-radius: 10px; text-align: center; color: white; font-size: 12px;">✉️ ওটিপি</div>
-            </div>
-            <p style="text-align: center; font-size: 13px; color: #94a3b8;">একাউন্ট নেই? <a href="#" style="color: #38bdf8; font-weight: bold; text-decoration: none;">নিবন্ধন করুন (Sign Up)</a></p>
-        """, unsafe_allow_html=True)
+                    st.error("ভুল ইউজারনেম অথবা পাসওয়ার্ড!")
 
 # ==========================================
 # 🔓 ২. মূল ড্যাশবোর্ড
@@ -204,14 +223,13 @@ else:
                 st.rerun()
         st.dataframe(pd.DataFrame(st.session_state.saved_passwords), use_container_width=True)
 
-    # ৫. সেল ইনভয়েস (লোগো বামে, টেক্সট ডানে এবং বটম পেমেন্ট/সাইন সেকশন)
+    # ৫. সেল ইনভয়েস
     elif st.session_state.current_menu == "Sell Invoice":
         st.title("🧾 ইনভয়েস জেনারেটর")
         
-        # ইনপুট ফিল্ড
         col_in1, col_in2, col_in3 = st.columns([1.5, 2, 2])
         with col_in1: inv_custom_num = st.text_input("Invoice No", value=f"SM-TECH/{datetime.datetime.now().strftime('%y/%m/%d')}")
-        with col_in2: cust_name = st.text_input("কাস্টমারের নাম", value="খুচরা কাস্টমার")
+        with col_in2: cust_name = st.text_input("কাস্টমারের নাম", value="Salman")
         with col_in3: cust_address = st.text_input("Address", value="Dhaka, Bangladesh")
             
         col_item1, col_item2, col_item3 = st.columns([3, 1, 1.5])
@@ -231,10 +249,11 @@ else:
                 st.rerun()
 
         sub_total = sum(item["Amount"] for item in st.session_state.invoice_items)
+        amount_in_words = number_to_words(sub_total)
         current_date = datetime.datetime.now().strftime("%d/%m/%Y")
         current_time_stamp = datetime.datetime.now().strftime("%d-%b-%Y %I:%M %p")
         
-        # ১০ লাইনের গ্রিড টেবিল জেনারেট
+        # ১০ লাইনের টেবিল
         rows_html = ""
         max_rows = 10
         for i in range(max_rows):
@@ -260,7 +279,7 @@ else:
                 </tr>
                 """
 
-        # সম্পূর্ণ HTML+CSS A5 ইনভয়েস লেআউট
+        # সম্পূর্ণ নীল রঙের ফন্ট এবং বড় SM-TECH লেআউট
         invoice_template = f"""
         <!DOCTYPE html>
         <html>
@@ -275,9 +294,10 @@ else:
                 margin: 0;
                 padding: 12px;
                 background: #fff;
+                color: #0d47a1; /* সমস্ত লেখা গাঢ় নীল করা হলো */
             }}
             .invoice-box {{
-                border: 2px solid #0d47a1;
+                border: 2.5px solid #0d47a1;
                 padding: 12px;
                 border-radius: 8px;
                 position: relative;
@@ -288,31 +308,31 @@ else:
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                border-bottom: 2px solid #0d47a1;
+                border-bottom: 2.5px solid #0d47a1;
                 padding-bottom: 8px;
             }}
             .logo-section {{
                 display: flex;
                 align-items: center;
-                gap: 10px;
+                gap: 12px;
             }}
             .logo-img {{
-                width: 55px;
-                height: 55px;
+                width: 70px;
+                height: 70px;
                 border-radius: 50%;
                 background: #ffffff;
                 object-fit: cover;
             }}
             .logo-text {{
-                font-size: 26px;
+                font-size: 52px; /* টেক্সট দ্বিগুণ বড় করা হয়েছে */
                 font-weight: 900;
                 color: #0d47a1;
-                line-height: 1;
+                line-height: 0.9;
             }}
             .logo-sub {{
-                font-size: 10px;
+                font-size: 11px;
                 font-weight: bold;
-                color: #2e7d32;
+                color: #0d47a1;
                 letter-spacing: 0.5px;
             }}
             .owner-info {{
@@ -326,11 +346,12 @@ else:
                 display: flex;
                 justify-content: space-between;
                 font-size: 12px;
+                color: #0d47a1;
             }}
             .invoice-title {{
                 background: #0d47a1;
                 color: white;
-                padding: 2px 10px;
+                padding: 3px 12px;
                 font-weight: bold;
                 border-radius: 3px;
                 display: inline-block;
@@ -351,29 +372,32 @@ else:
                 border: 1px solid #0d47a1;
                 padding: 5px;
                 height: 18px;
+                color: #0d47a1;
             }}
             .footer-sec {{
                 position: absolute;
-                bottom: 30px;
+                bottom: 28px;
                 left: 12px;
                 right: 12px;
                 display: flex;
                 justify-content: space-between;
                 align-items: flex-end;
                 font-size: 11px;
+                color: #0d47a1;
             }}
             .payment-methods {{
-                border: 1px solid #0d47a1;
+                border: 1.5px solid #0d47a1;
                 padding: 4px 8px;
                 font-weight: bold;
                 font-size: 10px;
+                color: #0d47a1;
             }}
             .print-btn-container {{
                 text-align: center;
                 margin-bottom: 15px;
             }}
             .btn-print {{
-                background: #0066ff;
+                background: #0d47a1;
                 color: white;
                 border: none;
                 padding: 10px 25px;
@@ -402,7 +426,7 @@ else:
                     <div>
                         <div class="logo-text">SM-TECH</div>
                         <div class="logo-sub">COMPUTER & IT SOLUTION</div>
-                        <div style="font-size: 9px; color: #333;">Smart Technology-Trusted Service</div>
+                        <div style="font-size: 9px; color: #0d47a1; font-weight: bold;">Smart Technology-Trusted Service</div>
                     </div>
                 </div>
                 <div class="owner-info">
@@ -438,7 +462,7 @@ else:
                 <tbody>
                     {rows_html}
                     <tr>
-                        <td colspan="3" style="border:none;"><b>Amount In Words:</b> ..................................................</td>
+                        <td colspan="3" style="border:1px solid #0d47a1;"><b>Amount In Words:</b> {amount_in_words}</td>
                         <td style="font-weight:bold; text-align:right; background:#0d47a1; color:white;">SUB TOTAL</td>
                         <td style="font-weight:bold; text-align:right; background:#0d47a1; color:white;">{sub_total:,}</td>
                     </tr>
@@ -459,7 +483,7 @@ else:
                 </div>
             </div>
 
-            <div style="position: absolute; bottom: 5px; left: 12px; right: 12px; display: flex; justify-content: space-between; font-size: 8px; color: #555;">
+            <div style="position: absolute; bottom: 5px; left: 12px; right: 12px; display: flex; justify-content: space-between; font-size: 8px; color: #0d47a1; font-weight: bold;">
                 <span>Print Date: {current_time_stamp}</span>
                 <span>Website: smtech.com.bd</span>
             </div>
@@ -469,4 +493,4 @@ else:
         </html>
         """
 
-        st.components.v1.html(invoice_template, height=760, scrolling=True)
+        st.components.v1.html(invoice_template, height=780, scrolling=True)
