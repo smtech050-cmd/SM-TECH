@@ -58,6 +58,9 @@ def number_to_words(number):
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
+if "lang" not in st.session_state:
+    st.session_state.lang = "English"
+
 if "current_menu" not in st.session_state:
     st.session_state.current_menu = "Dashboard"
 
@@ -88,7 +91,7 @@ custom_css = """
         background-color: #f4f7fb !important;
         color: #111111 !important;
     }
-    div[data-baseweb="input"], div[data-baseweb="base-input"] {
+    div[data-baseweb="input"], div[data-baseweb="base-input"], div[data-baseweb="select"] {
         background-color: #ffffff !important;
         border-radius: 8px !important;
     }
@@ -128,13 +131,45 @@ custom_css = """
 st.markdown(custom_css, unsafe_allow_html=True)
 
 # ==========================================
-# 🛑 ১. লগইন স্ক্রিন
+# 🌐 ভাষার অভিধান (Language Dictionary)
+# ==========================================
+text_translations = {
+    "English": {
+        "welcome": "WELCOME",
+        "tagline": "Smart Technology, Trusted Service.",
+        "signin_title": "Sign in",
+        "signin_sub": "Please sign in to admin system",
+        "user_label": "User Name",
+        "user_place": "Username...",
+        "pass_label": "Password",
+        "pass_place": "Password...",
+        "btn_login": "Sign in",
+        "err_msg": "Invalid Username or Password!",
+        "succ_msg": "Login Successful!"
+    },
+    "Bangla": {
+        "welcome": "স্বাগতম",
+        "tagline": "স্মার্ট টেকনোলজি, বিশ্বস্ত সেবা।",
+        "signin_title": "সাইন-ইন করুন",
+        "signin_sub": "অ্যাডমিন সিস্টেমে প্রবেশ করতে সাইন-ইন করুন",
+        "user_label": "ব্যবহারকারীর নাম",
+        "user_place": "ইউজারনেম লিখুন...",
+        "pass_label": "পাসওয়ার্ড",
+        "pass_place": "পাসওয়ার্ড লিখুন...",
+        "btn_login": "লগইন করুন",
+        "err_msg": "ভুল ইউজারনেম অথবা পাসওয়ার্ড!",
+        "succ_msg": "লগইন সফল হয়েছে!"
+    }
+}
+
+# ==========================================
+# 🛑 ১. লগইন স্ক্রিন (ভাষা পরিবর্তন সহ)
 # ==========================================
 if not st.session_state.logged_in:
     login_css = """
     <style>
         [data-testid="stAppViewContainer"] {
-            background: linear-gradient(135deg, #1b5e20 0%, #4caf50 100%) !important;
+            background: #0066ff !important;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -143,41 +178,59 @@ if not st.session_state.logged_in:
             display: none;
         }
         .main .block-container {
-            max-width: 950px !important;
+            max-width: 900px !important;
             padding: 0rem !important;
             margin: auto;
         }
-        .welcome-side {
-            background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 50%, #4caf50 100%);
+        .left-banner {
+            background: linear-gradient(135deg, #0052cc 0%, #0080ff 100%);
+            border-radius: 20px 0 0 20px;
             padding: 40px 30px;
-            color: #ffffff;
+            color: white;
+            position: relative;
             display: flex;
             flex-direction: column;
+            justify-content: space-between;
+            min-height: 480px;
+        }
+        .logo-circle {
+            width: 130px;
+            height: 130px;
+            background: #004080;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
             justify-content: center;
-            border-radius: 15px 0 0 15px;
-            min-height: 420px;
+            margin-top: 15px;
+            border: 4px solid #0066cc;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
-        .welcome-title {
-            font-size: 28px;
+        .logo-circle img {
+            max-width: 80%;
+            max-height: 80%;
+            object-fit: contain;
+        }
+        .welcome-text h2 {
+            font-size: 32px;
             font-weight: 900;
-            line-height: 1.2;
-            margin-bottom: 10px;
+            margin: 0;
+            color: #ffffff;
         }
-        .welcome-subtitle {
-            font-size: 14px;
-            opacity: 0.9;
-            line-height: 1.5;
-        }
-        .form-title {
-            font-size: 24px;
-            font-weight: 800;
-            color: #1b5e20;
-            margin-bottom: 5px;
-        }
-        .form-subtext {
+        .welcome-text p {
             font-size: 13px;
-            color: #666666;
-            margin-bottom: 25px;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+        .form-header h3 {
+            font-size: 28px;
+            font-weight: 800;
+            color: #222;
+            margin: 0;
+        }
+        .form-header p {
+            font-size: 12px;
+            color: #777;
+            margin-bottom: 15px;
         }
     </style>
     """
@@ -185,32 +238,60 @@ if not st.session_state.logged_in:
     
     col_left, col_right = st.columns([1, 1.2])
     
+    # বর্তমান নির্বাচিত ভাষার টেক্সট
+    t = text_translations[st.session_state.lang]
+    
     with col_left:
         st.markdown(
-            """
-            <div class="welcome-side">
-                <div class="welcome-title">WELCOME TO<br>SM-TECH</div>
-                <div class="welcome-subtitle">Smart Technology, Trusted Service.<br>Your complete IT & Computer Solution partner.</div>
+            f"""
+            <div class="left-banner">
+                <div class="welcome-text">
+                    <h2>{t['welcome']}</h2>
+                    <p style="font-weight: bold; font-size: 14px;">SM-TECH COMPUTER & IT</p>
+                    <p>{t['tagline']}</p>
+                </div>
+                <div class="logo-circle">
+                    <img src="https://raw.githubusercontent.com/smtech050-cmd/SM-TECH/main/IMG_20260717_214948.png" alt="Logo">
+                </div>
             </div>
             """,
             unsafe_allow_html=True
         )
 
     with col_right:
-        st.markdown('<div class="form-title">Sign In</div>', unsafe_allow_html=True)
-        st.markdown('<div class="form-subtext">অ্যাডমিন প্যানেলে প্রবেশ করতে আপনার তথ্য দিন</div>', unsafe_allow_html=True)
+        # ভাষা পরিবর্তনের ড্রপডাউন
+        selected_lang = st.selectbox(
+            "🌐 Select Language / ভাষা নির্বাচন করুন",
+            ["English", "Bangla"],
+            index=0 if st.session_state.lang == "English" else 1,
+            key="lang_select"
+        )
+        if selected_lang != st.session_state.lang:
+            st.session_state.lang = selected_lang
+            st.rerun()
+
+        st.markdown(
+            f"""
+            <div class="form-header">
+                <h3>{t['signin_title']}</h3>
+                <p>{t['signin_sub']}</p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
         
-        username = st.text_input("Username (ইউজারনেম)", placeholder="Enter username...", key="login_user")
-        password = st.text_input("Password (পাসওয়ার্ড)", type="password", placeholder="Enter password...", key="login_pass")
+        username = st.text_input(t["user_label"], placeholder=t["user_place"], key="login_user")
+        password = st.text_input(t["pass_label"], type="password", placeholder=t["pass_place"], key="login_pass")
+        
         st.markdown('<br>', unsafe_allow_html=True)
         
-        if st.button("Sign In / লগইন করুন", use_container_width=True):
+        if st.button(t["btn_login"], use_container_width=True):
             if username == "admin" and password == "1234":
                 st.session_state.logged_in = True
-                st.success("লগইন সফল হয়েছে!")
+                st.success(t["succ_msg"])
                 st.rerun()
             else:
-                st.error("ভুল ইউজারনেম অথবা পাসওয়ার্ড! আবার চেষ্টা করুন।")
+                st.error(t["err_msg"])
 
 # ==========================================
 # 🔓 ২. মূল ড্যাশবোর্ড স্ক্রিন
@@ -325,11 +406,9 @@ else:
         if st.session_state.invoice_items:
             st.dataframe(pd.DataFrame(st.session_state.invoice_items), use_container_width=True)
             
-            # মোট হিসাব বের করা
             total_amt = sum(item["Amount"] for item in st.session_state.invoice_items)
             amount_in_words = number_to_words(total_amt) + " BDT Only."
             
-            # ১২টি রো গ্রিড মেইনটেইন করা
             table_rows = ""
             max_rows = 12
             for idx in range(max_rows):
@@ -356,12 +435,15 @@ else:
                     """
             
             invoice_html = f"""
+            <!DOCTYPE html>
             <html>
             <head>
+                <meta charset="utf-8">
+                <title>SM-TECH Invoice - {inv_custom_num}</title>
                 <style>
                     @page {{
                         size: A5 portrait;
-                        margin: 10mm 5mm 10mm 5mm;
+                        margin: 5mm;
                     }}
                     body {{
                         font-family: 'Arial', sans-serif;
@@ -571,7 +653,7 @@ else:
                     }}
                 </style>
             </head>
-            <body>
+            <body onload="window.print();">
                 <div class="pad-container">
                     <table class="header-table">
                         <tr>
@@ -666,25 +748,30 @@ else:
             
             # HTML ডেটা এনকোড করা
             b64_html = base64.b64encode(invoice_html.encode('utf-8')).decode('utf-8')
-            iframe_src = f"data:text/html;base64,{b64_html}"
             
             col_action1, col_action2 = st.columns(2)
             with col_action1:
-                if st.button("🖨️ Print PDF (A5)", use_container_width=True):
-                    components.html(
-                        f"""
-                        <iframe src="{iframe_src}" style="display:none;" id="printFrame"></iframe>
-                        <script>
-                            var frame = document.getElementById('printFrame');
-                            frame.onload = function() {{
-                                frame.contentWindow.focus();
-                                frame.contentWindow.print();
-                            }};
-                        </script>
-                        """,
-                        height=0,
-                    )
-                    st.success("প্রিন্ট কমান্ড পাঠানো হয়েছে!")
+                st.markdown(
+                    f"""
+                    <a href="data:text/html;base64,{b64_html}" target="_blank" style="text-decoration:none;">
+                        <button style="
+                            background-color: #1b5e20;
+                            color: white;
+                            padding: 12px 18px;
+                            font-size: 16px;
+                            font-weight: bold;
+                            border: none;
+                            border-radius: 8px;
+                            width: 100%;
+                            cursor: pointer;
+                            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+                        ">
+                            🖨️ Open & Print Invoice
+                        </button>
+                    </a>
+                    """,
+                    unsafe_allow_html=True
+                )
             with col_action2:
                 if st.button("🗑️ Clear All", use_container_width=True):
                     st.session_state.invoice_items = []
