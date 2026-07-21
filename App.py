@@ -28,10 +28,7 @@ def number_to_words_en(n):
     return convert(int(n)).strip() + " Taka Only"
 
 def number_to_words_bn(n):
-    units = ["", "এক", "দুই", "তিন", "চার", "পাঁচ", "ছয়", "সাত", "আট", "নয়", "দশ",
-             "এগারো", "বারো", "তেরো", "চৌদ্দ", "পনেরো", "ষোলো", "সতেরো", "১৮", "১৯"]
     if n == 0: return "শূন্য টাকা মাত্র"
-    # সাধারণ বাংলা অ্যামাউন্ট ফরম্যাট
     en_words = number_to_words_en(n)
     return f"{n:,} টাকা মাত্র ({en_words})"
 
@@ -46,6 +43,9 @@ if "current_menu" not in st.session_state:
 
 if "language" not in st.session_state:
     st.session_state.language = "Bangla"
+
+if "inv_language" not in st.session_state:
+    st.session_state.inv_language = "Bangla"
 
 if "customer_dues" not in st.session_state:
     st.session_state.customer_dues = [
@@ -66,7 +66,7 @@ if "invoice_items" not in st.session_state:
     st.session_state.invoice_items = []
 
 # ==========================================
-# 🌐 ডিকশনারি (বাংলা ও ইংরেজি ডিকশনারি)
+# 🌐 ডিকশনারি (বাংলা ও ইংরেজি)
 # ==========================================
 t = {
     "Bangla": {
@@ -84,18 +84,7 @@ t = {
         "total_due": "মোট বাকি টাকা",
         "stock_val": "স্টক পণ্যের মূল্য",
         "cust_dir": "কাস্টমার ডিরেক্টরি & রিসেন্ট এন্ট্রি",
-        "logout": "🔒 লগআউট",
-        "bill_to": "বিল প্রাপক:",
-        "address": "ঠিকানা:",
-        "sl": "ক্রঃ নং",
-        "desc": "বিবরণ",
-        "qty": "পরিমাণ",
-        "price": "দর",
-        "amount": "মোট টাকা",
-        "words": "কথায়:",
-        "add_item": "➕ আইটেম যুক্ত করুন",
-        "clear_all": "🗑️ সব মুছে ফেলুন",
-        "print_btn": "🖨️ প্রিন্ট করুন / Save as PDF (A5)"
+        "logout": "🔒 লগআউট"
     },
     "English": {
         "title_dash": "🖥️ Dashboard",
@@ -112,17 +101,43 @@ t = {
         "total_due": "Total Due Amount",
         "stock_val": "Total Stock Value",
         "cust_dir": "Customer Directory & Recent Entries",
-        "logout": "🔒 Logout",
+        "logout": "🔒 Logout"
+    }
+}
+
+inv_labels = {
+    "Bangla": {
+        "bill_to": "বিল প্রাপক:",
+        "address": "ঠিকানা:",
+        "inv_title": "INVOICE",
+        "inv_no": "ইনভয়েস নং:",
+        "date": "তারিখ:",
+        "sl": "ক্রঃ নং",
+        "desc": "বিবরণ",
+        "qty": "পরিমাণ",
+        "price": "দর",
+        "amount": "মোট টাকা",
+        "words": "কথায়:",
+        "subtotal": "মোট (SUB TOTAL)",
+        "pay_meth": "পেমেন্ট মাধ্যম (Payment Methods)",
+        "auth_sig": "অনুমোদিত স্বাক্ষর (Authorised Signature)",
+        "print_btn": "🖨️ প্রিন্ট করুন / Save as PDF (A5)"
+    },
+    "English": {
         "bill_to": "Bill To Name:",
         "address": "Address:",
+        "inv_title": "INVOICE",
+        "inv_no": "Invoice No:",
+        "date": "Date:",
         "sl": "S.L",
         "desc": "DESCRIPTION",
         "qty": "QTY",
         "price": "U.PRICE",
         "amount": "AMOUNT",
         "words": "Amount In Words:",
-        "add_item": "➕ Add Item",
-        "clear_all": "🗑️ Clear All Items",
+        "subtotal": "SUB TOTAL",
+        "pay_meth": "Payment Methods",
+        "auth_sig": "Authorised Signature",
         "print_btn": "🖨️ Print / Save as PDF (A5)"
     }
 }
@@ -209,8 +224,7 @@ else:
             </div>
         ''', unsafe_allow_html=True)
         
-        # 🌐 ভাষা পরিবর্তন অপশন
-        selected_lang = st.selectbox("🌐 Language / ভাষা নির্বাচন করুন", ["Bangla", "English"], index=0 if st.session_state.language == "Bangla" else 1)
+        selected_lang = st.selectbox("🌐 System Language / ভাষা", ["Bangla", "English"], index=0 if st.session_state.language == "Bangla" else 1)
         if selected_lang != st.session_state.language:
             st.session_state.language = selected_lang
             st.rerun()
@@ -301,27 +315,43 @@ else:
         
         col_in1, col_in2, col_in3 = st.columns([1.5, 2, 2])
         with col_in1: inv_custom_num = st.text_input("Invoice No", value=f"SM-TECH/{datetime.datetime.now().strftime('%y/%m/%d')}")
-        with col_in2: cust_name = st.text_input("Customer Name / কাস্টমারের নাম", value="Salman")
-        with col_in3: cust_address = st.text_input("Address / ঠিকানা", value="Dhaka, Bangladesh")
+        with col_in2: cust_name = st.text_input("Customer Name / কাস্টমারের নাম", value="সালমান")
+        with col_in3: cust_address = st.text_input("Address / ঠিকানা", value="শ্রীবরদী")
             
         col_item1, col_item2, col_item3 = st.columns([3, 1, 1.5])
-        with col_item1: prod_desc = st.text_input("Product Name / Description")
+        with col_item1: prod_desc = st.text_input("Product Name / Description", value="খুচরা কাস্টমার")
         with col_item2: prod_qty = st.number_input("QTY", min_value=1, value=1)
-        with col_item3: prod_price = st.number_input("Unit Price", min_value=0, value=500)
+        with col_item3: prod_price = st.number_input("Unit Price", min_value=0, value=1500)
             
-        if st.button(curr_t["add_item"], use_container_width=True) and prod_desc:
-            st.session_state.invoice_items.append({
-                "Description": prod_desc, "Qty": prod_qty, "Price": prod_price, "Amount": prod_qty * prod_price
-            })
-            st.rerun()
-
-        if st.session_state.invoice_items:
-            if st.button(curr_t["clear_all"]):
-                st.session_state.invoice_items = []
+        col_btn1, col_btn2 = st.columns([1, 1])
+        with col_btn1:
+            if st.button("➕ আইটেম যুক্ত করুন / Add Item", use_container_width=True) and prod_desc:
+                st.session_state.invoice_items.append({
+                    "Description": prod_desc, "Qty": prod_qty, "Price": prod_price, "Amount": prod_qty * prod_price
+                })
                 st.rerun()
+        with col_btn2:
+            if st.session_state.invoice_items:
+                if st.button("🗑️ সব মুছে ফেলুন / Clear All", use_container_width=True):
+                    st.session_state.invoice_items = []
+                    st.rerun()
+
+        st.write("---")
+        
+        # 🔘 ইনভয়েসের ভাষা সিলেক্টর (ক্লিক করলেই সুইচ হবে)
+        inv_lang_choice = st.radio(
+            "🌐 **ইনভয়েসের ভাষা নির্বাচন করুন (Click to switch Invoice Language):**",
+            ["🇧🇩 বাংলা (Bangla)", "🇬🇧 English"],
+            horizontal=True,
+            index=0 if st.session_state.inv_language == "Bangla" else 1
+        )
+        st.session_state.inv_language = "Bangla" if "🇧🇩" in inv_lang_choice else "English"
+        
+        i_lang = st.session_state.inv_language
+        cur_inv = inv_labels[i_lang]
 
         sub_total = sum(item["Amount"] for item in st.session_state.invoice_items)
-        amount_in_words = number_to_words_bn(sub_total) if lang == "Bangla" else number_to_words_en(sub_total)
+        amount_in_words = number_to_words_bn(sub_total) if i_lang == "Bangla" else number_to_words_en(sub_total)
         current_date = datetime.datetime.now().strftime("%d/%m/%Y")
         current_time_stamp = datetime.datetime.now().strftime("%d-%b-%Y %I:%M %p")
         
@@ -351,7 +381,7 @@ else:
                 </tr>
                 """
 
-        # সম্পূর্ণ HTML+CSS A5 লেআউট
+        # ডায়নামিক সুইচিং সহ HTML লেআউট
         invoice_template = f"""
         <!DOCTYPE html>
         <html>
@@ -489,7 +519,7 @@ else:
         <body>
 
         <div class="print-btn-container">
-            <button class="btn-print" onclick="window.print()">{curr_t['print_btn']}</button>
+            <button class="btn-print" onclick="window.print()">{cur_inv['print_btn']}</button>
         </div>
 
         <div class="invoice-box">
@@ -512,31 +542,31 @@ else:
 
             <div class="bill-sec">
                 <div>
-                    <b>{curr_t['bill_to']}</b> {cust_name}<br>
-                    <b>{curr_t['address']}</b> {cust_address}
+                    <b>{cur_inv['bill_to']}</b> {cust_name}<br>
+                    <b>{cur_inv['address']}</b> {cust_address}
                 </div>
                 <div style="text-align: right;">
-                    <span class="invoice-title">INVOICE</span><br>
-                    <b>Invoice No:</b> {inv_custom_num}<br>
-                    <b>Date:</b> {current_date}
+                    <span class="invoice-title">{cur_inv['inv_title']}</span><br>
+                    <b>{cur_inv['inv_no']}</b> {inv_custom_num}<br>
+                    <b>{cur_inv['date']}</b> {current_date}
                 </div>
             </div>
 
             <table>
                 <thead>
                     <tr>
-                        <th style="width: 8%;">{curr_t['sl']}</th>
-                        <th style="width: 48%;">{curr_t['desc']}</th>
-                        <th style="width: 10%;">{curr_t['qty']}</th>
-                        <th style="width: 17%;">{curr_t['price']}</th>
-                        <th style="width: 17%;">{curr_t['amount']}</th>
+                        <th style="width: 8%;">{cur_inv['sl']}</th>
+                        <th style="width: 48%;">{cur_inv['desc']}</th>
+                        <th style="width: 10%;">{cur_inv['qty']}</th>
+                        <th style="width: 17%;">{cur_inv['price']}</th>
+                        <th style="width: 17%;">{cur_inv['amount']}</th>
                     </tr>
                 </thead>
                 <tbody>
                     {rows_html}
                     <tr>
-                        <td colspan="3" style="border:1px solid #0d47a1;"><b>{curr_t['words']}</b> {amount_in_words}</td>
-                        <td style="font-weight:bold; text-align:right; background:#0d47a1; color:white;">SUB TOTAL</td>
+                        <td colspan="3" style="border:1px solid #0d47a1;"><b>{cur_inv['words']}</b> {amount_in_words}</td>
+                        <td style="font-weight:bold; text-align:right; background:#0d47a1; color:white;">{cur_inv['subtotal']}</td>
                         <td style="font-weight:bold; text-align:right; background:#0d47a1; color:white;">{sub_total:,}</td>
                     </tr>
                 </tbody>
@@ -545,13 +575,13 @@ else:
             <div class="footer-sec">
                 <div>
                     <div class="payment-methods">
-                        Payment Methods<br>
+                        {cur_inv['pay_meth']}<br>
                         Cash | Bkash | Nagad | Bank
                     </div>
                 </div>
                 <div style="text-align: center;">
                     ------------------------------------------<br>
-                    <b>Authorised Signature</b><br>
+                    <b>{cur_inv['auth_sig']}</b><br>
                     <span style="font-size: 9px;">SM-TECH Computer & IT Solutions</span>
                 </div>
             </div>
