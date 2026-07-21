@@ -33,7 +33,7 @@ if "invoice_items" not in st.session_state:
     st.session_state.invoice_items = []
 
 # ==========================================
-# 🛑 ১. কাস্টম সুন্দর লগইন UI (100% Working)
+# 🛑 ১. কাস্টম সুন্দর লগইন UI
 # ==========================================
 if not st.session_state.logged_in:
     # Header/Footer Hide & Login Styling
@@ -47,7 +47,6 @@ if not st.session_state.logged_in:
                 padding: 0 !important;
             }
             
-            /* Streamlit Form-কে কাস্টম কার্ডের রূপ দেওয়া */
             div[data-testid="stForm"] {
                 background: rgba(13, 22, 41, 0.95) !important;
                 border: 1px solid #1e2e4a !important;
@@ -78,7 +77,6 @@ if not st.session_state.logged_in:
 
     with col2:
         st.write("<br><br>", unsafe_allow_html=True)
-        # লোগো ও হেডার
         st.markdown("""
             <div style="text-align: center; margin-bottom: 20px;">
                 <div style="width: 100px; height: 100px; border-radius: 50%; background: #ffffff; padding: 3px; 
@@ -91,7 +89,6 @@ if not st.session_state.logged_in:
             </div>
         """, unsafe_allow_html=True)
 
-        # সরাসরি ব্যাকএন্ডের সাথে যুক্ত আসল লগইন ফর্ম
         with st.form("main_login_form"):
             username = st.text_input("ইউজারনেম", value="admin", placeholder="আপনার ইউজারনেম")
             password = st.text_input("পাসওয়ার্ড", type="password", value="1234", placeholder="আপনার পাসওয়ার্ড")
@@ -105,7 +102,6 @@ if not st.session_state.logged_in:
                 else:
                     st.error("ভুল ইউজারনেম অথবা পাসওয়ার্ড! (ডিফল্ট: admin / 1234)")
 
-        # সোশ্যাল সার্ভিস স্টাইলিং
         st.markdown("""
             <div style="text-align: center; font-size: 12px; color: #64748b; margin: 15px 0;">অথবা ওটিপি দিয়ে লগইন</div>
             <div style="display: flex; gap: 8px; justify-content: center; margin-bottom: 15px;">
@@ -117,7 +113,7 @@ if not st.session_state.logged_in:
         """, unsafe_allow_html=True)
 
 # ==========================================
-# 🔓 ২. মূল ড্যাশবোর্ড (পরিষ্কার ও স্পষ্ট)
+# 🔓 ২. মূল ড্যাশবোর্ড
 # ==========================================
 else:
     with st.sidebar:
@@ -146,7 +142,7 @@ else:
         if st.button("🔐 Password Save", use_container_width=True):
             st.session_state.current_menu = "Password Save"; st.rerun()
 
-    # ১. ড্যাশবোর্ড মডিউল
+    # ১. ড্যাশবোর্ড
     if st.session_state.current_menu == "Dashboard":
         st.title("🖥️ ড্যাশবোর্ড")
         st.write("---")
@@ -208,9 +204,41 @@ else:
                 st.rerun()
         st.dataframe(pd.DataFrame(st.session_state.saved_passwords), use_container_width=True)
 
-    # ৫. সেল ইনভয়েস
+    # ৫. সেল ইনভয়েস (A5 পেপার + ডেট ও সাইট লিঙ্ক পেজ ফুটারে প্রদর্শন)
     elif st.session_state.current_menu == "Sell Invoice":
-        st.title("🧾 পয়েন্ট অব সেল ও ইনভয়েস")
+        st.title("🧾 ইনভয়েস")
+        
+        # A5 সাইজের CSS পেজ সেটআপ ও প্রিন্ট রুলস
+        st.markdown("""
+            <style>
+                @media print {
+                    @page {
+                        size: A5 portrait;
+                        margin: 10mm;
+                    }
+                    /* অনাকাঙ্ক্ষিত সাইডবার ও বাটন লুকিয়ে ফেলা */
+                    section[data-testid="stSidebar"], button, header, footer {
+                        display: none !important;
+                    }
+                    .print-footer {
+                        position: fixed;
+                        bottom: 0;
+                        left: 0;
+                        right: 0;
+                        display: flex !important;
+                        justify-content: space-between;
+                        font-size: 10px;
+                        color: #555;
+                        border-top: 1px dashed #ccc;
+                        padding-top: 5px;
+                    }
+                }
+                .print-footer {
+                    display: none;
+                }
+            </style>
+        """, unsafe_allow_html=True)
+        
         col_in1, col_in2, col_in3 = st.columns([1.5, 2, 2])
         with col_in1: inv_custom_num = st.text_input("Invoice No", value="1001")
         with col_in2: cust_name = st.text_input("কাস্টমারের নাম", value="খুচরা কাস্টমার")
@@ -229,6 +257,39 @@ else:
                 
         if st.session_state.invoice_items:
             st.dataframe(pd.DataFrame(st.session_state.invoice_items), use_container_width=True)
-            if st.button("🗑️ Clear All"):
-                st.session_state.invoice_items = []
-                st.rerun()
+            
+            # বর্তমান সময় ও তারিখ সংগ্রাহক
+            current_time = datetime.datetime.now().strftime("%d-%b-%Y %I:%M %p")
+            site_link = "smtech.com.bd"
+            
+            # প্রিন্ট ফুটারে সংযুক্ত এইচটিএমএল
+            st.markdown(f"""
+                <div class="print-footer">
+                    <div><b>Date & Time:</b> {current_time}</div>
+                    <div><b>Website:</b> {site_link}</div>
+                </div>
+            """, unsafe_allow_html=True)
+            
+            col_b1, col_b2 = st.columns([1, 1])
+            with col_b1:
+                if st.button("🗑️ Clear All", use_container_width=True):
+                    st.session_state.invoice_items = []
+                    st.rerun()
+            with col_b2:
+                st.components.v1.html(
+                    """
+                    <button onclick="window.print()" style="
+                        width: 100%;
+                        padding: 8px;
+                        background-color: #0066ff;
+                        color: white;
+                        border: none;
+                        border-radius: 8px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        font-size: 14px;">
+                        🖨️ ওপেন প্রিন্ট / PDF (A5)
+                    </button>
+                    """,
+                    height=45
+                )
