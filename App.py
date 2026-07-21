@@ -101,7 +101,7 @@ t = {
         "total_due": "Total Due Amount",
         "stock_val": "Total Stock Value",
         "cust_dir": "Customer Directory & Recent Entries",
-        "logout": "🔒 Logout"
+        "logout": "Logout"
     }
 }
 
@@ -319,7 +319,7 @@ else:
         with col_in3: cust_address = st.text_input("Address / ঠিকানা", value="শ্রীবরদী")
             
         col_item1, col_item2, col_item3 = st.columns([3, 1, 1.5])
-        with col_item1: prod_desc = st.text_input("Product Name / Description", value="খুচরা কাস্টমার")
+        with col_item1: prod_desc = st.text_input("Product Name / Description", value="এসএসডি")
         with col_item2: prod_qty = st.number_input("QTY", min_value=1, value=1)
         with col_item3: prod_price = st.number_input("Unit Price", min_value=0, value=1500)
             
@@ -338,7 +338,7 @@ else:
 
         st.write("---")
         
-        # 🔘 ইনভয়েসের ভাষা সিলেক্টর (ক্লিক করলেই সুইচ হবে)
+        # 🔘 ইনভয়েসের ভাষা সিলেক্টর
         inv_lang_choice = st.radio(
             "🌐 **ইনভয়েসের ভাষা নির্বাচন করুন (Click to switch Invoice Language):**",
             ["🇧🇩 বাংলা (Bangla)", "🇬🇧 English"],
@@ -381,7 +381,7 @@ else:
                 </tr>
                 """
 
-        # ডায়নামিক সুইচিং সহ HTML লেআউট
+        # HTML ইনভয়েস লেআউট (অফিশিয়াল লোগো সহ)
         invoice_template = f"""
         <!DOCTYPE html>
         <html>
@@ -420,49 +420,71 @@ else:
                 gap: 12px;
             }}
             .logo-img {{
-                width: 70px;
-                height: 70px;
+                width: 85px;
+                height: 85px;
                 border-radius: 50%;
                 background: #ffffff;
                 object-fit: cover;
+                border: 1px solid #0d47a1;
             }}
             .logo-text {{
-                font-size: 52px;
+                font-size: 48px;
                 font-weight: 900;
                 color: #0d47a1;
                 line-height: 0.9;
             }}
             .logo-sub {{
-                font-size: 11px;
-                font-weight: bold;
+                font-size: 14px;
+                font-weight: 800;
                 color: #0d47a1;
-                letter-spacing: 0.5px;
+                letter-spacing: 0.8px;
+                margin-top: 3px;
             }}
             .owner-info {{
                 text-align: right;
-                font-size: 11px;
-                font-weight: bold;
                 color: #0d47a1;
             }}
+            .owner-name {{
+                font-size: 16px;
+                font-weight: 900;
+                margin-bottom: 1px;
+            }}
+            .owner-title {{
+                font-size: 12px;
+                font-weight: bold;
+                margin-bottom: 4px;
+            }}
+            .owner-phone {{
+                font-size: 13px;
+                font-weight: bold;
+                line-height: 1.3;
+            }}
             .bill-sec {{
-                margin-top: 10px;
+                margin-top: 12px;
                 display: flex;
                 justify-content: space-between;
+                align-items: center;
                 font-size: 12px;
                 color: #0d47a1;
+            }}
+            .invoice-middle-badge {{
+                text-align: center;
+                flex-grow: 1;
             }}
             .invoice-title {{
                 background: #0d47a1;
                 color: white;
-                padding: 3px 12px;
+                padding: 4px 18px;
                 font-weight: bold;
-                border-radius: 3px;
+                font-size: 14px;
+                border-radius: 4px;
                 display: inline-block;
+                letter-spacing: 1px;
             }}
             table {{
                 width: 100%;
                 border-collapse: collapse;
-                margin-top: 10px;
+                margin-top: 12px;
                 font-size: 11px;
             }}
             th {{
@@ -488,12 +510,42 @@ else:
                 font-size: 11px;
                 color: #0d47a1;
             }}
+            
+            /* বিকাশ ও নগদ লোগো ডিজাইন */
             .payment-methods {{
                 border: 1.5px solid #0d47a1;
-                padding: 4px 8px;
+                padding: 6px 10px;
                 font-weight: bold;
-                font-size: 10px;
+                font-size: 11px;
                 color: #0d47a1;
+                border-radius: 4px;
+                background: #fdfdfd;
+            }}
+            .pay-title {{
+                font-size: 10px;
+                text-transform: uppercase;
+                margin-bottom: 4px;
+                border-bottom: 1px dashed #0d47a1;
+                padding-bottom: 2px;
+            }}
+            .pay-icons-list {{
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-top: 4px;
+            }}
+            .pay-item {{
+                display: flex;
+                align-items: center;
+                gap: 3px;
+                font-size: 10px;
+                font-weight: bold;
+            }}
+            .pay-logo-img {{
+                height: 16px;
+                width: auto;
+                object-fit: contain;
+                vertical-align: middle;
             }}
             .print-btn-container {{
                 text-align: center;
@@ -529,24 +581,28 @@ else:
                     <div>
                         <div class="logo-text">SM-TECH</div>
                         <div class="logo-sub">COMPUTER & IT SOLUTION</div>
-                        <div style="font-size: 9px; color: #0d47a1; font-weight: bold;">Smart Technology-Trusted Service</div>
+                        <div style="font-size: 10px; color: #0d47a1; font-weight: bold; margin-top: 2px;">Smart Technology-Trusted Service</div>
                     </div>
                 </div>
                 <div class="owner-info">
-                    <div style="font-size: 13px; font-weight: bold;">S.m. Ibrahim</div>
-                    <div>Owner</div>
-                    <div>01940-556114</div>
-                    <div>01810-499166</div>
+                    <div class="owner-name">S.m. Ibrahim</div>
+                    <div class="owner-title">Owner</div>
+                    <div class="owner-phone">💬 01940-556114</div>
+                    <div class="owner-phone">💬 01810-499166</div>
                 </div>
             </div>
 
             <div class="bill-sec">
-                <div>
+                <div style="width: 35%;">
                     <b>{cur_inv['bill_to']}</b> {cust_name}<br>
                     <b>{cur_inv['address']}</b> {cust_address}
                 </div>
-                <div style="text-align: right;">
-                    <span class="invoice-title">{cur_inv['inv_title']}</span><br>
+                
+                <div class="invoice-middle-badge">
+                    <span class="invoice-title">{cur_inv['inv_title']}</span>
+                </div>
+
+                <div style="text-align: right; width: 35%;">
                     <b>{cur_inv['inv_no']}</b> {inv_custom_num}<br>
                     <b>{cur_inv['date']}</b> {current_date}
                 </div>
@@ -574,9 +630,19 @@ else:
 
             <div class="footer-sec">
                 <div>
+                    <!-- বিকাশ ও নগদ অফিশিয়াল লোগো বক্স -->
                     <div class="payment-methods">
-                        {cur_inv['pay_meth']}<br>
-                        Cash | Bkash | Nagad | Bank
+                        <div class="pay-title"><b>{cur_inv['pay_meth']}</b></div>
+                        <div class="pay-icons-list">
+                            <span class="pay-item">💵 Cash</span> |
+                            <span class="pay-item">
+                                <img src="https://raw.githubusercontent.com/freelogovectors/bKash-Logo-PNG/main/bKash-Logo.png" class="pay-logo-img" alt="bKash"> Bkash
+                            </span> |
+                            <span class="pay-item">
+                                <img src="https://download.logo.wine/logo/Nagad/Nagad-Logo.wine.png" class="pay-logo-img" alt="Nagad"> Nagad
+                            </span> |
+                            <span class="pay-item">🏦 Bank</span>
+                        </div>
                     </div>
                 </div>
                 <div style="text-align: center;">
