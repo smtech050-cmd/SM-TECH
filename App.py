@@ -83,54 +83,6 @@ if "invoice_items" not in st.session_state:
     st.session_state.invoice_items = []
 
 # ==========================================
-# 🎨 গ্লোবাল থিম: CSS
-# ==========================================
-custom_css = """
-<style>
-    [data-testid="stAppViewContainer"], [data-testid="stSidebar"] {
-        background-color: #f4f7fb !important;
-        color: #111111 !important;
-    }
-    div[data-baseweb="input"], div[data-baseweb="base-input"], div[data-baseweb="select"] {
-        background-color: #ffffff !important;
-        border-radius: 8px !important;
-    }
-    .stTextInput div[data-baseweb="input"] {
-        border: 1px solid #cccccc !important;
-    }
-    .stTextInput input, .stNumberInput input {
-        color: #000000 !important;
-        background-color: #ffffff !important;
-        -webkit-text-fill-color: #000000 !important;
-    }
-    input::placeholder {
-        color: #777777 !important;
-        -webkit-text-fill-color: #777777 !important;
-    }
-    div.stButton > button {
-        background-color: #1b5e20 !important;
-        color: #ffffff !important;
-        border: none !important;
-        padding: 12px 18px !important;
-        font-size: 16px !important;
-        font-weight: bold !important;
-        border-radius: 8px !important;
-        width: 100% !important;
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15) !important;
-        transition: all 0.2s ease;
-    }
-    div.stButton > button:hover {
-        background-color: #0d3b11 !important;
-        box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.2) !important;
-    }
-    div.stButton p {
-        color: #ffffff !important; 
-    }
-</style>
-"""
-st.markdown(custom_css, unsafe_allow_html=True)
-
-# ==========================================
 # 🌐 ভাষার অভিধান (Language Dictionary)
 # ==========================================
 text_translations = {
@@ -151,7 +103,7 @@ text_translations = {
         "welcome": "স্বাগতম",
         "tagline": "স্মার্ট টেকনোলজি, বিশ্বস্ত সেবা।",
         "signin_title": "সাইন-ইন করুন",
-        "signin_sub": "অ্যাডমিন সিস্টেমে প্রবেশ করতে সাইন-ইন করুন",
+        "signin_sub": "এডমিন সিস্টেমে প্রবেশ করতে সাইন-ইন করুন",
         "user_label": "ব্যবহারকারীর নাম",
         "user_place": "ইউজারনেম লিখুন...",
         "pass_label": "পাসওয়ার্ড",
@@ -163,13 +115,13 @@ text_translations = {
 }
 
 # ==========================================
-# 🛑 ১. লগইন স্ক্রিন (ভাষা পরিবর্তন সহ)
+# 🛑 ১. ইমেজ স্টাইল লগইন স্ক্রিন
 # ==========================================
 if not st.session_state.logged_in:
     login_css = """
     <style>
         [data-testid="stAppViewContainer"] {
-            background: #0066ff !important;
+            background: linear-gradient(135deg, #0072ff 0%, #00c6ff 100%) !important;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -178,80 +130,139 @@ if not st.session_state.logged_in:
             display: none;
         }
         .main .block-container {
-            max-width: 900px !important;
+            max-width: 950px !important;
             padding: 0rem !important;
             margin: auto;
         }
+        
+        /* কন্টেইনার কার্ড */
+        .login-card {
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+            display: flex;
+            min-height: 520px;
+        }
+
+        /* বাম পাশের নীল ডিজাইন */
         .left-banner {
-            background: linear-gradient(135deg, #0052cc 0%, #0080ff 100%);
-            border-radius: 20px 0 0 20px;
-            padding: 40px 30px;
+            background: linear-gradient(135deg, #024ebb 0%, #0072ff 100%);
+            border-radius: 20px;
+            padding: 45px 35px;
             color: white;
             position: relative;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            min-height: 480px;
-        }
-        .logo-circle {
-            width: 130px;
-            height: 130px;
-            background: #004080;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
             justify-content: center;
-            margin-top: 15px;
-            border: 4px solid #0066cc;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            min-height: 500px;
         }
-        .logo-circle img {
-            max-width: 80%;
-            max-height: 80%;
-            object-fit: contain;
+
+        /* ছবির মতো ব্যাকগ্রাউন্ড সার্কেল ডিজাইন */
+        .circle-1 {
+            position: absolute;
+            width: 260px;
+            height: 260px;
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 50%;
+            top: -50px;
+            left: -50px;
         }
+        .circle-2 {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            bottom: -40px;
+            right: 10px;
+        }
+
         .welcome-text h2 {
-            font-size: 32px;
+            font-size: 38px;
             font-weight: 900;
             margin: 0;
-            color: #ffffff;
+            color: #ffffff !important;
+            letter-spacing: 1px;
+        }
+        .welcome-text h4 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-top: 5px;
+            color: #e0f2fe !important;
         }
         .welcome-text p {
             font-size: 13px;
-            opacity: 0.9;
-            margin-top: 4px;
+            opacity: 0.85;
+            margin-top: 10px;
+            line-height: 1.5;
+            color: #f0f9ff !important;
         }
-        .form-header h3 {
-            font-size: 28px;
+
+        /* ডান পাশের ফর্মের টেক্সট ও ফিল্ড স্টাইলিং */
+        .stSelectbox label, .stTextInput label {
+            color: #334155 !important;
+            font-weight: 700 !important;
+            font-size: 14px !important;
+        }
+
+        /* ইনপুট ফিল্ডকে ছবির মতো হালকা ধূসর করা */
+        div[data-baseweb="input"], div[data-baseweb="select"] {
+            background-color: #f1f5f9 !important;
+            border-radius: 10px !important;
+            border: 1px solid #e2e8f0 !important;
+        }
+        .stTextInput input {
+            color: #1e293b !important;
+            background-color: transparent !important;
+            font-size: 15px !important;
+        }
+        
+        /* বাটন স্টাইলিং (গাঢ় নীল) */
+        div.stButton > button {
+            background-color: #0a47a3 !important;
+            color: #ffffff !important;
+            border-radius: 10px !important;
+            padding: 12px !important;
+            font-size: 16px !important;
+            font-weight: 700 !important;
+            border: none !important;
+            box-shadow: 0px 4px 12px rgba(10, 71, 163, 0.3) !important;
+        }
+        div.stButton > button:hover {
+            background-color: #083780 !important;
+        }
+        
+        .form-title {
+            font-size: 32px;
             font-weight: 800;
-            color: #222;
-            margin: 0;
+            color: #0f172a;
+            margin-bottom: 2px;
         }
-        .form-header p {
-            font-size: 12px;
-            color: #777;
-            margin-bottom: 15px;
+        .form-subtitle {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 20px;
         }
     </style>
     """
     st.markdown(login_css, unsafe_allow_html=True)
     
-    col_left, col_right = st.columns([1, 1.2])
+    col_left, col_right = st.columns([1, 1.15])
     
-    # বর্তমান নির্বাচিত ভাষার টেক্সট
     t = text_translations[st.session_state.lang]
     
     with col_left:
         st.markdown(
             f"""
             <div class="left-banner">
-                <div class="welcome-text">
+                <div class="circle-1"></div>
+                <div class="circle-2"></div>
+                <div class="welcome-text" style="position: relative; z-index: 2;">
                     <h2>{t['welcome']}</h2>
-                    <p style="font-weight: bold; font-size: 14px;">SM-TECH COMPUTER & IT</p>
+                    <h4>SM-TECH COMPUTER & IT</h4>
                     <p>{t['tagline']}</p>
-                </div>
-                <div class="logo-circle">
-                    <img src="https://raw.githubusercontent.com/smtech050-cmd/SM-TECH/main/IMG_20260717_214948.png" alt="Logo">
                 </div>
             </div>
             """,
@@ -259,6 +270,16 @@ if not st.session_state.logged_in:
         )
 
     with col_right:
+        st.markdown(
+            f"""
+            <div style="padding: 10px 10px 0px 10px;">
+                <div class="form-title">{t['signin_title']}</div>
+                <div class="form-subtitle">{t['signin_sub']}</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        
         # ভাষা পরিবর্তনের ড্রপডাউন
         selected_lang = st.selectbox(
             "🌐 Select Language / ভাষা নির্বাচন করুন",
@@ -270,16 +291,6 @@ if not st.session_state.logged_in:
             st.session_state.lang = selected_lang
             st.rerun()
 
-        st.markdown(
-            f"""
-            <div class="form-header">
-                <h3>{t['signin_title']}</h3>
-                <p>{t['signin_sub']}</p>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-        
         username = st.text_input(t["user_label"], placeholder=t["user_place"], key="login_user")
         password = st.text_input(t["pass_label"], type="password", placeholder=t["pass_place"], key="login_pass")
         
@@ -297,6 +308,21 @@ if not st.session_state.logged_in:
 # 🔓 ২. মূল ড্যাশবোর্ড স্ক্রিন
 # ==========================================
 else:
+    # ড্যাশবোর্ডের ভিতরের স্টাইল (সবুজ থিম)
+    dashboard_css = """
+    <style>
+        [data-testid="stAppViewContainer"], [data-testid="stSidebar"] {
+            background-color: #f4f7fb !important;
+            color: #111111 !important;
+        }
+        div.stButton > button {
+            background-color: #1b5e20 !important;
+            color: #ffffff !important;
+        }
+    </style>
+    """
+    st.markdown(dashboard_css, unsafe_allow_html=True)
+
     with st.sidebar:
         st.markdown('''
             <div style="display: flex; align-items: center; margin-top: 15px; margin-bottom: 15px; padding-left: 5px;">
@@ -746,7 +772,6 @@ else:
             </html>
             """
             
-            # HTML ডেটা এনকোড করা
             b64_html = base64.b64encode(invoice_html.encode('utf-8')).decode('utf-8')
             
             col_action1, col_action2 = st.columns(2)
