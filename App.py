@@ -204,13 +204,13 @@ else:
                 st.rerun()
         st.dataframe(pd.DataFrame(st.session_state.saved_passwords), use_container_width=True)
 
-    # ৫. সেল ইনভয়েস (A5 পারফেক্ট ডিজাইনার ক্যাশ মেমো প্রিন্ট)
+    # ৫. সেল ইনভয়েস (লোগো বামে, টেক্সট ডানে এবং বটম পেমেন্ট/সাইন সেকশন)
     elif st.session_state.current_menu == "Sell Invoice":
         st.title("🧾 ইনভয়েস জেনারেটর")
         
         # ইনপুট ফিল্ড
         col_in1, col_in2, col_in3 = st.columns([1.5, 2, 2])
-        with col_in1: inv_custom_num = st.text_input("Invoice No", value="1001")
+        with col_in1: inv_custom_num = st.text_input("Invoice No", value=f"SM-TECH/{datetime.datetime.now().strftime('%y/%m/%d')}")
         with col_in2: cust_name = st.text_input("কাস্টমারের নাম", value="খুচরা কাস্টমার")
         with col_in3: cust_address = st.text_input("Address", value="Dhaka, Bangladesh")
             
@@ -260,7 +260,7 @@ else:
                 </tr>
                 """
 
-        # সম্পূর্ণ ছবি সংসংক্রান্ত HTML+CSS A5 লেআউট
+        # সম্পূর্ণ HTML+CSS A5 ইনভয়েস লেআউট
         invoice_template = f"""
         <!DOCTYPE html>
         <html>
@@ -273,7 +273,7 @@ else:
             body {{
                 font-family: Arial, sans-serif;
                 margin: 0;
-                padding: 15px;
+                padding: 12px;
                 background: #fff;
             }}
             .invoice-box {{
@@ -282,23 +282,35 @@ else:
                 border-radius: 8px;
                 position: relative;
                 box-sizing: border-box;
-                min-height: 94vh;
+                min-height: 95vh;
             }}
             .header {{
                 display: flex;
                 justify-content: space-between;
-                align-items: flex-start;
+                align-items: center;
                 border-bottom: 2px solid #0d47a1;
                 padding-bottom: 8px;
             }}
+            .logo-section {{
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }}
+            .logo-img {{
+                width: 55px;
+                height: 55px;
+                border-radius: 50%;
+                background: #ffffff;
+                object-fit: cover;
+            }}
             .logo-text {{
-                font-size: 28px;
+                font-size: 26px;
                 font-weight: 900;
                 color: #0d47a1;
                 line-height: 1;
             }}
             .logo-sub {{
-                font-size: 11px;
+                font-size: 10px;
                 font-weight: bold;
                 color: #2e7d32;
                 letter-spacing: 0.5px;
@@ -341,7 +353,10 @@ else:
                 height: 18px;
             }}
             .footer-sec {{
-                margin-top: 30px;
+                position: absolute;
+                bottom: 30px;
+                left: 12px;
+                right: 12px;
                 display: flex;
                 justify-content: space-between;
                 align-items: flex-end;
@@ -382,10 +397,13 @@ else:
 
         <div class="invoice-box">
             <div class="header">
-                <div>
-                    <div class="logo-text">SM-TECH</div>
-                    <div class="logo-sub">COMPUTER & IT SOLUTION</div>
-                    <div style="font-size: 9px; color: #333;">Smart Technology-Trusted Service</div>
+                <div class="logo-section">
+                    <img class="logo-img" src="https://raw.githubusercontent.com/smtech050-cmd/SM-TECH/main/IMG_20260717_214948.png" alt="Logo">
+                    <div>
+                        <div class="logo-text">SM-TECH</div>
+                        <div class="logo-sub">COMPUTER & IT SOLUTION</div>
+                        <div style="font-size: 9px; color: #333;">Smart Technology-Trusted Service</div>
+                    </div>
                 </div>
                 <div class="owner-info">
                     <div style="font-size: 13px; font-weight: bold;">S.m. Ibrahim</div>
@@ -451,4 +469,4 @@ else:
         </html>
         """
 
-        st.components.v1.html(invoice_template, height=750, scrolling=True)
+        st.components.v1.html(invoice_template, height=760, scrolling=True)
