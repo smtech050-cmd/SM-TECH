@@ -22,6 +22,7 @@ components.html(
     """,
     height=0,
 )
+
 # পেজ কনফিগারেশন
 st.set_page_config(page_title="SM-TECH | Admin System", layout="wide")
 
@@ -79,12 +80,12 @@ if "invoice_items" not in st.session_state:
     st.session_state.invoice_items = []
 
 # ==========================================
-# 🎨 গ্লোবাল থিম: CSS
+# 🎨 গ্লোবাল থিম: CSS (ড্যাশবোর্ডের জন্য)
 # ==========================================
 custom_css = """
 <style>
     [data-testid="stAppViewContainer"], [data-testid="stSidebar"] {
-        background-color: #ffffff !important;
+        background-color: #f4f7fb !important;
         color: #111111 !important;
     }
     div[data-baseweb="input"], div[data-baseweb="base-input"] {
@@ -103,79 +104,155 @@ custom_css = """
         color: #777777 !important;
         -webkit-text-fill-color: #777777 !important;
     }
-    div[data-baseweb="input"] svg {
-        fill: #333333 !important;
-        color: #333333 !important;
-    }
-    .stTextInput label, .stNumberInput label {
-        color: #222222 !important;
-        font-weight: bold !important;
-    }
     div.stButton > button {
-        background-color: #d60000 !important;
+        background-color: #0056b3 !important;
         color: #ffffff !important;
         border: none !important;
-        padding: 14px 18px !important;
+        padding: 12px 18px !important;
         font-size: 16px !important;
         font-weight: bold !important;
-        border-radius: 12px !important;
+        border-radius: 8px !important;
         width: 100% !important;
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15) !important;
         transition: all 0.2s ease;
     }
     div.stButton > button:hover {
-        background-color: #bd0000 !important;
+        background-color: #003d80 !important;
         box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.2) !important;
     }
     div.stButton p {
         color: #ffffff !important; 
-    }
-    div.stSidebar div.stButton > button {
-        text-align: left !important;
-        margin-bottom: 12px !important;
     }
 </style>
 """
 st.markdown(custom_css, unsafe_allow_html=True)
 
 # ==========================================
-# 🛑 ১. লগইন স্ক্রিন রেন্ডারিং
+# 🛑 ১. স্প্লিট-কার্ড লগইন স্ক্রিন (নমুনা ছবির মতো)
 # ==========================================
 if not st.session_state.logged_in:
-    _, col_center, _ = st.columns([0.5, 2.4, 0.5])
-    with col_center:
-        st.markdown('<br>', unsafe_allow_html=True)
+    # ব্যাকগ্রাউন্ড এবং আধুনিক কার্ড ডিজাইন CSS
+    login_css = """
+    <style>
+        [data-testid="stAppViewContainer"] {
+            background: linear-gradient(135deg, #0072ff 0%, #00c6ff 100%) !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        [data-testid="stHeader"] {
+            display: none;
+        }
+        .main .block-container {
+            max-width: 950px !important;
+            padding: 0rem !important;
+            margin: auto;
+        }
+        .login-card-container {
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            display: flex;
+            margin-top: 40px;
+            min-height: 480px;
+        }
+        .welcome-side {
+            background: linear-gradient(135deg, #0052D4 0%, #4364F7 50%, #6FB1FC 100%);
+            width: 45%;
+            padding: 40px 30px;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .welcome-side::before {
+            content: "";
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            top: -50px;
+            left: -50px;
+        }
+        .welcome-side::after {
+            content: "";
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            bottom: -40px;
+            right: -30px;
+        }
+        .welcome-title {
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            line-height: 1.2;
+            margin-bottom: 10px;
+            z-index: 1;
+        }
+        .welcome-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+            line-height: 1.5;
+            z-index: 1;
+        }
+        .form-side {
+            width: 55%;
+            padding: 40px 35px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: #ffffff;
+        }
+        .form-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #1a237e;
+            margin-bottom: 5px;
+        }
+        .form-subtext {
+            font-size: 13px;
+            color: #666666;
+            margin-bottom: 25px;
+        }
+    </style>
+    """
+    st.markdown(login_css, unsafe_allow_html=True)
+    
+    col_left, col_right = st.columns([1, 1.2])
+    
+    with col_left:
         st.markdown(
             """
-            <style>
-                div[data-testid="stImage"] img {
-                    width: 85% !important;
-                    max-width: 550px !important;
-                    display: block;
-                    margin-left: auto;
-                    margin-right: auto;
-                }
-            </style>
+            <div class="welcome-side">
+                <div class="welcome-title">WELCOME TO<br>SM-TECH</div>
+                <div class="welcome-subtitle">Smart Technology, Trusted Service.<br>Your complete IT & Computer Solution partner.</div>
+            </div>
             """,
             unsafe_allow_html=True
         )
-        st.image("https://raw.githubusercontent.com/smtech050-cmd/SM-TECH/main/IMG_20260717_214948.png", use_container_width=True)
+
+    with col_right:
+        st.markdown('<div class="form-title">Sign In</div>', unsafe_allow_html=True)
+        st.markdown('<div class="form-subtext">অ্যাডমিন প্যানেলে প্রবেশ করতে আপনার তথ্য দিন</div>', unsafe_allow_html=True)
         
-        with st.container(border=False):
-            st.markdown('<div style="font-size: 22px; font-weight: bold; text-align: center; color: #d60000; margin-top: 15px; margin-bottom: 25px;">অ্যাডমিন প্যানেল প্রবেশ করুন</div>', unsafe_allow_html=True)
-            
-            username = st.text_input("Username (ইউজারনেম)", placeholder="ইউজারনেম লিখুন...")
-            password = st.text_input("Password (পাসওয়ার্ড)", type="password", placeholder="পাসওয়ার্ড লিখুন...")
-            st.markdown('<br>', unsafe_allow_html=True)
-            
-            login_btn = st.button("🔒 লগইন করুন", use_container_width=True)
-            if login_btn:
-                if username == "admin" and password == "1234":
-                    st.session_state.logged_in = True
-                    st.success("লগইন সফল হয়েছে!")
-                    st.rerun()
-                else:
-                    st.error("ভুল ইউজারনেম অথবা পাসওয়ার্ড! আবার চেষ্টা করুন।")
+        username = st.text_input("Username (ইউজারনেম)", placeholder="Enter username...", key="login_user")
+        password = st.text_input("Password (পাসওয়ার্ড)", type="password", placeholder="Enter password...", key="login_pass")
+        st.markdown('<br>', unsafe_allow_html=True)
+        
+        if st.button("Sign In / লগইন করুন", use_container_width=True):
+            if username == "admin" and password == "1234":
+                st.session_state.logged_in = True
+                st.success("লগইন সফল হয়েছে!")
+                st.rerun()
+            else:
+                st.error("ভুল ইউজারনেম অথবা পাসওয়ার্ড! আবার চেষ্টা করুন।")
 
 # ==========================================
 # 🔓 ২. মূল ড্যাশবোর্ড স্ক্রিন
@@ -184,8 +261,8 @@ else:
     with st.sidebar:
         st.markdown('''
             <div style="display: flex; align-items: center; margin-top: 15px; margin-bottom: 15px; padding-left: 5px;">
-                <span style="font-size: 32px; margin-right: 12px; color: #d60000;">⚙️</span>
-                <span style="font-size: 30px; font-weight: 900; color: #d60000; letter-spacing: 0.5px;">SM-TECH</span>
+                <span style="font-size: 32px; margin-right: 12px; color: #0056b3;">⚙️</span>
+                <span style="font-size: 30px; font-weight: 900; color: #0056b3; letter-spacing: 0.5px;">SM-TECH</span>
             </div>
         ''', unsafe_allow_html=True)
         
@@ -194,7 +271,7 @@ else:
             st.rerun()
             
         st.write("---")
-        st.markdown("<h3 style='color:#d60000; font-size:20px; font-weight:bold; margin-left:5px; margin-bottom:15px;'>মেনু নির্বাচন করুন</h3>", unsafe_allow_html=True)
+        st.markdown("<h3 style='color:#0056b3; font-size:20px; font-weight:bold; margin-left:5px; margin-bottom:15px;'>মেনু নির্বাচন করুন</h3>", unsafe_allow_html=True)
         
         if st.button("⬜  Dashboard", use_container_width=True):
             st.session_state.current_menu = "Dashboard"; st.rerun()
@@ -267,7 +344,7 @@ else:
                 st.rerun()
         st.dataframe(pd.DataFrame(st.session_state.saved_passwords), use_container_width=True)
 
-    # সেল ইনভয়েস (লোগোর সাথে বড় SM-TECH লেখা যুক্ত করা হয়েছে)
+    # সেল ইনভয়েস
     elif st.session_state.current_menu == "Sell Invoice":
         st.title("🧾 ইনভয়েস")
         col_in1, col_in2, col_in3 = st.columns([1.5, 2, 2])
