@@ -353,9 +353,9 @@ else:
         sub_total = sum(item["Amount"] for item in st.session_state.invoice_items)
         amount_in_words = number_to_words_bn(sub_total) if i_lang == "Bangla" else number_to_words_en(sub_total)
         
-        # ১০ লাইনের টেবিল
+        # ৮ লাইনের টেবিল (রো-গুলোর হাইট বাড়িয়ে টেবিলটি ফাকা করা হয়েছে)
         rows_html = ""
-        max_rows = 10
+        max_rows = 8
         for i in range(max_rows):
             if i < len(st.session_state.invoice_items):
                 item = st.session_state.invoice_items[i]
@@ -379,7 +379,7 @@ else:
                 </tr>
                 """
 
-        # HTML ইনভয়েস লেআউট
+        # HTML ইনভয়েস লেআউট (Updated Row Height & Padding to Fill Space Vertically)
         invoice_template = f"""
         <!DOCTYPE html>
         <html>
@@ -425,7 +425,6 @@ else:
                 object-fit: contain;
                 border: 2px solid #0d47a1;
             }}
-            /* SM-TECH হেডিং ফন্ট সাইজ বড় করা হলো */
             .logo-text {{
                 font-size: 44px;
                 font-weight: 900;
@@ -484,19 +483,20 @@ else:
             table {{
                 width: 100%;
                 border-collapse: collapse;
-                margin-top: 10px;
-                font-size: 11px;
+                margin-top: 12px;
+                font-size: 12px;
             }}
             th {{
                 background-color: #0d47a1;
                 color: white;
                 border: 1px solid #0d47a1;
-                padding: 5px;
+                padding: 7px 5px;
+                font-size: 12px;
             }}
             td {{
                 border: 1px solid #0d47a1;
-                padding: 4px 6px;
-                height: 17px;
+                padding: 6px 8px;
+                height: 28px; /* কলামের উচ্চতা বড় করা হয়েছে */
                 color: #0d47a1;
             }}
             .footer-sec {{
@@ -510,7 +510,6 @@ else:
                 font-size: 11px;
                 color: #0d47a1;
             }}
-            /* পেমেন্ট মেথড বক্স এবং টেক্সট বড় করা হলো */
             .payment-methods {{
                 border: 1.5px solid #0d47a1;
                 padding: 8px 14px;
@@ -538,7 +537,7 @@ else:
             .pay-item {{
                 display: flex;
                 align-items: center;
-                gap: 6px;
+                gap: 8px;
             }}
             .pay-logo-img {{
                 height: 18px;
@@ -619,7 +618,7 @@ else:
                 <tbody>
                     {rows_html}
                     <tr>
-                        <td colspan="3" style="border:1px solid #0d47a1;"><b>{cur_inv['words']}</b> {amount_in_words}</td>
+                        <td colspan="3" style="border:1px solid #0d47a1; height: 26px;"><b>{cur_inv['words']}</b> {amount_in_words}</td>
                         <td style="font-weight:bold; text-align:right; background:#0d47a1; color:white;">{cur_inv['subtotal']}</td>
                         <td style="font-weight:bold; text-align:right; background:#0d47a1; color:white;">{sub_total:,}</td>
                     </tr>
@@ -628,18 +627,21 @@ else:
 
             <div class="footer-sec">
                 <div>
+                    <!-- ১, ২, ৩, ৪ পেমেন্ট মেথড নিশ্চিত লোগো সহ -->
                     <div class="payment-methods">
                         <div class="pay-title">{cur_inv['pay_meth']}</div>
                         <div class="pay-list">
-                            <div class="pay-item">১। 💵 Cash</div>
                             <div class="pay-item">
-                                ২। <img src="https://raw.githubusercontent.com/freelogovectors/bKash-Logo-PNG/main/bKash-Logo.png" class="pay-logo-img" alt="bKash"> Bkash
+                                ১। 💵 <span>Cash</span>
                             </div>
                             <div class="pay-item">
-                                ৩। <img src="https://download.logo.wine/logo/Nagad/Nagad-Logo.wine.png" class="pay-logo-img" alt="Nagad"> Nagad
+                                ২। <img src="https://img.icons8.com/color/48/bkash.png" class="pay-logo-img" alt="bKash"> <span>Bkash</span>
                             </div>
                             <div class="pay-item">
-                                ৪। <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/AB_Bank_Logo.svg/1200px-AB_Bank_Logo.svg.png" class="pay-logo-img" alt="Bank"> Bank
+                                ৩। <img src="https://nagad.com.bd/wp-content/uploads/2021/04/nagad-logo.png" class="pay-logo-img" alt="Nagad"> <span>Nagad</span>
+                            </div>
+                            <div class="pay-item">
+                                ৪। <img src="https://img.icons8.com/color/48/bank-building.png" class="pay-logo-img" alt="Bank"> <span>Bank</span>
                             </div>
                         </div>
                     </div>
@@ -692,4 +694,4 @@ else:
         </html>
         """
 
-        st.components.v1.html(invoice_template, height=780, scrolling=True)
+        st.components.v1.html(invoice_template, height=820, scrolling=True)
