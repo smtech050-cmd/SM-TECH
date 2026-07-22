@@ -56,6 +56,7 @@
             left: 0;
             background-color: #111;
             overflow-x: hidden;
+            overflow-y: auto; /* লিঙ্কের সংখ্যা বেশি হলে স্ক্রোল সুবিধা */
             transition: 0.3s;
             padding-top: 60px;
             box-shadow: 2px 0 10px rgba(0,0,0,0.5);
@@ -74,17 +75,21 @@
             color: #000;
             font-weight: bold;
         }
-        /* সাব-লিঙ্কের জন্য বিশেষ স্টাইল */
+
+        /* সাব-লিঙ্কের জন্য স্টাইল (এডুকেশনের নিচের লিঙ্কগুলো) */
         .sidebar a.sub-link {
             padding-left: 45px;
             font-size: 14px;
             color: #aaa;
             background-color: #181818;
+            border-bottom: 1px solid #282828;
         }
         .sidebar a.sub-link:hover {
             color: #000;
             background-color: #00e676;
+            font-weight: bold;
         }
+
         .sidebar .close-btn {
             position: absolute;
             top: 10px;
@@ -178,12 +183,15 @@
         <a href="#">🛍️ সেল পণ্য</a>
         <a href="#">🧾 ইনভয়েস</a>
         
-        <!-- এডুকেশন মেনু -->
-        <a href="#">🎓 এডুকেশন</a>
+        <!-- এডুকেশন প্রধান অপশন -->
+        <a href="#" style="background-color: #00e676; color: #000; font-weight: bold;">🎓 এডুকেশন</a>
         
-        <!-- এডুকেশনের নিচের লিঙ্কসমূহ (এগুলোর URL ও নাম পরিবর্তন করে নিন) -->
-        <a href="https://your-education-link1.com" target="_blank" class="sub-link">🔗 কোর্স লিঙ্ক ১</a>
-        <a href="https://your-education-link2.com" target="_blank" class="sub-link">🔗 স্টাডি মেটেরিয়াল</a>
+        <!-- এডুকেশনের সাইটসমূহের লিঙ্ক -->
+        <a href="http://bmeb.gov.bd/" target="_blank" class="sub-link">🔗 মাদ্রাসা বোর্ড</a>
+        <a href="https://dme.gov.bd/" target="_blank" class="sub-link">🔗 মাদ্রাসা শিক্ষা অধিদপ্তর</a>
+        <a href="https://www.memis.gov.bd" target="_blank" class="sub-link">🔗 মেমিস (MEMIS)</a>
+        <a href="https://www.dhakaeducationboard.gov.bd" target="_blank" class="sub-link">🔗 ঢাকা শিক্ষা বোর্ড</a>
+        <a href="https://www.mymensingheducationboard.gov.bd/" target="_blank" class="sub-link">🔗 ময়মনসিংহ শিক্ষা বোর্ড</a>
     </div>
 
     <!-- ব্যাকগ্রাউন্ড ওভারলে -->
@@ -226,7 +234,7 @@
     <!-- সাইডবার কন্ট্রোলের জন্য জাভাস্ক্রিপ্ট -->
     <script>
         function openNav() {
-            document.getElementById("mySidebar").style.width = "250px";
+            document.getElementById("mySidebar").style.width = "260px";
             document.getElementById("overlay").style.display = "block";
         }
 
