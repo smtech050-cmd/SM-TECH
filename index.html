@@ -13,7 +13,7 @@
         }
         body {
             background-color: #f4f4f4;
-            padding-bottom: 70px; /* নিচের নেভিগেশন বারের জন্য জায়গা */
+            padding-bottom: 70px; /* নিচের নেভিগেশন বারের জন্য জায়গা */
         }
         /* হেডার ও লোগো বার */
         header {
@@ -29,24 +29,26 @@
             font-weight: bold;
             color: #00e676;
         }
-        /* মোট ব্যানার সেকশন */
+        
+        /* ব্যানার সেকশন */
         .banner {
             width: 100%;
             background-color: #111;
-            color: #fff;
-            text-align: center;
-            padding: 40px 20px;
+            padding: 10px;
             margin-bottom: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        .banner h2 {
-            font-size: 24px;
-            color: #00e676;
-            margin-bottom: 10px;
+        .banner-img {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            display: block;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
-        .banner p {
-            font-size: 16px;
-            color: #ccc;
-        }
+
         /* প্রোডাক্ট কার্ড */
         .products {
             display: grid;
@@ -97,10 +99,9 @@
         <div>🔍</div>
     </header>
 
-    <!-- ব্যানার -->
+    <!-- ব্যানার (এখানে ইমেজ যোগ করা হয়েছে) -->
     <div class="banner">
-        <h2>এসএম টেক-এ স্বাগতম!</h2>
-        <p>কম্পিউটার পার্টস ও সার্ভিসিংয়ের সেরা সমাধান</p>
+        <img src="banner.jpg" alt="SM-TECH Banner" class="banner-img">
     </div>
 
     <!-- প্রোডাক্ট ক্যাটাগরি -->
