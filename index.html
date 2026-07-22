@@ -13,8 +13,9 @@
         }
         body {
             background-color: #f4f4f4;
-            padding-bottom: 70px; /* নিচের নেভিগেশন বারের জন্য জায়গা */
+            padding-bottom: 70px; /* নিচের নেভিগেশনের জন্য স্পেস */
         }
+
         /* হেডার ও লোগো বার */
         header {
             background-color: #000;
@@ -23,13 +24,77 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .menu-btn {
+            font-size: 24px;
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
         }
         .logo {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: bold;
             color: #00e676;
         }
-        
+
+        /* বাম পাশের সাইডবার (Sidebar / Menu Bar) */
+        .sidebar {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 1000;
+            top: 0;
+            left: 0;
+            background-color: #111;
+            overflow-x: hidden;
+            transition: 0.3s;
+            padding-top: 60px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+        }
+        .sidebar a {
+            padding: 15px 25px;
+            text-decoration: none;
+            font-size: 16px;
+            color: #ddd;
+            display: block;
+            transition: 0.2s;
+            border-bottom: 1px solid #222;
+        }
+        .sidebar a:hover {
+            background-color: #00e676;
+            color: #000;
+            font-weight: bold;
+        }
+        .sidebar .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 30px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        /* মেনু ওপেন থাকলে ব্যাকগ্রাউন্ড ডার্ক করার জন্য ওভারলে */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
         /* ব্যানার সেকশন */
         .banner {
             width: 100%;
@@ -42,7 +107,6 @@
         }
         .banner-img {
             width: 100%;
-            max-width: 100%;
             height: auto;
             border-radius: 8px;
             display: block;
@@ -70,6 +134,7 @@
             color: #00e676;
             font-weight: bold;
         }
+
         /* নিচের ফিক্সড নেভিগেশন বার */
         .bottom-nav {
             position: fixed;
@@ -81,6 +146,7 @@
             justify-content: space-around;
             padding: 12px 0;
             box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
+            z-index: 900;
         }
         .nav-item {
             color: #fff;
@@ -93,13 +159,29 @@
 </head>
 <body>
 
+    <!-- বাম পাশের সাইডবার মেনু -->
+    <div id="mySidebar" class="sidebar">
+        <span class="close-btn" onclick="closeNav()">&times;</span>
+        <a href="#">📊 ড্যাশবোর্ড</a>
+        <a href="#">📦 স্টক পণ্য</a>
+        <a href="#">🛍️ সেল পণ্য</a>
+        <a href="#">🧾 ইনভয়েস</a>
+        <a href="https://your-education-link.com" target="_blank">🎓 এডুকেশন</a>
+    </div>
+
+    <!-- ব্যাকগ্রাউন্ড ওভারলে -->
+    <div id="overlay" class="overlay" onclick="closeNav()"></div>
+
     <!-- হেডার -->
     <header>
-        <div class="logo">SM TECH</div>
+        <div class="header-left">
+            <button class="menu-btn" onclick="openNav()">☰</button>
+            <div class="logo">SM TECH</div>
+        </div>
         <div>🔍</div>
     </header>
 
-    <!-- ব্যানার (এখানে ইমেজ যোগ করা হয়েছে) -->
+    <!-- ব্যানার (এখানে ইমেজ যোগ করবেন) -->
     <div class="banner">
         <img src="banner.jpg" alt="SM-TECH Banner" class="banner-img">
     </div>
@@ -123,6 +205,19 @@
         <a href="#" class="nav-item">👤 Profile</a>
         <a href="#" class="nav-item">🛒 Cart</a>
     </div>
+
+    <!-- সাইডবার কন্ট্রোলের জন্য জাভাস্ক্রিপ্ট -->
+    <script>
+        function openNav() {
+            document.getElementById("mySidebar").style.width = "250px";
+            document.getElementById("overlay").style.display = "block";
+        }
+
+        function closeNav() {
+            document.getElementById("mySidebar").style.width = "0";
+            document.getElementById("overlay").style.display = "none";
+        }
+    </script>
 
 </body>
 </html>
