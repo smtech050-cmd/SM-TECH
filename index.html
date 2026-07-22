@@ -74,6 +74,17 @@
             color: #000;
             font-weight: bold;
         }
+        /* সাব-লিঙ্কের জন্য বিশেষ স্টাইল */
+        .sidebar a.sub-link {
+            padding-left: 45px;
+            font-size: 14px;
+            color: #aaa;
+            background-color: #181818;
+        }
+        .sidebar a.sub-link:hover {
+            color: #000;
+            background-color: #00e676;
+        }
         .sidebar .close-btn {
             position: absolute;
             top: 10px;
@@ -166,7 +177,13 @@
         <a href="#">📦 স্টক পণ্য</a>
         <a href="#">🛍️ সেল পণ্য</a>
         <a href="#">🧾 ইনভয়েস</a>
-        <a href="https://your-education-link.com" target="_blank">🎓 এডুকেশন</a>
+        
+        <!-- এডুকেশন মেনু -->
+        <a href="#">🎓 এডুকেশন</a>
+        
+        <!-- এডুকেশনের নিচের লিঙ্কসমূহ (এগুলোর URL ও নাম পরিবর্তন করে নিন) -->
+        <a href="https://your-education-link1.com" target="_blank" class="sub-link">🔗 কোর্স লিঙ্ক ১</a>
+        <a href="https://your-education-link2.com" target="_blank" class="sub-link">🔗 স্টাডি মেটেরিয়াল</a>
     </div>
 
     <!-- ব্যাকগ্রাউন্ড ওভারলে -->
@@ -181,7 +198,7 @@
         <div>🔍</div>
     </header>
 
-    <!-- ব্যানার (এখানে ইমেজ যোগ করবেন) -->
+    <!-- ব্যানার -->
     <div class="banner">
         <img src="banner.jpg" alt="SM-TECH Banner" class="banner-img">
     </div>
