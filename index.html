@@ -75,8 +75,6 @@
             color: #000;
             font-weight: bold;
         }
-
-        /* সাব-লিঙ্কের জন্য স্টাইল */
         .sidebar a.sub-link {
             padding-left: 45px;
             font-size: 14px;
@@ -89,7 +87,6 @@
             background-color: #00e676;
             font-weight: bold;
         }
-
         .sidebar .close-btn {
             position: absolute;
             top: 10px;
@@ -127,6 +124,58 @@
             border-radius: 8px;
             display: block;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        /* রেজাল্ট আর্কাইভ সেকশন */
+        .result-archive-section {
+            padding: 10px;
+        }
+        .section-header {
+            background-color: #008d43;
+            color: #ffffff;
+            text-align: center;
+            padding: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 8px 8px 0 0;
+        }
+        .boxes-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background-color: #e8f5e9;
+            padding: 10px;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        /* আলাদা আলাদা সবুজ বক্স */
+        .result-box {
+            background-color: #00a651;
+            color: white;
+            padding: 12px 15px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+        }
+        .result-box .title {
+            font-size: 15px;
+            font-weight: bold;
+        }
+        .result-box a {
+            background-color: #ffffff;
+            color: #00a651;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .result-box a:hover {
+            background-color: #222;
+            color: #ffffff;
         }
 
         /* প্রোডাক্ট কার্ড */
@@ -182,11 +231,7 @@
         <a href="#">📦 স্টক পণ্য</a>
         <a href="#">🛍️ সেল পণ্য</a>
         <a href="#">🧾 ইনভয়েস</a>
-        
-        <!-- এডুকেশন প্রধান অপশন -->
         <a href="#">🎓 এডুকেশন</a>
-        
-        <!-- সাব-লিঙ্কসমূহ -->
         <a href="http://bmeb.gov.bd/" target="_blank" class="sub-link">🔗 মাদ্রাসা বোর্ড</a>
         <a href="https://dme.gov.bd/" target="_blank" class="sub-link">🔗 মাদ্রাসা শিক্ষা অধিদপ্তর</a>
         <a href="https://www.memis.gov.bd" target="_blank" class="sub-link">🔗 মেমিস (MEMIS)</a>
@@ -206,9 +251,42 @@
         <div>🔍</div>
     </header>
 
-    <!-- ব্যানার (নাম আপডেট করা হয়েছে) -->
+    <!-- ব্যানার -->
     <div class="banner">
         <img src="banner.png" alt="SM-TECH Banner" class="banner-img">
+    </div>
+
+    <!-- রেজাল্ট আর্কাইভ (আলাদা আলাদা সবুজ বক্স) -->
+    <div class="result-archive-section">
+        <div class="section-header">🎓 রেজাল্ট আর্কাইভ</div>
+        <div class="boxes-container">
+            
+            <div class="result-box">
+                <span class="title">মাদ্রাসা শিক্ষা বোর্ড</span>
+                <a href="http://bmeb.gov.bd/" target="_blank">ভিজিট করুন</a>
+            </div>
+
+            <div class="result-box">
+                <span class="title">মাদ্রাসা শিক্ষা অধিদপ্তর</span>
+                <a href="https://dme.gov.bd/" target="_blank">ভিজিট করুন</a>
+            </div>
+
+            <div class="result-box">
+                <span class="title">ময়মনসিংহ শিক্ষা বোর্ড</span>
+                <a href="https://www.mymensingheducationboard.gov.bd/" target="_blank">ভিজিট করুন</a>
+            </div>
+
+            <div class="result-box">
+                <span class="title">ঢাকা শিক্ষা বোর্ড</span>
+                <a href="https://www.dhakaeducationboard.gov.bd" target="_blank">ভিজিট করুন</a>
+            </div>
+
+            <div class="result-box">
+                <span class="title">জাতীয় বিশ্ববিদ্যালয়</span>
+                <a href="https://www.nu.ac.bd/" target="_blank">ভিজিট করুন</a>
+            </div>
+
+        </div>
     </div>
 
     <!-- প্রোডাক্ট ক্যাটাগরি -->
