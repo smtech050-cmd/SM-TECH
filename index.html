@@ -40,7 +40,6 @@
             color: #fff;
             cursor: pointer;
         }
-        /* লোগো ফন্ট সাইজ বড় করা হয়েছে */
         .logo {
             font-size: 26px;
             font-weight: bold;
@@ -77,6 +76,40 @@
             color: #000;
             font-weight: bold;
         }
+        /* এডমিন প্যানেল ড্রপডাউন ডিজাইন */
+        .admin-dropdown-btn {
+            padding: 15px 25px;
+            font-size: 16px;
+            color: #00e676;
+            font-weight: bold;
+            background: none;
+            border: none;
+            border-bottom: 1px solid #222;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .admin-dropdown-btn:hover {
+            background-color: #1a1a1a;
+        }
+        .admin-submenu {
+            display: none;
+            background-color: #181818;
+        }
+        .admin-submenu a {
+            padding-left: 45px;
+            font-size: 15px;
+            color: #ccc;
+            border-bottom: 1px solid #252525;
+        }
+        .admin-submenu a:hover {
+            background-color: #00e676;
+            color: #000;
+        }
+
         .sidebar .close-btn {
             position: absolute;
             top: 10px;
@@ -213,19 +246,28 @@
 </head>
 <body>
 
-    <!-- বাম পাশের সাইডবার মেনু (এডুকেশন ও নিচের সকল লিংক বাদ দেওয়া হয়েছে) -->
+    <!-- বাম পাশের সাইডবার মেনু -->
     <div id="mySidebar" class="sidebar">
         <span class="close-btn" onclick="closeNav()">&times;</span>
-        <a href="#">📊 ড্যাশবোর্ড</a>
-        <a href="#">📦 স্টক পণ্য</a>
-        <a href="#">🛍️ সেল পণ্য</a>
-        <a href="#">🧾 ইনভয়েস</a>
+        
+        <!-- এডমিন প্যানেল মূল মেনু -->
+        <button class="admin-dropdown-btn" onclick="toggleAdminMenu()">
+            🔐 এডমিন প্যানেল <span id="arrow">▾</span>
+        </button>
+        
+        <!-- এডমিন প্যানেলের ভেতরের মেনুসমূহ -->
+        <div class="admin-submenu" id="adminSubmenu">
+            <a href="#">📊 ড্যাশবোর্ড</a>
+            <a href="#">📦 স্টক পণ্য</a>
+            <a href="#">🛍️ সেল পণ্য</a>
+            <a href="#">🧾 ইনভয়েস</a>
+        </div>
     </div>
 
     <!-- ব্যাকগ্রাউন্ড ওভারলে -->
     <div id="overlay" class="overlay" onclick="closeNav()"></div>
 
-    <!-- হেডার (SM TECH ফন্ট বড় করা হয়েছে) -->
+    <!-- হেডার -->
     <header>
         <div class="header-left">
             <button class="menu-btn" onclick="openNav()">☰</button>
@@ -292,7 +334,7 @@
         <a href="#" class="nav-item">🛒 Cart</a>
     </div>
 
-    <!-- সাইডবার কন্ট্রোলের জন্য জাভাস্ক্রিপ্ট -->
+    <!-- সাইডবার ও ড্রপডাউন কন্ট্রোলের জন্য জাভাস্ক্রিপ্ট -->
     <script>
         function openNav() {
             document.getElementById("mySidebar").style.width = "260px";
@@ -302,6 +344,18 @@
         function closeNav() {
             document.getElementById("mySidebar").style.width = "0";
             document.getElementById("overlay").style.display = "none";
+        }
+
+        function toggleAdminMenu() {
+            var submenu = document.getElementById("adminSubmenu");
+            var arrow = document.getElementById("arrow");
+            if (submenu.style.display === "block") {
+                submenu.style.display = "none";
+                arrow.innerHTML = "▾";
+            } else {
+                submenu.style.display = "block";
+                arrow.innerHTML = "▴";
+            }
         }
     </script>
 
