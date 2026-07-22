@@ -1,1 +1,127 @@
-index
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SM TECH</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            background-color: #f4f4f4;
+            padding-bottom: 70px; /* নিচের নেভিগেশন বারের জন্য জায়গা */
+        }
+        /* হেডার ও লোগো বার */
+        header {
+            background-color: #000;
+            color: #fff;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+            color: #00e676;
+        }
+        /* মোট ব্যানার সেকশন */
+        .banner {
+            width: 100%;
+            background-color: #111;
+            color: #fff;
+            text-align: center;
+            padding: 40px 20px;
+            margin-bottom: 10px;
+        }
+        .banner h2 {
+            font-size: 24px;
+            color: #00e676;
+            margin-bottom: 10px;
+        }
+        .banner p {
+            font-size: 16px;
+            color: #ccc;
+        }
+        /* প্রোডাক্ট কার্ড */
+        .products {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            padding: 10px;
+        }
+        .card {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .card h4 {
+            margin: 10px 0 5px;
+        }
+        .card p {
+            color: #00e676;
+            font-weight: bold;
+        }
+        /* নিচের ফিক্সড নেভিগেশন বার */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #0d5c3a;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
+        }
+        .nav-item {
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- হেডার -->
+    <header>
+        <div class="logo">SM TECH</div>
+        <div>🔍</div>
+    </header>
+
+    <!-- ব্যানার -->
+    <div class="banner">
+        <h2>এসএম টেক-এ স্বাগতম!</h2>
+        <p>কম্পিউটার পার্টস ও সার্ভিসিংয়ের সেরা সমাধান</p>
+    </div>
+
+    <!-- প্রোডাক্ট ক্যাটাগরি -->
+    <div class="products">
+        <div class="card">
+            <h4>PC Build</h4>
+            <p>অফার মূল্য</p>
+        </div>
+        <div class="card">
+            <h4>Accessories</h4>
+            <p>ডিসকাউন্ট</p>
+        </div>
+    </div>
+
+    <!-- নিচের সবুজ নেভিগেশন বার -->
+    <div class="bottom-nav">
+        <a href="#" class="nav-item">🖥️ PC Builder</a>
+        <a href="#" class="nav-item">📢 Campaign</a>
+        <a href="#" class="nav-item">👤 Profile</a>
+        <a href="#" class="nav-item">🛒 Cart</a>
+    </div>
+
+</body>
+</html>
