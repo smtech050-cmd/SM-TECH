@@ -40,10 +40,12 @@
             color: #fff;
             cursor: pointer;
         }
+        /* লোগো ফন্ট সাইজ বড় করা হয়েছে */
         .logo {
-            font-size: 20px;
+            font-size: 26px;
             font-weight: bold;
             color: #00e676;
+            letter-spacing: 0.5px;
         }
 
         /* বাম পাশের সাইডবার (Sidebar / Menu Bar) */
@@ -73,18 +75,6 @@
         .sidebar a:hover {
             background-color: #00e676;
             color: #000;
-            font-weight: bold;
-        }
-        .sidebar a.sub-link {
-            padding-left: 45px;
-            font-size: 14px;
-            color: #aaa;
-            background-color: #181818;
-            border-bottom: 1px solid #282828;
-        }
-        .sidebar a.sub-link:hover {
-            color: #000;
-            background-color: #00e676;
             font-weight: bold;
         }
         .sidebar .close-btn {
@@ -134,7 +124,7 @@
             background-color: #008d43;
             color: #ffffff;
             text-align: center;
-            padding: 10px;
+            padding: 12px;
             font-size: 18px;
             font-weight: bold;
             border-radius: 8px 8px 0 0;
@@ -223,25 +213,19 @@
 </head>
 <body>
 
-    <!-- বাম পাশের সাইডবার মেনু -->
+    <!-- বাম পাশের সাইডবার মেনু (এডুকেশন ও নিচের সকল লিংক বাদ দেওয়া হয়েছে) -->
     <div id="mySidebar" class="sidebar">
         <span class="close-btn" onclick="closeNav()">&times;</span>
         <a href="#">📊 ড্যাশবোর্ড</a>
         <a href="#">📦 স্টক পণ্য</a>
         <a href="#">🛍️ সেল পণ্য</a>
         <a href="#">🧾 ইনভয়েস</a>
-        <a href="#">🎓 এডুকেশন</a>
-        <a href="http://bmeb.gov.bd/" target="_blank" class="sub-link">🔗 মাদ্রাসা বোর্ড</a>
-        <a href="https://dme.gov.bd/" target="_blank" class="sub-link">🔗 মাদ্রাসা শিক্ষা অধিদপ্তর</a>
-        <a href="https://www.memis.gov.bd" target="_blank" class="sub-link">🔗 মেমিস (MEMIS)</a>
-        <a href="https://www.dhakaeducationboard.gov.bd" target="_blank" class="sub-link">🔗 ঢাকা শিক্ষা বোর্ড</a>
-        <a href="https://www.mymensingheducationboard.gov.bd/" target="_blank" class="sub-link">🔗 ময়মনসিংহ শিক্ষা বোর্ড</a>
     </div>
 
     <!-- ব্যাকগ্রাউন্ড ওভারলে -->
     <div id="overlay" class="overlay" onclick="closeNav()"></div>
 
-    <!-- হেডার -->
+    <!-- হেডার (SM TECH ফন্ট বড় করা হয়েছে) -->
     <header>
         <div class="header-left">
             <button class="menu-btn" onclick="openNav()">☰</button>
@@ -255,7 +239,7 @@
         <img src="banner.png" alt="SM-TECH Banner" class="banner-img">
     </div>
 
-    <!-- দাপ্তরিক ওয়েবসাইট (আলাদা আলাদা সবুজ বক্স) -->
+    <!-- দাপ্তরিক ওয়েবসাইট -->
     <div class="result-archive-section">
         <div class="section-header">🏛️ দাপ্তরিক ওয়েবসাইট</div>
         <div class="boxes-container">
