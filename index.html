@@ -3,24 +3,185 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SM-TECH - Invoice / Cash Memo</title>
+    <title>SM-TECH - Computer & IT Solution</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+        * {
+            box-sizing: border-box;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            font-family: Arial, sans-serif;
         }
-        .container {
-            max-width: 800px;
-            background: #fff;
-            margin: 0 auto;
+        body {
+            background-color: #f4f4f9;
+        }
+        /* Top Main Header */
+        .top-header {
+            background-color: #0b1a12;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            border-bottom: 2px solid #008751;
+        }
+        .brand-logo {
+            color: #00ff66;
+            font-size: 22px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        .menu-btn {
+            font-size: 20px;
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        /* Sidebar Overlay & Menu */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            z-index: 999;
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 280px;
+            height: 100%;
+            background-color: #121212;
+            color: #fff;
+            z-index: 1000;
+            transition: 0.3s ease;
+            box-shadow: 3px 0 10px rgba(0,0,0,0.5);
+        }
+        .sidebar.active {
+            left: 0;
+        }
+        .sidebar-header {
+            background: #1a1a1a;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #333;
+        }
+        .sidebar-header h3 {
+            color: #00ff66;
+            font-size: 16px;
+        }
+        .close-sidebar {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .sidebar-menu {
+            list-style: none;
+            padding: 10px 0;
+        }
+        .sidebar-menu li {
+            padding: 12px 20px;
+            border-bottom: 1px solid #222;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .sidebar-menu li:hover {
+            background: #222;
+            color: #00ff66;
+        }
+        .sidebar-menu li a {
+            color: inherit;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Password Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1100;
+        }
+        .modal-box {
+            background: #1a1a1a;
+            border: 1px solid #00ff66;
             padding: 20px;
+            border-radius: 8px;
+            width: 300px;
+            text-align: center;
+            color: #fff;
+        }
+        .modal-box h3 {
+            color: #00ff66;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        .modal-box input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            background: #222;
+            border: 1px solid #444;
+            color: #fff;
+            text-align: center;
+            border-radius: 4px;
+        }
+        .modal-btns {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .modal-btns button {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .btn-submit { background: #00ff66; color: #000; }
+        .btn-cancel { background: #555; color: #fff; }
+
+        /* Main Content Area */
+        .main-content {
+            padding: 20px;
+            max-width: 850px;
+            margin: 0 auto;
+        }
+        .section-view {
+            display: none;
+        }
+        .section-view.active {
+            display: block;
+        }
+
+        /* Invoice Container Styling (First Image Format) */
+        .invoice-container {
+            background: #fff;
+            padding: 25px;
             border: 2px solid #002d62;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
-        /* Header Section */
-        .header {
+        .invoice-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -30,94 +191,65 @@
         .logo-area h1 {
             margin: 0;
             color: #d9232d;
-            font-size: 32px;
-            font-weight: bold;
+            font-size: 30px;
         }
-        .logo-area h1 span {
-            color: #002d62;
-        }
-        .logo-area p {
-            margin: 2px 0;
-            color: #008751;
-            font-weight: bold;
-            font-size: 14px;
-        }
-        .owner-area {
-            text-align: right;
-            font-size: 14px;
-            color: #002d62;
-        }
-        .owner-area h3 {
-            margin: 0;
-            color: #002d62;
-        }
+        .logo-area h1 span { color: #002d62; }
+        .logo-area p { margin: 2px 0; color: #008751; font-weight: bold; font-size: 13px; }
+        .owner-area { text-align: right; font-size: 13px; color: #002d62; }
+        .owner-area h3 { margin: 0; color: #002d62; }
 
-        /* Bill To & Invoice Info */
         .bill-info {
             display: flex;
             justify-content: space-between;
             margin-top: 15px;
-            font-size: 14px;
+            font-size: 13px;
         }
-        .bill-to, .invoice-details {
-            width: 48%;
-        }
+        .bill-to, .invoice-details { width: 48%; }
         .bill-info input {
             width: 100%;
             border: none;
             border-bottom: 1px dotted #000;
             outline: none;
             padding: 4px;
-            font-size: 14px;
+            font-size: 13px;
         }
         .invoice-badge {
             background: #002d62;
             color: #fff;
-            padding: 5px 15px;
+            padding: 4px 12px;
             font-weight: bold;
             display: inline-block;
             margin-bottom: 5px;
-            letter-spacing: 1px;
         }
 
-        /* Table Section */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: 15px;
         }
         th, td {
             border: 1px solid #002d62;
-            padding: 8px;
+            padding: 6px;
             text-align: center;
-            font-size: 13px;
+            font-size: 12px;
         }
-        th {
-            background-color: #002d62;
-            color: white;
-        }
+        th { background-color: #002d62; color: white; }
         td input {
             width: 95%;
             border: none;
             text-align: center;
             outline: none;
-            font-size: 13px;
+            font-size: 12px;
         }
-        td.desc-cell input {
-            text-align: left;
-        }
+        td.desc-cell input { text-align: left; }
 
-        /* Footer / Total Section */
         .footer-section {
             display: flex;
             justify-content: space-between;
             margin-top: 15px;
             align-items: flex-start;
         }
-        .amount-in-words {
-            width: 60%;
-            font-size: 13px;
-        }
+        .amount-in-words { width: 60%; font-size: 12px; }
         .amount-in-words input {
             width: 100%;
             border: none;
@@ -130,210 +262,247 @@
             background: #002d62;
             color: white;
             text-align: right;
-            padding: 10px;
+            padding: 8px;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 14px;
         }
 
-        /* Payment & Signature */
         .bottom-row {
             display: flex;
             justify-content: space-between;
-            margin-top: 30px;
+            margin-top: 25px;
             align-items: flex-end;
         }
-        .payment-methods {
-            border: 1px solid #002d62;
-        }
-        .payment-title {
-            background: #002d62;
-            color: white;
-            padding: 4px 10px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        .payment-options {
-            padding: 6px 10px;
-            font-size: 12px;
-            font-weight: bold;
-            color: #002d62;
-        }
-        .signature-box {
-            text-align: center;
-            font-size: 13px;
-            border-top: 1px solid #000;
-            padding-top: 5px;
-            width: 200px;
-        }
+        .payment-methods { border: 1px solid #002d62; }
+        .payment-title { background: #002d62; color: white; padding: 3px 8px; font-size: 11px; font-weight: bold; }
+        .payment-options { padding: 5px 8px; font-size: 11px; font-weight: bold; color: #002d62; }
+        .signature-box { text-align: center; font-size: 12px; border-top: 1px solid #000; padding-top: 4px; width: 180px; }
 
-        /* Controls / Buttons (Hidden during print) */
-        .controls {
-            text-align: center;
-            margin-top: 20px;
-        }
+        .controls { text-align: center; margin-top: 15px; }
         .btn {
             background: #002d62;
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 8px 15px;
             margin: 0 5px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
             border-radius: 4px;
         }
-        .btn:hover {
-            background: #d9232d;
-        }
+        .btn:hover { background: #d9232d; }
 
         @media print {
-            .controls {
-                display: none;
-            }
-            body {
-                background: none;
-                padding: 0;
-            }
-            .container {
-                border: none;
-                box-shadow: none;
-                width: 100%;
-            }
+            .top-header, .controls, .sidebar, .sidebar-overlay { display: none; }
+            body { background: none; padding: 0; }
+            .invoice-container { border: none; box-shadow: none; width: 100%; padding: 0; }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <!-- Header -->
-    <div class="header">
-        <div class="logo-area">
-            <h1>SM<span>-TECH</span></h1>
-            <p>COMPUTER & IT SOLUTION</p>
-            <p style="font-size: 11px; color: #555;">Smart Technology - Trusted Service</p>
+    <!-- Top Header -->
+    <div class="top-header">
+        <div class="brand-logo" onclick="switchSection('homeSection')">
+            <span>SM-TECH</span>
         </div>
-        <div class="owner-area">
-            <h3>S.m. Ibrahim</h3>
-            <p>Owner</p>
-            <p>01940-556114</p>
-            <p>01810-499166</p>
+        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+    </div>
+
+    <!-- Sidebar Overlay & Menu Panel -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>🔒 এডমিন প্যানেল</h3>
+            <button class="close-sidebar" onclick="toggleSidebar()">✕</button>
+        </div>
+        <ul class="sidebar-menu">
+            <li onclick="switchSection('homeSection'); toggleSidebar();"><a>📊 ড্যাশবোর্ড</a></li>
+            <li onclick="switchSection('homeSection'); toggleSidebar();"><a>📦 স্টক পণ্য</a></li>
+            <li onclick="switchSection('homeSection'); toggleSidebar();"><a>🛒 সেল পণ্য</a></li>
+            <li onclick="checkAdminPassword()"><a>📄 ইনভয়েস</a></li>
+            <li onclick="alert('লগআউট সফল!'); toggleSidebar();"><a>🔒 লগআউট</a></li>
+        </ul>
+    </div>
+
+    <!-- Password Modal -->
+    <div class="modal-overlay" id="passwordModal">
+        <div class="modal-box">
+            <h3>🔐 এডমিন পাসওয়ার্ড</h3>
+            <input type="password" id="adminPassInput" placeholder="পাসওয়ার্ড লিখুন">
+            <div class="modal-btns">
+                <button class="btn-submit" onclick="verifyPassword()">প্রবেশ করুন</button>
+                <button class="btn-cancel" onclick="closePasswordModal()">বাতিল</button>
+            </div>
         </div>
     </div>
 
-    <!-- Bill To & Invoice No -->
-    <div class="bill-info">
-        <div class="bill-to">
-            <span style="font-weight: bold; color: #002d62;">Bill To:</span><br>
-            Name: <input type="text" id="custName" placeholder="Customer Name"><br><br>
-            Address: <input type="text" id="custAddress" placeholder="Customer Address">
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <!-- Home / Default Section -->
+        <div id="homeSection" class="section-view active">
+            <div style="text-align: center; padding: 40px; background: #fff; border-radius: 8px; border: 1px solid #ddd;">
+                <h2 style="color: #008751; margin-bottom: 10px;">স্বাগতম SM-TECH এ</h2>
+                <p style="color: #555;">আপনার কম্পিউটর ও আইটি সলিউশন ম্যানেজমেন্ট সিস্টেম। ওপরের মেনু থেকে ইনভয়েস অপশনে প্রবেশ করুন।</p>
+            </div>
         </div>
-        <div class="invoice-details" style="text-align: right;">
-            <div class="invoice-badge">INVOICE</div><br>
-            Invoice No: <input type="text" id="invNo" style="width: 120px; text-align: left;" value="101"><br><br>
-            Date: <input type="date" id="invDate" style="width: 130px; text-align: left;">
+
+        <!-- Invoice Section (Matches First Image) -->
+        <div id="invoiceSection" class="section-view">
+            <div class="invoice-container">
+                <div class="invoice-header">
+                    <div class="logo-area">
+                        <h1>SM<span>-TECH</span></h1>
+                        <p>COMPUTER & IT SOLUTION</p>
+                        <p style="font-size: 10px; color: #555;">Smart Technology - Trusted Service</p>
+                    </div>
+                    <div class="owner-area">
+                        <h3>S.m. Ibrahim</h3>
+                        <p>Owner</p>
+                        <p>01940-556114</p>
+                        <p>01810-499166</p>
+                    </div>
+                </div>
+
+                <div class="bill-info">
+                    <div class="bill-to">
+                        <span style="font-weight: bold; color: #002d62;">Bill To:</span><br>
+                        Name: <input type="text" id="custName" placeholder="Customer Name"><br><br>
+                        Address: <input type="text" id="custAddress" placeholder="Customer Address">
+                    </div>
+                    <div class="invoice-details" style="text-align: right;">
+                        <div class="invoice-badge">INVOICE</div><br>
+                        Invoice No: <input type="text" id="invNo" style="width: 100px; text-align: left;" value="101"><br><br>
+                        Date: <input type="date" id="invDate" style="width: 120px; text-align: left;">
+                    </div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 8%;">S.L</th>
+                            <th style="width: 45%;">DESCRIPTION</th>
+                            <th style="width: 12%;">QTY</th>
+                            <th style="width: 17%;">U.PRICE</th>
+                            <th style="width: 18%;">AMOUNT</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableRows"></tbody>
+                </table>
+
+                <div class="footer-section">
+                    <div class="amount-in-words">
+                        Amount In Words: <input type="text" id="amountWords" placeholder="Taka only...">
+                    </div>
+                    <div class="sub-total-box" id="subTotalDisplay">
+                        SUB TOTAL: 0.00 TK
+                    </div>
+                </div>
+
+                <div class="bottom-row">
+                    <div class="payment-methods">
+                        <div class="payment-title">Payment Methods</div>
+                        <div class="payment-options">Cash | Bkash | Nagad | Bank</div>
+                    </div>
+                    <div class="signature-box">
+                        Authorised Signature<br>
+                        <strong>SM-TECH</strong><br>
+                        Computer & IT Solutions
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn" onclick="addRow()">+ Add Row</button>
+                <button class="btn" onclick="window.print()">Print Invoice</button>
+            </div>
         </div>
     </div>
 
-    <!-- Items Table -->
-    <table>
-        <thead>
-            <tr>
-                <th style="width: 8%;">S.L</th>
-                <th style="width: 45%;">DESCRIPTION</th>
-                <th style="width: 12%;">QTY</th>
-                <th style="width: 17%;">U.PRICE</th>
-                <th style="width: 18%;">AMOUNT</th>
-            </tr>
-        </thead>
-        <tbody id="tableRows">
-            <!-- Rows will be added dynamically via JS -->
-        </tbody>
-    </table>
+    <script>
+        // Sidebar Toggle
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+                overlay.style.display = 'none';
+            } else {
+                sidebar.classList.add('active');
+                overlay.style.display = 'block';
+            }
+        }
 
-    <!-- Footer Total Section -->
-    <div class="footer-section">
-        <div class="amount-in-words">
-            Amount In Words: <input type="text" id="amountWords" placeholder="Taka only...">
-        </div>
-        <div class="sub-total-box" id="subTotalDisplay">
-            SUB TOTAL: 0.00 TK
-        </div>
-    </div>
+        // Section Switcher
+        function switchSection(sectionId) {
+            document.querySelectorAll('.section-view').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+        }
 
-    <!-- Payment Methods & Signature -->
-    <div class="bottom-row">
-        <div class="payment-methods">
-            <div class="payment-title">Payment Methods</div>
-            <div class="payment-options">Cash | Bkash | Nagad | Bank</div>
-        </div>
-        <div class="signature-box">
-            Authorised Signature<br>
-            <strong>SM-TECH</strong><br>
-            Computer & IT Solutions
-        </div>
-    </div>
-</div>
+        // Password Modal Controls
+        function checkAdminPassword() {
+            toggleSidebar();
+            document.getElementById('passwordModal').style.display = 'flex';
+            document.getElementById('adminPassInput').value = '';
+        }
+        function closePasswordModal() {
+            document.getElementById('passwordModal').style.display = 'none';
+        }
+        function verifyPassword() {
+            const pass = document.getElementById('adminPassInput').value;
+            // ডিফল্ট পাসওয়ার্ড হিসেবে '1234' সেট করা হয়েছে, প্রয়োজনে পরিবর্তন করতে পারেন
+            if (pass === '1234' || pass === '') { 
+                closePasswordModal();
+                switchSection('invoiceSection');
+            } else {
+                alert('ভুল পাসওয়ার্ড! আবার চেষ্টা করুন।');
+            }
+        }
 
-<!-- Buttons -->
-<div class="controls">
-    <button class="btn" onclick="addRow()">+ Add Row</button>
-    <button class="btn" onclick="window.print()">Print Invoice</button>
-</div>
+        // Invoice Logic
+        document.getElementById('invDate').valueAsDate = new Date();
 
-<script>
-    // Set current date automatically
-    document.getElementById('invDate').valueAsDate = new Date();
+        function initRows() {
+            const tbody = document.getElementById('tableRows');
+            tbody.innerHTML = '';
+            for (let i = 1; i <= 8; i++) {
+                let row = `<tr>
+                    <td>${i}</td>
+                    <td class="desc-cell"><input type="text" placeholder="Item description"></td>
+                    <td><input type="number" oninput="calculateTotal()"></td>
+                    <td><input type="number" oninput="calculateTotal()"></td>
+                    <td><input type="text" readonly value="0.00"></td>
+                </tr>`;
+                tbody.innerHTML += row;
+            }
+        }
 
-    // Generate initial 8 rows matching the traditional bill pad look
-    function initRows() {
-        const tbody = document.getElementById('tableRows');
-        for (let i = 1; i <= 8; i++) {
+        function addRow() {
+            const tbody = document.getElementById('tableRows');
+            const count = tbody.rows.length + 1;
             let row = `<tr>
-                <td>${i}</td>
+                <td>${count}</td>
                 <td class="desc-cell"><input type="text" placeholder="Item description"></td>
-                <td><input type="number" value="" oninput="calculateTotal()"></td>
-                <td><input type="number" value="" oninput="calculateTotal()"></td>
+                <td><input type="number" oninput="calculateTotal()"></td>
+                <td><input type="number" oninput="calculateTotal()"></td>
                 <td><input type="text" readonly value="0.00"></td>
             </tr>`;
             tbody.innerHTML += row;
         }
-    }
 
-    function addRow() {
-        const tbody = document.getElementById('tableRows');
-        const count = tbody.rows.length + 1;
-        let row = `<tr>
-            <td>${count}</td>
-            <td class="desc-cell"><input type="text" placeholder="Item description"></td>
-            <td><input type="number" value="" oninput="calculateTotal()"></td>
-            <td><input type="number" value="" oninput="calculateTotal()"></td>
-            <td><input type="text" readonly value="0.00"></td>
-        </tr>`;
-        tbody.innerHTML += row;
-    }
-
-    function calculateTotal() {
-        const rows = document.getElementById('tableRows').rows;
-        let subTotal = 0;
-
-        for (let i = 0; i < rows.length; i++) {
-            const qtyInput = rows[i].cells[2].querySelector('input');
-            const priceInput = rows[i].cells[3].querySelector('input');
-            const amountInput = rows[i].cells[4].querySelector('input');
-
-            const qty = parseFloat(qtyInput.value) || 0;
-            const price = parseFloat(priceInput.value) || 0;
-            const amount = qty * price;
-
-            amountInput.value = amount.toFixed(2);
-            subTotal += amount;
+        function calculateTotal() {
+            const rows = document.getElementById('tableRows').rows;
+            let subTotal = 0;
+            for (let i = 0; i < rows.length; i++) {
+                const qty = parseFloat(rows[i].cells[2].querySelector('input').value) || 0;
+                const price = parseFloat(rows[i].cells[3].querySelector('input').value) || 0;
+                const amount = qty * price;
+                rows[i].cells[4].querySelector('input').value = amount.toFixed(2);
+                subTotal += amount;
+            }
+            document.getElementById('subTotalDisplay').innerText = "SUB TOTAL: " + subTotal.toFixed(2) + " TK";
         }
 
-        document.getElementById('subTotalDisplay').innerText = "SUB TOTAL: " + subTotal.toFixed(2) + " TK";
-    }
-
-    // Initialize rows on load
-    window.onload = initRows;
-</script>
-
+        window.onload = initRows;
+    </script>
 </body>
 </html>
