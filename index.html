@@ -58,7 +58,8 @@
             overflow: hidden;
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-            background: #000;
+            background: #111;
+            min-height: 180px;
         }
         .slide-track {
             display: flex;
@@ -67,10 +68,19 @@
         .slide {
             min-width: 100%;
             box-sizing: border-box;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00ff66;
+            font-weight: bold;
+            font-size: 16px;
+            background: #1a1a1a;
         }
         .slide img {
             width: 100%;
-            height: auto;
+            height: 180px;
+            object-fit: cover;
             display: block;
             border-radius: 8px;
         }
@@ -82,6 +92,7 @@
             transform: translateX(-50%);
             display: flex;
             gap: 8px;
+            z-index: 10;
         }
         .dot {
             width: 10px;
@@ -418,12 +429,15 @@
         </div>
     </div>
 
-    <!-- Banner Slider Section (GitHub banner.png linked) -->
+    <!-- Banner Slider Section -->
     <div class="slider-container">
         <div class="slide-track" id="slideTrack">
-            <div class="slide"><img src="https://raw.githubusercontent.com/smtech050-cmd/smtech/main/banner.png" alt="SM-TECH Banner"></div>
-            <!-- যদি আরও ব্যানার যোগ করতে চান, নিচে একইভাবে দিতে পারেন -->
-            <div class="slide"><img src="https://raw.githubusercontent.com/smtech050-cmd/smtech/main/banner.png" alt="SM-TECH Banner"></div>
+            <div class="slide">
+                <img src="https://raw.githubusercontent.com/smtech050-cmd/smtech/main/banner.png" alt="SM-TECH Banner" onerror="this.style.display='none'">
+            </div>
+            <div class="slide">
+                <img src="https://raw.githubusercontent.com/smtech050-cmd/smtech/main/banner.png" alt="SM-TECH Banner" onerror="this.style.display='none'">
+            </div>
         </div>
         <div class="slider-dots" id="sliderDots">
             <span class="dot active" onclick="currentSlide(0)"></span>
@@ -445,14 +459,14 @@
             <span class="arrow-icon" id="arrowIcon">▼</span>
         </div>
 
-        <!-- Password Input Box (Hidden initially, protected with dots type="password") -->
+        <!-- Password Input Box -->
         <div class="admin-pass-box" id="adminPassBox">
             <label>এডমিন পাসওয়ার্ড দিন</label>
             <input type="password" id="adminPasswordInput" placeholder="••••••••">
             <button onclick="verifyAdminPassword()">প্রবেশ করুন</button>
         </div>
 
-        <!-- Features Sub-menu (Unlocked after password) -->
+        <!-- Features Sub-menu -->
         <ul class="admin-sub-menu" id="adminSubMenu">
             <li onclick="switchSection('dashboardSection'); toggleSidebar();"><a>📊 ড্যাশবোর্ড</a></li>
             <li onclick="switchSection('stockSection'); toggleSidebar();"><a>📦 স্টক পণ্য</a></li>
@@ -573,7 +587,6 @@
     </div>
 
     <script>
-        // Banner Slider Logic
         let slideIndex = 0;
         const slides = document.querySelectorAll('.slide');
         const dots = document.querySelectorAll('.dot');
@@ -593,14 +606,11 @@
             showSlide(slideIndex);
         }
 
-        // Auto Slide Every 3 Seconds
         setInterval(() => {
             slideIndex++;
             showSlide(slideIndex);
         }, 3000);
 
-
-        // Admin & Sidebar Logic
         let isAdminLoggedIn = false;
 
         function toggleSidebar() {
@@ -665,7 +675,6 @@
             document.getElementById(sectionId).classList.add('active');
         }
 
-        // Invoice Logic
         document.getElementById('invDate').valueAsDate = new Date();
 
         function initRows() {
