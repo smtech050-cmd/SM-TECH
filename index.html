@@ -177,9 +177,11 @@
         .btn-add { background-color: #00e676; color: #000; font-weight: bold; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; margin-top: 12px; }
         .btn-delete { background-color: #ff5252; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; }
         .sales-summary { margin-top: 15px; padding: 10px; background-color: #e8f5e9; border-radius: 6px; display: flex; justify-content: space-between; font-weight: bold; font-size: 14px; }
-        .btn-save-sale { width: 100%; background-color: #0d5c3a; color: white; font-size: 16px; font-weight: bold; padding: 12px; border: none; border-radius: 6px; margin-top: 15px; cursor: pointer; }
+        
+        /* নিশ্চিত করুন বাটন স্টাইল */
+        .btn-save-sale { width: 100%; background-color: #0d5c3a; color: white; font-size: 16px; font-weight: bold; padding: 12px; border: none; border-radius: 6px; margin-top: 10px; cursor: pointer; }
 
-        /* মূল ওয়েবসাইট স্টাইল */
+        /* মূল ওয়েবসাইট স্টাইল */
         .banner { width: 100%; background-color: #111; padding: 10px; margin-bottom: 10px; }
         .banner-img { width: 100%; height: auto; border-radius: 8px; }
         .result-archive-section { padding: 8px; margin-bottom: 10px; }
@@ -246,7 +248,7 @@
     <!-- ১. সেল পণ্য সেকশন (এন্ট্রি ফর্ম) -->
     <div id="salesSection" class="sales-container">
         <div class="sales-header">
-            <h2>🛍️ বিক্রয় পণ্য এন্ট্রি</h2>
+            <h2>🛍️ বিক্রয় পণ্য এন্ট্রি</h2>
             <button class="btn-delete" onclick="showMainSection()">❌ বন্ধ করুন</button>
         </div>
 
@@ -257,8 +259,8 @@
                         <th style="width: 5%;">ক্র:নং</th>
                         <th style="width: 35%;">পণ্যের নাম ও মডেল</th>
                         <th style="width: 12%;">পরিমাণ</th>
-                        <th style="width: 15%;">ক্রয় মূল্য (৳)</th>
-                        <th style="width: 15%;">বিক্রয় মূল্য (৳)</th>
+                        <th style="width: 15%;">ক্রয় মূল্য (৳)</th>
+                        <th style="width: 15%;">বিক্রয় মূল্য (৳)</th>
                         <th style="width: 13%;">লভ্যাংশ (৳)</th>
                         <th style="width: 5%;">মুছুন</th>
                     </tr>
@@ -276,20 +278,21 @@
             <span>মোট লভ্যাংশ: <span id="totalProfitAmount">0</span> ৳</span>
         </div>
 
-        <button class="btn-save-sale" onclick="saveSalesData()">💾 বিক্রয় নিশ্চিত করুন ও সেভ করুন</button>
+        <!-- বাটনটি টেবিল ও সারসংক্ষেপের ঠিক নিচে নিয়ে আসা হয়েছে এবং নাম পরিবর্তন করা হয়েছে -->
+        <button class="btn-save-sale" onclick="saveSalesData()">💾 নিশ্চিত করুন</button>
     </div>
 
-    <!-- ২. ইনভয়েস / ক্যাশ মেমো সেকশন -->
+    <!-- ২. ইনভয়েস / ক্যাশ মেমো সেকশন -->
     <div id="invoiceSection" class="invoice-container">
         <div class="invoice-header">
-            <h2>🧾 সাম্প্রতিক বিক্রয় ও ইনভয়েস</h2>
+            <h2>🧾 সাম্প্রতিক বিক্রয় ও ইনভয়েস</h2>
             <button class="btn-delete" onclick="showMainSection()">❌ বন্ধ করুন</button>
         </div>
         <div class="table-responsive">
             <table class="sales-table">
                 <thead>
                     <tr>
-                        <th>তারিখ ও সময়</th>
+                        <th>তারিখ ও সময়</th>
                         <th>পণ্যের বিবরণ</th>
                         <th>মোট পরিমাণ</th>
                         <th>মোট বিক্রি (৳)</th>
@@ -304,14 +307,14 @@
         <button class="btn-delete" onclick="clearAllInvoices()" style="margin-top: 15px; width: 100%; padding: 10px;">🗑️ সমস্ত রেকর্ড মুছুন</button>
     </div>
 
-    <!-- মূল ওয়েবসাইট কনটেন্ট -->
+    <!-- মূল ওয়েবসাইট কনটেন্ট -->
     <div id="mainWebsiteContent">
         <div class="banner">
             <img src="banner.png" alt="SM-TECH Banner" class="banner-img">
         </div>
 
         <div class="result-archive-section">
-            <div class="section-header">🏛️ দাপ্তরিক ওয়েবসাইট</div>
+            <div class="section-header">🏛️ দাপ্তরিক ওয়েবসাইট</div>
             <div class="boxes-container">
                 <div class="result-box"><span class="title">মাদ্রাসা শিক্ষা বোর্ড</span><a href="http://bmeb.gov.bd/" target="_blank">ভিজিট করুন</a></div>
                 <div class="result-box"><span class="title">মাদ্রাসা শিক্ষা অধিদপ্তর</span><a href="https://dme.gov.bd/" target="_blank">ভিজিট করুন</a></div>
@@ -396,7 +399,7 @@
                 document.getElementById("adminSubmenu").style.display = "block";
                 document.getElementById("arrow").innerHTML = "▴";
             } else {
-                alert("ভুল পাসওয়ার্ড! সঠিক পাসওয়ার্ড দিয়ে পুনরায় চেষ্টা করুন।");
+                alert("ভুল পাসওয়ার্ড! সঠিক পাসওয়ার্ড দিয়ে পুনরায় চেষ্টা করুন।");
             }
         }
 
@@ -531,7 +534,7 @@
             });
 
             if(!isValid) {
-                alert("দয়া করে সকল পণ্যের নাম ও মডেল সঠিকভাবে লিখুন!");
+                alert("দয়া করে সকল পণ্যের নাম ও মডেল সঠিকভাবে লিখুন!");
                 return;
             }
 
@@ -544,17 +547,15 @@
             };
 
             let savedInvoices = JSON.parse(localStorage.getItem("sm_tech_invoices")) || [];
-            savedInvoices.unshift(saleRecord); // নতুন রেকর্ড উপরে যোগ হবে
+            savedInvoices.unshift(saleRecord);
             localStorage.setItem("sm_tech_invoices", JSON.stringify(savedInvoices));
 
-            alert("বিক্রয় তথ্য সফলভাবে সংরক্ষিত হয়েছে এবং ইনভয়েসে যুক্ত করা হয়েছে!");
+            alert("বিক্রয় তথ্য সফলভাবে সংরক্ষিত হয়েছে এবং ইনভয়েসে যুক্ত করা হয়েছে!");
             
-            // ফর্ম রিসেট
             document.getElementById("salesTableBody").innerHTML = "";
             addSaleRow();
             calculateTotal();
 
-            // ইনভয়েস পেজে রিডাইরেক্ট করা
             showInvoiceSection();
         }
 
@@ -564,7 +565,7 @@
             let savedInvoices = JSON.parse(localStorage.getItem("sm_tech_invoices")) || [];
 
             if(savedInvoices.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" style="padding: 20px; color: #777;">কোনো বিক্রয়ের রেকর্ড পাওয়া যায়নি!</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" style="padding: 20px; color: #777;">কোনো বিক্রয়ের রেকর্ড পাওয়া যায়নি!</td></tr>`;
                 return;
             }
 
@@ -582,7 +583,7 @@
         }
 
         function clearAllInvoices() {
-            if(confirm("আপনি কি সমস্ত বিক্রয় রেকর্ড মুছে ফেলতে চান?")) {
+            if(confirm("আপনি কি সমস্ত বিক্রয় রেকর্ড মুছে ফেলতে চান?")) {
                 localStorage.removeItem("sm_tech_invoices");
                 loadInvoices();
             }
