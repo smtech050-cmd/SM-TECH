@@ -49,13 +49,14 @@
             letter-spacing: 0.5px;
         }
 
-        /* Banner Slider Section - Updated for Desktop Mode Fix */
+        /* Banner Slider Section - Fixed for Desktop & Mobile */
         .slider-container {
             width: 100%;
-            max-width: 100%;
-            margin: 0 auto;
+            max-width: 1200px;
+            margin: 10px auto;
             position: relative;
             overflow: hidden;
+            border-radius: 6px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.15);
             background: #111;
         }
@@ -75,8 +76,8 @@
         .slide img {
             width: 100%;
             height: auto;
-            max-height: 300px;
-            object-fit: contain;
+            aspect-ratio: 16 / 5;
+            object-fit: cover;
             display: block;
         }
         /* Slider Navigation Dots */
