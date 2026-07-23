@@ -43,7 +43,7 @@
             cursor: pointer;
         }
 
-        /* Sidebar Overlay & Admin Panel */
+        /* Sidebar Panel */
         .sidebar-overlay {
             position: fixed;
             top: 0;
@@ -65,6 +65,7 @@
             z-index: 1000;
             transition: 0.3s ease;
             box-shadow: 3px 0 10px rgba(0,0,0,0.5);
+            overflow-y: auto;
         }
         .sidebar.active {
             left: 0;
@@ -79,8 +80,7 @@
         }
         .sidebar-header h3 {
             color: #00ff66;
-            font-size: 17px;
-            font-weight: bold;
+            font-size: 18px;
         }
         .close-sidebar {
             background: none;
@@ -89,27 +89,96 @@
             font-size: 18px;
             cursor: pointer;
         }
-        .sidebar-menu {
-            list-style: none;
-            padding: 5px 0;
+
+        /* Dropdown Admin Menu Styles */
+        .admin-dropdown-btn {
+            padding: 16px 20px;
+            background: #1a1a1a;
+            color: #00ff66;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            border-bottom: 1px solid #222;
+            font-size: 16px;
         }
-        .sidebar-menu li {
+        .admin-dropdown-btn:hover {
+            background: #222;
+        }
+        .arrow-icon {
+            transition: transform 0.3s ease;
+        }
+        .arrow-icon.rotate {
+            transform: rotate(180deg);
+        }
+
+        /* Password Box inside Dropdown */
+        .admin-pass-box {
             padding: 15px 20px;
+            background: #0d0d0d;
+            border-bottom: 1px solid #222;
+            display: none;
+        }
+        .admin-pass-box input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            background: #1a1a1a;
+            border: 1px solid #444;
+            color: #fff;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .admin-pass-box button {
+            width: 100%;
+            padding: 8px;
+            background: #00ff66;
+            color: #000;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .admin-pass-box button:hover {
+            background: #00cc52;
+        }
+
+        /* Sub-menu items inside Admin Panel */
+        .admin-sub-menu {
+            list-style: none;
+            display: none;
+            background: #161616;
+        }
+        .admin-sub-menu li {
+            padding: 14px 20px 14px 35px;
             border-bottom: 1px solid #222;
             cursor: pointer;
             transition: 0.2s;
-            font-size: 15px;
+            font-size: 14px;
+            color: #ddd;
         }
-        .sidebar-menu li:hover {
-            background: #1a1a1a;
+        .admin-sub-menu li:hover {
+            background: #222;
             color: #00ff66;
         }
-        .sidebar-menu li a {
+        .admin-sub-menu li a {
             color: inherit;
             text-decoration: none;
             display: flex;
             align-items: center;
             gap: 12px;
+        }
+        .logout-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #222;
+            cursor: pointer;
+            font-size: 15px;
+            color: #ff4d4d;
+        }
+        .logout-item:hover {
+            background: #1a1a1a;
         }
 
         /* Main Content Area */
@@ -125,7 +194,7 @@
             display: block;
         }
 
-        /* Invoice Container Styling */
+        /* Invoice Styles */
         .invoice-container {
             background: #fff;
             padding: 25px;
@@ -259,20 +328,38 @@
         </div>
     </div>
 
-    <!-- Sidebar Admin Panel -->
+    <!-- Sidebar Dropdown Panel -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <h3>SM-TECH ADMIN</h3>
+            <h3>মেনুবার</h3>
             <button class="close-sidebar" onclick="toggleSidebar()">✕</button>
         </div>
-        <ul class="sidebar-menu">
+
+        <!-- SM-TECH ADMIN Dropdown Button -->
+        <div class="admin-dropdown-btn" onclick="toggleAdminDropdown()">
+            <span>SM-TECH ADMIN</span>
+            <span class="arrow-icon" id="arrowIcon">▼</span>
+        </div>
+
+        <!-- Password Input Box (Hidden initially) -->
+        <div class="admin-pass-box" id="adminPassBox">
+            <input type="password" id="adminPasswordInput" placeholder="পাসওয়ার্ড লিখুন (1234)">
+            <button onclick="verifyAdminPassword()">লগইন করুন</button>
+        </div>
+
+        <!-- Features Sub-menu (Unlocked after password) -->
+        <ul class="admin-sub-menu" id="adminSubMenu">
             <li onclick="switchSection('dashboardSection'); toggleSidebar();"><a>📊 ড্যাশবোর্ড</a></li>
             <li onclick="switchSection('stockSection'); toggleSidebar();"><a>📦 স্টক পণ্য</a></li>
             <li onclick="switchSection('sellSection'); toggleSidebar();"><a>🛒 সেল পণ্য</a></li>
             <li onclick="switchSection('invoiceSection'); toggleSidebar();"><a>📄 ইনভয়েস</a></li>
-            <li onclick="alert('লগআউট সফল হয়েছে!'); switchSection('homeSection'); toggleSidebar();"><a>🔒 লগআউট</a></li>
         </ul>
+
+        <!-- Logout Option -->
+        <div class="logout-item" onclick="logoutAdmin()">
+            <a>🔒 লগআউট</a>
+        </div>
     </div>
 
     <!-- Main Content Area -->
@@ -281,7 +368,7 @@
         <div id="homeSection" class="section-view active">
             <div style="text-align: center; padding: 40px; background: #fff; border-radius: 8px; border: 1px solid #ddd;">
                 <h2 style="color: #008751; margin-bottom: 10px;">স্বাগতম SM-TECH এ</h2>
-                <p style="color: #555;">আপনার কম্পিউটর ও আইটি সলিউশন ম্যানেজমেন্ট সিস্টেম। বাঁ পাশের মেনু থেকে এডমিন প্যানেল ওপেন করে কাজ শুরু করুন।</p>
+                <p style="color: #555;">আপনার কম্পিউটর ও আইটি সলিউশন ম্যানেজমেন্ট সিস্টেম। বাঁ পাশের মেনু থেকে SM-TECH ADMIN ওপেন করুন।</p>
             </div>
         </div>
 
@@ -382,6 +469,8 @@
     </div>
 
     <script>
+        let isAdminLoggedIn = false;
+
         // Sidebar Toggle
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
@@ -393,6 +482,59 @@
                 sidebar.classList.add('active');
                 overlay.style.display = 'block';
             }
+        }
+
+        // Admin Dropdown Toggle
+        function toggleAdminDropdown() {
+            const passBox = document.getElementById('adminPassBox');
+            const subMenu = document.getElementById('adminSubMenu');
+            const arrow = document.getElementById('arrowIcon');
+
+            if (isAdminLoggedIn) {
+                // If already logged in, toggle sub-menu directly
+                if (subMenu.style.display === 'block') {
+                    subMenu.style.display = 'none';
+                    arrow.classList.remove('rotate');
+                } else {
+                    subMenu.style.display = 'block';
+                    arrow.classList.add('rotate');
+                }
+            } else {
+                // If not logged in, toggle password box
+                if (passBox.style.display === 'block') {
+                    passBox.style.display = 'none';
+                    arrow.classList.remove('rotate');
+                } else {
+                    passBox.style.display = 'block';
+                    arrow.classList.add('rotate');
+                }
+            }
+        }
+
+        // Verify Password
+        function verifyAdminPassword() {
+            const passInput = document.getElementById('adminPasswordInput').value;
+            // ডিফল্ট পাসওয়ার্ড '1234' রাখা হয়েছে
+            if (passInput === '1234') {
+                isAdminLoggedIn = true;
+                document.getElementById('adminPassBox').style.display = 'none';
+                document.getElementById('adminSubMenu').style.display = 'block';
+                alert('সফলভাবে এডমিন প্যানেলে প্রবেশ করেছেন!');
+            } else {
+                alert('ভুল পাসওয়ার্ড! আবার চেষ্টা করুন।');
+            }
+        }
+
+        // Logout Admin
+        function logoutAdmin() {
+            isAdminLoggedIn = false;
+            document.getElementById('adminSubMenu').style.display = 'none';
+            document.getElementById('adminPassBox').style.display = 'none';
+            document.getElementById('arrowIcon').classList.remove('rotate');
+            document.getElementById('adminPasswordInput').value = '';
+            switchSection('homeSection');
+            toggleSidebar();
+            alert('লগআউট সফল হয়েছে!');
         }
 
         // Section Switcher
