@@ -20,15 +20,13 @@
         header {
             background-color: #000;
             color: #fff;
-            padding: 12px 15px;
+            padding: 10px 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             position: sticky;
             top: 0;
             z-index: 100;
-            flex-wrap: wrap;
-            gap: 10px;
         }
         .header-left {
             display: flex;
@@ -42,42 +40,37 @@
             color: #fff;
             cursor: pointer;
         }
-        
-        /* অনার ও কন্টাক্ট ইনফো (বাম কোণে) */
+
+        /* বামে SM-TECH লোগো */
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+            color: #00e676; /* SM-TECH এর সবুজ কালার */
+            letter-spacing: 0.5px;
+        }
+
+        /* ডানে ওনার ও কন্টাক্ট ইনফো (সবুজ কালার থিম) */
         .owner-info {
             display: flex;
             flex-direction: column;
+            text-align: right; /* ডান পাশে এলাইনমেন্ট */
             font-size: 11px;
-            color: #ddd;
-            line-height: 1.3;
+            line-height: 1.35;
         }
         .owner-name {
             font-weight: bold;
-            color: #ffffff;
+            color: #00e676; /* SM-TECH এর উজ্জ্বল সবুজ */
             font-size: 13px;
         }
         .owner-title {
             color: #00e676;
-            font-weight: bold;
+            font-weight: 600;
             font-size: 11px;
         }
         .contact-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            color: #bbb;
-        }
-        .wa-icon {
-            color: #25D366;
-            font-weight: bold;
-        }
-
-        /* লোগো (ডানে SM-TECH) */
-        .logo {
-            font-size: 22px;
-            font-weight: bold;
             color: #00e676;
-            letter-spacing: 0.5px;
+            font-size: 11px;
+            font-weight: 500;
         }
 
         /* বাম পাশের সাইডবার (Sidebar / Menu Bar) */
@@ -388,22 +381,19 @@
         </div>
     </div>
 
-    <!-- হেডার (আপডেট করা অনার ইনফো ও ব্র্যান্ডিং) -->
+    <!-- হেডার (আপডেট করা লেআউট: বামে SM-TECH, ডানে ইনফরমেশন) -->
     <header>
         <div class="header-left">
             <button class="menu-btn" onclick="openNav()">☰</button>
-            <div class="owner-info">
-                <span class="owner-name">Sheikh Muhammad Ibrahim</span>
-                <span class="owner-title">Owner</span>
-                <div class="contact-item">
-                    <span class="wa-icon">💬</span> 01940-556114, 01810-499166
-                </div>
-                <div class="contact-item">
-                    ✉️ sm-tech050@gmail.com
-                </div>
-            </div>
+            <div class="logo">SM-TECH</div>
         </div>
-        <div class="logo">SM-TECH</div>
+        
+        <div class="owner-info">
+            <span class="owner-name">Sheikh Muhammad Ibrahim</span>
+            <span class="owner-title">Owner</span>
+            <div class="contact-item">💬 01940-556114, 01810-499166</div>
+            <div class="contact-item">✉️ sm-tech050@gmail.com</div>
+        </div>
     </header>
 
     <!-- ব্যানার -->
