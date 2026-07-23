@@ -41,7 +41,7 @@
             cursor: pointer;
         }
         .logo {
-            font-size: 26px;
+            font-size: 24px;
             font-weight: bold;
             color: #00e676;
             letter-spacing: 0.5px;
@@ -210,9 +210,9 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
-        /* দাপ্তরিক ওয়েবসাইট সেকশন (২ কলাম রেসপন্সিভ গ্রিড) */
+        /* দাপ্তরিক ওয়েবসাইট সেকশন (যেকোনো স্ক্রিনে বাধ্যতামূলক ২ ভাগ/কলাম) */
         .result-archive-section {
-            padding: 10px;
+            padding: 8px;
         }
         .section-header {
             background-color: #008d43;
@@ -225,45 +225,43 @@
         }
         .boxes-container {
             display: grid;
-            grid-template-columns: repeat(2, 1fr); /* দুই ভাগ বা দুই কলাম করা হয়েছে */
-            gap: 10px;
+            grid-template-columns: 1fr 1fr; /* মোবাইল এবং পিসি সবখানেই দুই ভাগ থাকবে */
+            gap: 8px;
             background-color: #e8f5e9;
-            padding: 12px;
+            padding: 8px;
             border-radius: 0 0 8px 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        /* ছোট মোবাইলের জন্য সিঙ্গেল কলাম */
-        @media (max-width: 600px) {
-            .boxes-container {
-                grid-template-columns: 1fr;
-            }
         }
 
         .result-box {
             background-color: #00a651;
             color: white;
-            padding: 12px 15px;
+            padding: 10px 8px;
             border-radius: 6px;
             display: flex;
+            flex-direction: column; /* ছোট স্ক্রিনে লেখা ও বাটন সুন্দর দেখানোর জন্য */
             justify-content: space-between;
             align-items: center;
+            text-align: center;
+            gap: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.12);
         }
         .result-box .title {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
+            line-height: 1.3;
         }
         .result-box a {
             background-color: #ffffff;
             color: #00a651;
             text-decoration: none;
-            padding: 6px 10px;
+            padding: 5px 10px;
             border-radius: 4px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
             transition: 0.2s;
-            white-space: nowrap;
+            width: 100%;
+            display: block;
         }
         .result-box a:hover {
             background-color: #222;
@@ -275,7 +273,7 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
-            padding: 10px;
+            padding: 8px;
         }
         .card {
             background: #fff;
@@ -308,7 +306,7 @@
         .nav-item {
             color: #fff;
             text-decoration: none;
-            font-size: 14px;
+            font-size: 13px;
             text-align: center;
             font-weight: bold;
         }
