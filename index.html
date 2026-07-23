@@ -43,7 +43,7 @@
             cursor: pointer;
         }
 
-        /* Sidebar Overlay & Menu */
+        /* Sidebar Overlay & Admin Panel */
         .sidebar-overlay {
             position: fixed;
             top: 0;
@@ -70,16 +70,17 @@
             left: 0;
         }
         .sidebar-header {
-            background: #1a1a1a;
-            padding: 15px;
+            background: #121212;
+            padding: 18px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #333;
+            border-bottom: 1px solid #222;
         }
         .sidebar-header h3 {
             color: #00ff66;
-            font-size: 16px;
+            font-size: 17px;
+            font-weight: bold;
         }
         .close-sidebar {
             background: none;
@@ -90,16 +91,17 @@
         }
         .sidebar-menu {
             list-style: none;
-            padding: 10px 0;
+            padding: 5px 0;
         }
         .sidebar-menu li {
-            padding: 12px 20px;
+            padding: 15px 20px;
             border-bottom: 1px solid #222;
             cursor: pointer;
             transition: 0.2s;
+            font-size: 15px;
         }
         .sidebar-menu li:hover {
-            background: #222;
+            background: #1a1a1a;
             color: #00ff66;
         }
         .sidebar-menu li a {
@@ -107,61 +109,8 @@
             text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
-
-        /* Password Modal */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1100;
-        }
-        .modal-box {
-            background: #1a1a1a;
-            border: 1px solid #00ff66;
-            padding: 20px;
-            border-radius: 8px;
-            width: 300px;
-            text-align: center;
-            color: #fff;
-        }
-        .modal-box h3 {
-            color: #00ff66;
-            margin-bottom: 15px;
-            font-size: 16px;
-        }
-        .modal-box input {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 15px;
-            background: #222;
-            border: 1px solid #444;
-            color: #fff;
-            text-align: center;
-            border-radius: 4px;
-        }
-        .modal-btns {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-        }
-        .modal-btns button {
-            flex: 1;
-            padding: 8px;
-            border: none;
-            cursor: pointer;
-            border-radius: 4px;
-            font-weight: bold;
-        }
-        .btn-submit { background: #00ff66; color: #000; }
-        .btn-cancel { background: #555; color: #fff; }
 
         /* Main Content Area */
         .main-content {
@@ -302,7 +251,7 @@
 </head>
 <body>
 
-    <!-- Top Header (SM-TECH with Menu Button on Left) -->
+    <!-- Top Header -->
     <div class="top-header">
         <div class="header-left">
             <button class="menu-btn" onclick="toggleSidebar()">☰</button>
@@ -310,32 +259,20 @@
         </div>
     </div>
 
-    <!-- Sidebar Overlay & Menu Panel -->
+    <!-- Sidebar Admin Panel -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <h3>মেনুবার</h3>
+            <h3>SM-TECH ADMIN</h3>
             <button class="close-sidebar" onclick="toggleSidebar()">✕</button>
         </div>
         <ul class="sidebar-menu">
-            <li onclick="checkAdminPassword('dashboardSection')"><a>📊 ড্যাশবোর্ড</a></li>
-            <li onclick="checkAdminPassword('stockSection')"><a>📦 স্টক পণ্য</a></li>
-            <li onclick="checkAdminPassword('sellSection')"><a>🛒 সেল পণ্য</a></li>
+            <li onclick="switchSection('dashboardSection'); toggleSidebar();"><a>📊 ড্যাশবোর্ড</a></li>
+            <li onclick="switchSection('stockSection'); toggleSidebar();"><a>📦 স্টক পণ্য</a></li>
+            <li onclick="switchSection('sellSection'); toggleSidebar();"><a>🛒 সেল পণ্য</a></li>
             <li onclick="switchSection('invoiceSection'); toggleSidebar();"><a>📄 ইনভয়েস</a></li>
-            <li onclick="alert('লগআউট সফল!'); toggleSidebar(); switchSection('homeSection');"><a>🔒 লগআউট</a></li>
+            <li onclick="alert('লগআউট সফল হয়েছে!'); switchSection('homeSection'); toggleSidebar();"><a>🔒 লগআউট</a></li>
         </ul>
-    </div>
-
-    <!-- Password Modal -->
-    <div class="modal-overlay" id="passwordModal">
-        <div class="modal-box">
-            <h3>🔐 এডমিন পাসওয়ার্ড</h3>
-            <input type="password" id="adminPassInput" placeholder="পাসওয়ার্ড লিখুন">
-            <div class="modal-btns">
-                <button class="btn-submit" onclick="verifyPassword()">প্রবেশ করুন</button>
-                <button class="btn-cancel" onclick="closePasswordModal()">বাতিল</button>
-            </div>
-        </div>
     </div>
 
     <!-- Main Content Area -->
@@ -344,35 +281,35 @@
         <div id="homeSection" class="section-view active">
             <div style="text-align: center; padding: 40px; background: #fff; border-radius: 8px; border: 1px solid #ddd;">
                 <h2 style="color: #008751; margin-bottom: 10px;">স্বাগতম SM-TECH এ</h2>
-                <p style="color: #555;">আপনার কম্পিউটর ও আইটি সলিউশন ম্যানেজমেন্ট সিস্টেম। বাঁ পাশের মেনু থেকে ইনভয়েস বা এডমিন ফিচার ব্যবহার করুন।</p>
+                <p style="color: #555;">আপনার কম্পিউটর ও আইটি সলিউশন ম্যানেজমেন্ট সিস্টেম। বাঁ পাশের মেনু থেকে এডমিন প্যানেল ওপেন করে কাজ শুরু করুন।</p>
             </div>
         </div>
 
         <!-- Dashboard Section -->
         <div id="dashboardSection" class="section-view">
-            <div style="padding: 20px; background: #fff; border-radius: 8px;">
+            <div style="padding: 20px; background: #fff; border-radius: 8px; border: 1px solid #ddd;">
                 <h3 style="color: #002d62; margin-bottom: 10px;">📊 ড্যাশবোর্ড প্যানেল</h3>
-                <p>এখানে আপনার সমস্ত হিসাব-নিকাশ ও ওভারভিউ দেখতে পাবেন।</p>
+                <p>এখানে আপনার ব্যবসার সার্বিক হিসাব এবং পরিসংখ্যান দেখতে পাবেন।</p>
             </div>
         </div>
 
         <!-- Stock Section -->
         <div id="stockSection" class="section-view">
-            <div style="padding: 20px; background: #fff; border-radius: 8px;">
+            <div style="padding: 20px; background: #fff; border-radius: 8px; border: 1px solid #ddd;">
                 <h3 style="color: #002d62; margin-bottom: 10px;">📦 স্টক পণ্য প্যানেল</h3>
-                <p>এখানে পণ্যের স্টক ম্যানেজ করতে পারবেন।</p>
+                <p>এখানে নতুন পণ্য যোগ এবং বর্তমান স্টকের হিসাব রাখা যাবে।</p>
             </div>
         </div>
 
         <!-- Sell Section -->
         <div id="sellSection" class="section-view">
-            <div style="padding: 20px; background: #fff; border-radius: 8px;">
+            <div style="padding: 20px; background: #fff; border-radius: 8px; border: 1px solid #ddd;">
                 <h3 style="color: #002d62; margin-bottom: 10px;">🛒 সেল পণ্য প্যানেল</h3>
-                <p>এখানে বিক্রির হিসাব ও তালিকা থাকবে।</p>
+                <p>এখানে পণ্য বিক্রয়ের এন্ট্রি ও তালিকা সংরক্ষণ করা হয়।</p>
             </div>
         </div>
 
-        <!-- Invoice Section (No Password Required) -->
+        <!-- Invoice Section -->
         <div id="invoiceSection" class="section-view">
             <div class="invoice-container">
                 <div class="invoice-header">
@@ -445,8 +382,6 @@
     </div>
 
     <script>
-        let targetSectionAfterLogin = '';
-
         // Sidebar Toggle
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
@@ -464,27 +399,6 @@
         function switchSection(sectionId) {
             document.querySelectorAll('.section-view').forEach(sec => sec.classList.remove('active'));
             document.getElementById(sectionId).classList.add('active');
-        }
-
-        // Password Modal Controls for Admin Features
-        function checkAdminPassword(sectionId) {
-            targetSectionAfterLogin = sectionId;
-            toggleSidebar();
-            document.getElementById('passwordModal').style.display = 'flex';
-            document.getElementById('adminPassInput').value = '';
-        }
-        function closePasswordModal() {
-            document.getElementById('passwordModal').style.display = 'none';
-        }
-        function verifyPassword() {
-            const pass = document.getElementById('adminPassInput').value;
-            // ডিফল্ট পাসওয়ার্ড '1234' সেট করা আছে, প্রয়োজনে বদল করে নিতে পারেন
-            if (pass === '1234' || pass === '') { 
-                closePasswordModal();
-                switchSection(targetSectionAfterLogin);
-            } else {
-                alert('ভুল পাসওয়ার্ড! আবার চেষ্টা করুন।');
-            }
         }
 
         // Invoice Logic
