@@ -49,6 +49,52 @@
             letter-spacing: 0.5px;
         }
 
+        /* Banner Slider Section */
+        .slider-container {
+            width: 100%;
+            max-width: 850px;
+            margin: 15px auto;
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            background: #000;
+        }
+        .slide-track {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+        .slide {
+            min-width: 100%;
+            box-sizing: border-box;
+        }
+        .slide img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 8px;
+        }
+        /* Slider Navigation Dots */
+        .slider-dots {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+        }
+        .dot {
+            width: 10px;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .dot.active {
+            background: #00ff66;
+        }
+
         /* Sidebar Panel */
         .sidebar-overlay {
             position: fixed;
@@ -227,7 +273,7 @@
 
         /* Main Content Area */
         .main-content {
-            padding: 20px;
+            padding: 0 20px 20px 20px;
             max-width: 850px;
             margin: 0 auto;
         }
@@ -356,7 +402,7 @@
         .btn:hover { background: #d9232d; }
 
         @media print {
-            .top-header, .controls, .sidebar, .sidebar-overlay { display: none; }
+            .top-header, .controls, .sidebar, .sidebar-overlay, .slider-container { display: none; }
             body { background: none; padding: 0; }
             .invoice-container { border: none; box-shadow: none; width: 100%; padding: 0; }
         }
@@ -369,6 +415,19 @@
         <div class="header-left">
             <button class="menu-btn" onclick="toggleSidebar()">☰</button>
             <div class="brand-logo" onclick="switchSection('homeSection')">SM-TECH</div>
+        </div>
+    </div>
+
+    <!-- Banner Slider Section (GitHub banner.png linked) -->
+    <div class="slider-container">
+        <div class="slide-track" id="slideTrack">
+            <div class="slide"><img src="https://raw.githubusercontent.com/smtech050-cmd/smtech/main/banner.png" alt="SM-TECH Banner"></div>
+            <!-- যদি আরও ব্যানার যোগ করতে চান, নিচে একইভাবে দিতে পারেন -->
+            <div class="slide"><img src="https://raw.githubusercontent.com/smtech050-cmd/smtech/main/banner.png" alt="SM-TECH Banner"></div>
+        </div>
+        <div class="slider-dots" id="sliderDots">
+            <span class="dot active" onclick="currentSlide(0)"></span>
+            <span class="dot" onclick="currentSlide(1)"></span>
         </div>
     </div>
 
@@ -411,7 +470,7 @@
     <div class="main-content">
         <!-- Home / Default Section -->
         <div id="homeSection" class="section-view active">
-            <div style="text-align: center; padding: 40px; background: #fff; border-radius: 8px; border: 1px solid #ddd;">
+            <div style="text-align: center; padding: 30px; background: #fff; border-radius: 8px; border: 1px solid #ddd;">
                 <h2 style="color: #008751; margin-bottom: 10px;">স্বাগতম SM-TECH এ</h2>
                 <p style="color: #555;">আপনার কম্পিউটর ও আইটি সলিউশন ম্যানেজমেন্ট সিস্টেম। বাঁ পাশের মেনু থেকে SM-TECH ADMIN ওপেন করুন।</p>
             </div>
@@ -514,9 +573,36 @@
     </div>
 
     <script>
+        // Banner Slider Logic
+        let slideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.dot');
+
+        function showSlide(index) {
+            if (index >= slides.length) slideIndex = 0;
+            if (index < 0) slideIndex = slides.length - 1;
+            
+            document.getElementById('slideTrack').style.transform = `translateX(-${slideIndex * 100}%)`;
+            
+            dots.forEach(dot => dot.classList.remove('active'));
+            dots[slideIndex].classList.add('active');
+        }
+
+        function currentSlide(index) {
+            slideIndex = index;
+            showSlide(slideIndex);
+        }
+
+        // Auto Slide Every 3 Seconds
+        setInterval(() => {
+            slideIndex++;
+            showSlide(slideIndex);
+        }, 3000);
+
+
+        // Admin & Sidebar Logic
         let isAdminLoggedIn = false;
 
-        // Sidebar Toggle
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebarOverlay');
@@ -529,7 +615,6 @@
             }
         }
 
-        // Admin Dropdown Toggle
         function toggleAdminDropdown() {
             const passBox = document.getElementById('adminPassBox');
             const subMenu = document.getElementById('adminSubMenu');
@@ -554,7 +639,6 @@
             }
         }
 
-        // Verify Password (Default: 1234)
         function verifyAdminPassword() {
             const passInput = document.getElementById('adminPasswordInput').value;
             if (passInput === '1234') {
@@ -566,7 +650,6 @@
             }
         }
 
-        // Logout Admin
         function logoutAdmin() {
             isAdminLoggedIn = false;
             document.getElementById('adminSubMenu').style.display = 'none';
@@ -577,7 +660,6 @@
             toggleSidebar();
         }
 
-        // Section Switcher
         function switchSection(sectionId) {
             document.querySelectorAll('.section-view').forEach(sec => sec.classList.remove('active'));
             document.getElementById(sectionId).classList.add('active');
