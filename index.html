@@ -48,8 +48,17 @@
             cursor: pointer;
             letter-spacing: 0.5px;
         }
+        .header-right {
+            text-align: right;
+            font-size: 12px;
+            color: #ccc;
+        }
+        .header-right span {
+            color: #00ff66;
+            font-weight: bold;
+        }
 
-        /* Banner Slider Section - Fixed for Desktop & Mobile */
+        /* Banner Slider Section */
         .slider-container {
             width: 100%;
             max-width: 1200px;
@@ -80,7 +89,6 @@
             object-fit: cover;
             display: block;
         }
-        /* Slider Navigation Dots */
         .slider-dots {
             position: absolute;
             bottom: 10px;
@@ -161,7 +169,6 @@
             color: #fff;
         }
 
-        /* Modern Dropdown Admin Menu */
         .admin-dropdown-btn {
             padding: 18px 20px;
             background: rgba(0, 255, 102, 0.08);
@@ -187,7 +194,6 @@
             transform: rotate(180deg);
         }
 
-        /* Styled Password Box */
         .admin-pass-box {
             padding: 18px 20px;
             background: #161616;
@@ -211,7 +217,6 @@
             border-radius: 6px;
             font-size: 14px;
             outline: none;
-            transition: border-color 0.2s;
         }
         .admin-pass-box input:focus {
             border-color: #00ff66;
@@ -225,13 +230,8 @@
             border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
-            transition: background 0.2s;
-        }
-        .admin-pass-box button:hover {
-            background: #00cc52;
         }
 
-        /* Sub-menu items inside Admin Panel */
         .admin-sub-menu {
             list-style: none;
             display: none;
@@ -242,9 +242,9 @@
             padding: 14px 20px 14px 35px;
             border-bottom: 1px solid #222;
             cursor: pointer;
-            transition: all 0.2s;
             font-size: 14px;
             color: #ccc;
+            transition: 0.2s;
         }
         .admin-sub-menu li:hover {
             background: #222;
@@ -267,7 +267,6 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            transition: background 0.2s;
         }
         .logout-item:hover {
             background: rgba(255, 82, 82, 0.1);
@@ -278,17 +277,110 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Main Content Area */
+        /* Main Content & Portal Links Styling */
         .main-content {
-            padding: 15px 20px 20px 20px;
-            max-width: 850px;
+            padding: 15px 15px 70px 15px;
+            max-width: 900px;
             margin: 0 auto;
         }
-        .section-view {
-            display: none;
+        .section-view { display: none; }
+        .section-view.active { display: block; }
+
+        .portal-section {
+            background: #fff;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
         }
-        .section-view.active {
-            display: block;
+        .portal-header {
+            background: #008751;
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+            font-weight: bold;
+            font-size: 15px;
+            letter-spacing: 0.5px;
+        }
+        .portal-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 12px;
+        }
+        @media (max-width: 768px) {
+            .portal-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 480px) {
+            .portal-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .portal-card {
+            background: #008751;
+            border-radius: 5px;
+            color: #fff;
+            text-align: center;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+            transition: transform 0.2s;
+        }
+        .portal-card:hover {
+            transform: translateY(-2px);
+        }
+        .portal-card-title {
+            padding: 10px 8px;
+            font-size: 13px;
+            font-weight: bold;
+            min-height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .portal-card-btn {
+            background: #fff;
+            color: #008751;
+            padding: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            border-top: 1px solid rgba(0,0,0,0.1);
+            transition: background 0.2s, color 0.2s;
+        }
+        .portal-card-btn:hover {
+            background: #f0f0f0;
+            color: #005a35;
+        }
+
+        /* Bottom Fixed Navigation Bar */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #0b1a12;
+            border-top: 2px solid #008751;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 900;
+        }
+        .nav-item {
+            color: #fff;
+            text-align: center;
+            font-size: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            transition: color 0.2s;
+        }
+        .nav-item:hover {
+            color: #00ff66;
         }
 
         /* Invoice Styles */
@@ -305,111 +397,35 @@
             border-bottom: 3px solid #002d62;
             padding-bottom: 10px;
         }
-        .logo-area h1 {
-            margin: 0;
-            color: #d9232d;
-            font-size: 30px;
-        }
+        .logo-area h1 { margin: 0; color: #d9232d; font-size: 30px; }
         .logo-area h1 span { color: #002d62; }
         .logo-area p { margin: 2px 0; color: #008751; font-weight: bold; font-size: 13px; }
         .owner-area { text-align: right; font-size: 13px; color: #002d62; }
         .owner-area h3 { margin: 0; color: #002d62; }
-
-        .bill-info {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 15px;
-            font-size: 13px;
-        }
+        .bill-info { display: flex; justify-content: space-between; margin-top: 15px; font-size: 13px; }
         .bill-to, .invoice-details { width: 48%; }
-        .bill-info input {
-            width: 100%;
-            border: none;
-            border-bottom: 1px dotted #000;
-            outline: none;
-            padding: 4px;
-            font-size: 13px;
-        }
-        .invoice-badge {
-            background: #002d62;
-            color: #fff;
-            padding: 4px 12px;
-            font-weight: bold;
-            display: inline-block;
-            margin-bottom: 5px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-        th, td {
-            border: 1px solid #002d62;
-            padding: 6px;
-            text-align: center;
-            font-size: 12px;
-        }
+        .bill-info input { width: 100%; border: none; border-bottom: 1px dotted #000; outline: none; padding: 4px; font-size: 13px; }
+        .invoice-badge { background: #002d62; color: #fff; padding: 4px 12px; font-weight: bold; display: inline-block; margin-bottom: 5px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #002d62; padding: 6px; text-align: center; font-size: 12px; }
         th { background-color: #002d62; color: white; }
-        td input {
-            width: 95%;
-            border: none;
-            text-align: center;
-            outline: none;
-            font-size: 12px;
-        }
+        td input { width: 95%; border: none; text-align: center; outline: none; font-size: 12px; }
         td.desc-cell input { text-align: left; }
-
-        .footer-section {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 15px;
-            align-items: flex-start;
-        }
+        .footer-section { display: flex; justify-content: space-between; margin-top: 15px; align-items: flex-start; }
         .amount-in-words { width: 60%; font-size: 12px; }
-        .amount-in-words input {
-            width: 100%;
-            border: none;
-            border-bottom: 1px dotted #000;
-            outline: none;
-            margin-top: 5px;
-        }
-        .sub-total-box {
-            width: 35%;
-            background: #002d62;
-            color: white;
-            text-align: right;
-            padding: 8px;
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        .bottom-row {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 25px;
-            align-items: flex-end;
-        }
+        .amount-in-words input { width: 100%; border: none; border-bottom: 1px dotted #000; outline: none; margin-top: 5px; }
+        .sub-total-box { width: 35%; background: #002d62; color: white; text-align: right; padding: 8px; font-weight: bold; font-size: 14px; }
+        .bottom-row { display: flex; justify-content: space-between; margin-top: 25px; align-items: flex-end; }
         .payment-methods { border: 1px solid #002d62; }
         .payment-title { background: #002d62; color: white; padding: 3px 8px; font-size: 11px; font-weight: bold; }
         .payment-options { padding: 5px 8px; font-size: 11px; font-weight: bold; color: #002d62; }
         .signature-box { text-align: center; font-size: 12px; border-top: 1px solid #000; padding-top: 4px; width: 180px; }
-
         .controls { text-align: center; margin-top: 15px; }
-        .btn {
-            background: #002d62;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            margin: 0 5px;
-            cursor: pointer;
-            font-size: 13px;
-            border-radius: 4px;
-        }
+        .btn { background: #002d62; color: white; border: none; padding: 8px 15px; margin: 0 5px; cursor: pointer; font-size: 13px; border-radius: 4px; }
         .btn:hover { background: #d9232d; }
 
         @media print {
-            .top-header, .controls, .sidebar, .sidebar-overlay, .slider-container { display: none; }
+            .top-header, .controls, .sidebar, .sidebar-overlay, .slider-container, .bottom-nav { display: none; }
             body { background: none; padding: 0; }
             .invoice-container { border: none; box-shadow: none; width: 100%; padding: 0; }
         }
@@ -422,6 +438,10 @@
         <div class="header-left">
             <button class="menu-btn" onclick="toggleSidebar()">☰</button>
             <div class="brand-logo" onclick="switchSection('homeSection')">SM-TECH</div>
+        </div>
+        <div class="header-right">
+            Sheikh Muhammad Ibrahim<br>
+            <span>Owner</span> | 01940-556114
         </div>
     </div>
 
@@ -441,7 +461,7 @@
         </div>
     </div>
 
-    <!-- Sidebar Dropdown Panel -->
+    <!-- Sidebar Panel -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
@@ -449,20 +469,17 @@
             <button class="close-sidebar" onclick="toggleSidebar()">✕</button>
         </div>
 
-        <!-- SM-TECH ADMIN Dropdown Button -->
         <div class="admin-dropdown-btn" onclick="toggleAdminDropdown()">
             <span>SM-TECH ADMIN</span>
             <span class="arrow-icon" id="arrowIcon">▼</span>
         </div>
 
-        <!-- Password Input Box -->
         <div class="admin-pass-box" id="adminPassBox">
             <label>এডমিন পাসওয়ার্ড দিন</label>
             <input type="password" id="adminPasswordInput" placeholder="••••••••">
             <button onclick="verifyAdminPassword()">প্রবেশ করুন</button>
         </div>
 
-        <!-- Features Sub-menu -->
         <ul class="admin-sub-menu" id="adminSubMenu">
             <li onclick="switchSection('dashboardSection'); toggleSidebar();"><a>📊 ড্যাশবোর্ড</a></li>
             <li onclick="switchSection('stockSection'); toggleSidebar();"><a>📦 স্টক পণ্য</a></li>
@@ -470,7 +487,6 @@
             <li onclick="switchSection('invoiceSection'); toggleSidebar();"><a>📄 ইনভয়েস</a></li>
         </ul>
 
-        <!-- Logout Option -->
         <div class="logout-item" onclick="logoutAdmin()">
             <a>🔒 লগআউট</a>
         </div>
@@ -478,12 +494,119 @@
 
     <!-- Main Content Area -->
     <div class="main-content">
-        <!-- Home / Default Section -->
+        <!-- Home / Portal Section -->
         <div id="homeSection" class="section-view active">
-            <div style="text-align: center; padding: 30px; background: #fff; border-radius: 8px; border: 1px solid #ddd;">
-                <h2 style="color: #008751; margin-bottom: 10px;">স্বাগতম SM-TECH এ</h2>
-                <p style="color: #555;">আপনার কম্পিউটর ও আইটি সলিউশন ম্যানেজমেন্ট সিস্টেম। বাঁ পাশের মেনু থেকে SM-TECH ADMIN ওপেন করুন।</p>
+            
+            <!-- দাপ্তরিক ওয়েবসাইট সেকশন -->
+            <div class="portal-section">
+                <div class="portal-header">🏛️ দাপ্তরিক ওয়েবসাইট</div>
+                <div class="portal-grid">
+                    <div class="portal-card">
+                        <div class="portal-card-title">মাদ্রাসা শিক্ষা বোর্ড</div>
+                        <div class="portal-card-btn" onclick="window.open('http://www.madrasahboard.gov.bd', '_blank')">ভিজিট করুন</div>
+                    </div>
+                    <div class="portal-card">
+                        <div class="portal-card-title">মাদ্রাসা শিক্ষা অধিদপ্তর</div>
+                        <div class="portal-card-btn" onclick="window.open('http://www.dme.gov.bd', '_blank')">ভিজিট করুন</div>
+                    </div>
+                    <div class="portal-card">
+                        <div class="portal-card-title">মাধ্যমিক ও উচ্চশিক্ষা অধিদপ্তর</div>
+                        <div class="portal-card-btn" onclick="window.open('http://www.dshe.gov.bd', '_blank')">ভিজিট করুন</div>
+                    </div>
+                    <div class="portal-card">
+                        <div class="portal-card-title">কারিগরি শিক্ষা বোর্ড</div>
+                        <div class="portal-card-btn" onclick="window.open('http://www.bteb.gov.bd', '_blank')">ভিজিট করুন</div>
+                    </div>
+                    <div class="portal-card">
+                        <div class="portal-card-title">কারিগরি ও মাদ্রাসা শিক্ষা বিভাগ</div>
+                        <div class="portal-card-btn" onclick="window.open('http://tmed.gov.bd', '_blank')">ভিজিট করুন</div>
+                    </div>
+                    <div class="portal-card">
+                        <div class="portal-card-title">ময়মনসিংহ শিক্ষা বোর্ড</div>
+                        <div class="portal-card-btn" onclick="window.open('https://www.mymensingheducationboard.gov.bd', '_blank')">ভিজিট করুন</div>
+                    </div>
+                    <div class="portal-card">
+                        <div class="portal-card-title">ঢাকা শিক্ষা বোর্ড</div>
+                        <div class="portal-card-btn" onclick="window.open('https://dhakaeducationboard.gov.bd', '_blank')">ভিজিট করুন</div>
+                    </div>
+                    <div class="portal-card">
+                        <div class="portal-card-title">জাতীয় বিশ্ববিদ্যালয়</div>
+                        <div class="portal-card-btn" onclick="window.open('https://www.nu.ac.bd', '_blank')">ভিজিট করুন</div>
+                    </div>
+                    <div class="portal-card">
+                        <div class="portal-card-title">ইসলামিক আরবি বিশ্ববিদ্যালয়</div>
+                        <div class="portal-card-btn" onclick="window.open('https://iau.edu.bd', '_blank')">ভিজিট করুন</div>
+                    </div>
+                    <div class="portal-card">
+                        <div class="portal-card-title">প্রাথমিক শিক্ষা অধিদপ্তর</div>
+                        <div class="portal-card-btn" onclick="window.open('http://www.dpe.gov.bd', '_blank')">ভিজিট করুন</div>
+                    </div>
+                    <div class="portal-card">
+                        <div class="portal-card-title">এনটিআরসিএ</div>
+                        <div class="portal-card-btn" onclick="window.open('http://www.ntrca.gov.bd', '_blank')">ভিজিট করুন</div>
+                    </div>
+                    <div class="portal-card">
+                        <div class="portal-card-title">এন지আইআই</div>
+                        <div class="portal-card-btn" onclick="window.open('http://www.nctb.gov.bd', '_blank')">ভিজিট করুন</div>
+                    </div>
+                    <div class="portal-card">
+                        <div class="portal-card-title">ই-পাসপোর্ট</div>
+                        <div class="portal-card-btn" onclick="window.open('https://www.epassport.gov.bd', '_blank')">ভিজিট করুন</div>
+                    </div>
+                    <div class="portal-card">
+                        <div class="portal-card-title">পুলিশ ক্লিয়ারেন্স</div>
+                        <div class="portal-card-btn" onclick="window.open('https://pcc.police.gov.bd', '_blank')">ভিজিট করুন</div>
+                    </div>
+                    <div class="portal-card">
+                        <div class="portal-card-title">বিএমইটি ট্রেনিং</div>
+                        <div class="portal-card-btn" onclick="window.open('https://www.bmet.gov.bd', '_blank')">ভিজিট করুন</div>
+                    </div>
+                    <div class="portal-card">
+                        <div class="portal-card-title">বেসরকারি শিক্ষক/কর্মচারী অবসর বোর্ড</div>
+                        <div class="portal-card-btn" onclick="window.open('http://www.shikhobor.gov.bd', '_blank')">ভিজিট করুন</div>
+                    </div>
+                    <div class="portal-card">
+                        <div class="portal-card-title">বেসরকারি শিক্ষক/কর্মচারী কল্যাণ বোর্ড</div>
+                        <div class="portal-card-btn" onclick="window.open('http://www.welfareboard.gov.bd', '_blank')">ভিজিট করুন</div>
+                    </div>
+                    <div class="portal-card">
+                        <div class="portal-card-title">তুমি তথ্য বাতায়ন</div>
+                        <div class="portal-card-btn" onclick="window.open('https://bangladesh.gov.bd', '_blank')">ভিজিট করুন</div>
+                    </div>
+                    <div class="portal-card">
+                        <div class="portal-card-title">অনলাইন জিডি</div>
+                        <div class="portal-card-btn" onclick="window.open('https://onlinegd.police.gov.bd', '_blank')">ভিজিট করুন</div>
+                    </div>
+                </div>
             </div>
+
+            <!-- রেজাল্ট লিংক সেকশন -->
+            <div class="portal-section">
+                <div class="portal-header">📜 রেজাল্ট লিংক</div>
+                <div class="portal-grid">
+                    <div class="portal-card">
+                        <div class="portal-card-title">রেজাল্ট ময়মনসিংহ বোর্ড</div>
+                        <div class="portal-card-btn" onclick="window.open('http://www.educationboardresults.gov.bd', '_blank')">ভিজিট করুন</div>
+                    </div>
+                    <div class="portal-card">
+                        <div class="portal-card-title">রেজাল্ট মাদ্রাসা বোর্ড</div>
+                        <div class="portal-card-btn" onclick="window.open('http://www.educationboardresults.gov.bd', '_blank')">ভিজিট করুন</div>
+                    </div>
+                    <div class="portal-card">
+                        <div class="portal-card-title">রেজাল্ট ঢাকা বোর্ড</div>
+                        <div class="portal-card-btn" onclick="window.open('http://www.educationboardresults.gov.bd', '_blank')">ভিজিট করুন</div>
+                    </div>
+                    <div class="portal-card">
+                        <div class="portal-card-title">রেজাল্ট জাতীয় বিশ্ববিদ্যালয়</div>
+                        <div class="portal-card-btn" onclick="window.open('http://results.nu.ac.bd', '_blank')">ভিজিট করুন</div>
+                    </div>
+                    <div class="portal-card">
+                        <div class="portal-card-title">রেজাল্ট আরবি বিশ্ববিদ্যালয়</div>
+                        <div class="portal-card-btn" onclick="window.open('https://iau.edu.bd', '_blank')">ভিজিট করুন</div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <!-- Dashboard Section -->
@@ -582,6 +705,26 @@
         </div>
     </div>
 
+    <!-- Bottom Fixed Navigation Bar -->
+    <div class="bottom-nav">
+        <div class="nav-item" onclick="switchSection('homeSection')">
+            <span>💻</span>
+            <span>PC Builder</span>
+        </div>
+        <div class="nav-item" onclick="switchSection('homeSection')">
+            <span>📢</span>
+            <span>Campaign</span>
+        </div>
+        <div class="nav-item" onclick="switchSection('homeSection')">
+            <span>👤</span>
+            <span>Profile</span>
+        </div>
+        <div class="nav-item" onclick="switchSection('invoiceSection')">
+            <span>🛒</span>
+            <span>Cart</span>
+        </div>
+    </div>
+
     <script>
         let slideIndex = 0;
         const slides = document.querySelectorAll('.slide');
@@ -669,6 +812,7 @@
         function switchSection(sectionId) {
             document.querySelectorAll('.section-view').forEach(sec => sec.classList.remove('active'));
             document.getElementById(sectionId).classList.add('active');
+            window.scrollTo(0, 0);
         }
 
         document.getElementById('invDate').valueAsDate = new Date();
