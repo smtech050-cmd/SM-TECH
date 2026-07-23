@@ -176,10 +176,22 @@
         .sales-table input { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; }
         .btn-add { background-color: #00e676; color: #000; font-weight: bold; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; margin-top: 12px; }
         .btn-delete { background-color: #ff5252; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; }
+        .btn-edit { background-color: #ff9800; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; margin-right: 4px; }
         .sales-summary { margin-top: 15px; padding: 10px; background-color: #e8f5e9; border-radius: 6px; display: flex; justify-content: space-between; font-weight: bold; font-size: 14px; }
         
-        /* নিশ্চিত করুন বাটন স্টাইল */
         .btn-save-sale { width: 100%; background-color: #0d5c3a; color: white; font-size: 16px; font-weight: bold; padding: 12px; border: none; border-radius: 6px; margin-top: 10px; cursor: pointer; }
+
+        /* সেভ করা রেকর্ড তালিকা সেকশন */
+        .saved-records-section {
+            margin-top: 25px;
+            border-top: 2px dashed #0d5c3a;
+            padding-top: 15px;
+        }
+        .saved-records-section h3 {
+            font-size: 16px;
+            color: #0d5c3a;
+            margin-bottom: 10px;
+        }
 
         /* মূল ওয়েবসাইট স্টাইল */
         .banner { width: 100%; background-color: #111; padding: 10px; margin-bottom: 10px; }
@@ -245,7 +257,7 @@
         </div>
     </header>
 
-    <!-- ১. সেল পণ্য সেকশন (এন্ট্রি ফর্ম) -->
+    <!-- ১. সেল পণ্য সেকশন (এন্ট্রি ফর্ম ও নিচে সেভ করা তালিকা) -->
     <div id="salesSection" class="sales-container">
         <div class="sales-header">
             <h2>🛍️ বিক্রয় পণ্য এন্ট্রি</h2>
@@ -278,11 +290,34 @@
             <span>মোট লভ্যাংশ: <span id="totalProfitAmount">0</span> ৳</span>
         </div>
 
-        <!-- বাটনটি টেবিল ও সারসংক্ষেপের ঠিক নিচে নিয়ে আসা হয়েছে এবং নাম পরিবর্তন করা হয়েছে -->
+        <!-- নিশ্চিত করুন বাটন -->
         <button class="btn-save-sale" onclick="saveSalesData()">💾 নিশ্চিত করুন</button>
+
+        <!-- এই পেজেই নিচে সেভ করা রেকর্ড তালিকা, এডিট ও ডিলিট অপশনসহ -->
+        <div class="saved-records-section">
+            <h3>📋 সাম্প্রতিক সংরক্ষিত বিক্রয় তালিকা</h3>
+            <div class="table-responsive">
+                <table class="sales-table">
+                    <thead>
+                        <tr>
+                            <th>তারিখ ও সময়</th>
+                            <th>পণ্যের বিবরণ</th>
+                            <th>মোট পরিমাণ</th>
+                            <th>মোট বিক্রি (৳)</th>
+                            <th>মোট লাভ (৳)</th>
+                            <th>অ্যাকশন</th>
+                        </tr>
+                    </thead>
+                    <tbody id="localSavedTableBody">
+                        <!-- এখানেই সেভ হওয়া ডাটা দেখাবে -->
+                    </tbody>
+                </table>
+            </div>
+            <button class="btn-delete" onclick="clearAllInvoices()" style="margin-top: 15px; width: 100%; padding: 10px;">🗑️ সমস্ত রেকর্ড মুছুন</button>
+        </div>
     </div>
 
-    <!-- ২. ইনভয়েস / ক্যাশ মেমো সেকশন -->
+    <!-- ২. ইনভয়েস / ক্যাশ মেমো সেকশন (যদি মেনू থেকে যেতে চায়) -->
     <div id="invoiceSection" class="invoice-container">
         <div class="invoice-header">
             <h2>🧾 সাম্প্রতিক বিক্রয় ও ইনভয়েস</h2>
@@ -425,6 +460,7 @@
             if (document.getElementById("salesTableBody").children.length === 0) {
                 addSaleRow();
             }
+            loadLocalSavedRecords(); // এই পেজের নিচের তালিকা লোড করবে
         }
 
         function showInvoiceSection() {
@@ -508,7 +544,7 @@
             document.getElementById("totalProfitAmount").innerText = totalProfit;
         }
 
-        /* লোকাল স্টোরেজে ডাটা সেভ করার ফাংশন */
+        /* লোকাল স্টোরেজে ডাটা সেভ এবং এই পেজেই নিচে দেখানোর ফাংশন */
         function saveSalesData() {
             const rows = document.querySelectorAll("#salesTableBody tr");
             let itemsList = "";
@@ -539,6 +575,7 @@
             }
 
             const saleRecord = {
+                id: Date.now(), // এডিট বা ডিলিট করার জন্য ইউনিক আইডি
                 date: new Date().toLocaleString('en-GB'),
                 items: itemsList,
                 qty: totalQty,
@@ -550,17 +587,83 @@
             savedInvoices.unshift(saleRecord);
             localStorage.setItem("sm_tech_invoices", JSON.stringify(savedInvoices));
 
-            alert("বিক্রয় তথ্য সফলভাবে সংরক্ষিত হয়েছে এবং ইনভয়েসে যুক্ত করা হয়েছে!");
+            alert("বিক্রয় তথ্য সফলভাবে সংরক্ষিত হয়েছে!");
             
+            // ফর্ম রিসেট
             document.getElementById("salesTableBody").innerHTML = "";
             addSaleRow();
             calculateTotal();
 
-            showInvoiceSection();
+            // ইনভয়েস পেজে না গিয়ে এখানেই তালিকা রিফ্রেশ করবে
+            loadLocalSavedRecords();
+        }
+
+        /* এই পেজের নিচের অংশে রেকর্ড লোড করা এবং এডিট/ডিলিট অপশন দেওয়া */
+        function loadLocalSavedRecords() {
+            const tbody = document.getElementById("localSavedTableBody");
+            if (!tbody) return;
+            tbody.innerHTML = "";
+            let savedInvoices = JSON.parse(localStorage.getItem("sm_tech_invoices")) || [];
+
+            if(savedInvoices.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="padding: 15px; color: #777;">কোনো বিক্রয়ের রেকর্ড পাওয়া যায়নি!</td></tr>`;
+                return;
+            }
+
+            savedInvoices.forEach((inv, index) => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${inv.date}</td>
+                    <td style="text-align: left; padding-left: 10px;">${inv.items}</td>
+                    <td>${inv.qty}</td>
+                    <td>${inv.sell} ৳</td>
+                    <td style="color: green; font-weight: bold;">${inv.profit} ৳</td>
+                    <td>
+                        <button class="btn-edit" onclick="editRecord(${inv.id})">✏️</button>
+                        <button class="btn-delete" onclick="deleteRecord(${inv.id})">🗑️</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        /* নির্দিষ্ট রেকর্ড ডিলিট করা */
+        function deleteRecord(id) {
+            if(confirm("আপনি কি এই বিক্রয়ের রেকর্ডটি মুছে ফেলতে চান?")) {
+                let savedInvoices = JSON.parse(localStorage.getItem("sm_tech_invoices")) || [];
+                savedInvoices = savedInvoices.filter(inv => inv.id !== id);
+                localStorage.setItem("sm_tech_invoices", JSON.stringify(savedInvoices));
+                loadLocalSavedRecords();
+            }
+        }
+
+        /* নির্দিষ্ট রেকর্ড এডিট করা (ডাটা ফর্ম এ ফিরিয়ে আনা) */
+        function editRecord(id) {
+            let savedInvoices = JSON.parse(localStorage.getItem("sm_tech_invoices")) || [];
+            const record = savedInvoices.find(inv => inv.id === id);
+            
+            if(record) {
+                if(confirm("এই রেকর্ডটি এডিট করার জন্য ফর্মের উপরে লোড করতে চান?")) {
+                    document.getElementById("salesTableBody").innerHTML = "";
+                    addSaleRow();
+                    const firstRow = document.querySelector("#salesTableBody tr");
+                    firstRow.querySelector(".item-name").value = record.items;
+                    firstRow.querySelector(".item-qty").value = record.qty;
+                    firstRow.querySelector(".item-sell").value = record.sell / record.qty;
+                    firstRow.querySelector(".item-profit").value = record.profit;
+                    calculateTotal();
+
+                    // পুরনো রেকর্ডটি তালিকা থেকে মুছে ফেলা যাতে নতুন করে সেভ করা যায়
+                    savedInvoices = savedInvoices.filter(inv => inv.id !== id);
+                    localStorage.setItem("sm_tech_invoices", JSON.stringify(savedInvoices));
+                    loadLocalSavedRecords();
+                }
+            }
         }
 
         function loadInvoices() {
             const tbody = document.getElementById("invoiceTableBody");
+            if (!tbody) return;
             tbody.innerHTML = "";
             let savedInvoices = JSON.parse(localStorage.getItem("sm_tech_invoices")) || [];
 
@@ -585,6 +688,7 @@
         function clearAllInvoices() {
             if(confirm("আপনি কি সমস্ত বিক্রয় রেকর্ড মুছে ফেলতে চান?")) {
                 localStorage.removeItem("sm_tech_invoices");
+                loadLocalSavedRecords();
                 loadInvoices();
             }
         }
