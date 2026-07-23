@@ -41,7 +41,6 @@
             cursor: pointer;
         }
 
-        /* বামে SM-TECH লোগো */
         .logo {
             font-size: 22px;
             font-weight: bold;
@@ -49,7 +48,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* ডানে ওনার ও কন্টাক্ট ইনফো */
         .owner-info {
             display: flex;
             flex-direction: column;
@@ -103,7 +101,7 @@
             font-weight: bold;
         }
         
-        /* এডমিন প্যানেল ড্রপডাউন ডিজাইন */
+        /* এডমিন প্যানেল ড্রপডাউন */
         .admin-dropdown-btn {
             padding: 15px 25px;
             font-size: 16px;
@@ -197,14 +195,8 @@
             font-weight: bold;
             cursor: pointer;
         }
-        .btn-submit {
-            background-color: #00e676;
-            color: #000;
-        }
-        .btn-cancel {
-            background-color: #444;
-            color: #fff;
-        }
+        .btn-submit { background-color: #00e676; color: #000; }
+        .btn-cancel { background-color: #444; color: #fff; }
 
         /* ওভারলে */
         .overlay {
@@ -218,158 +210,131 @@
             z-index: 999;
         }
 
-        /* ব্যানার সেকশন */
-        .banner {
-            width: 100%;
-            background-color: #111;
-            padding: 10px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .banner-img {
-            width: 100%;
-            height: auto;
+        /* সেল পণ্য (Sales Section) স্টাইল */
+        .sales-container {
+            display: none;
+            padding: 15px;
+            background: #fff;
+            margin: 15px;
             border-radius: 8px;
-            display: block;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-
-        /* সেকশন ডিজাইন (৩ কলাম গ্রিড) */
-        .result-archive-section {
-            padding: 8px;
-            margin-bottom: 10px;
-        }
-        .section-header {
-            background-color: #008d43;
-            color: #ffffff;
-            text-align: center;
-            padding: 12px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 8px 8px 0 0;
-        }
-        .boxes-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            background-color: #e8f5e9;
-            padding: 8px;
-            border-radius: 0 0 8px 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        @media (max-width: 480px) {
-            .boxes-container {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        .result-box {
-            background-color: #00a651;
-            color: white;
-            padding: 10px 6px;
-            border-radius: 6px;
+        .sales-header {
             display: flex;
-            flex-direction: column;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 2px solid #00e676;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .sales-header h2 {
+            font-size: 18px;
+            color: #0d5c3a;
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+        .sales-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+        .sales-table th, .sales-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
             text-align: center;
-            gap: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+            font-size: 13px;
         }
-        .result-box .title {
-            font-size: 12px;
+        .sales-table th {
+            background-color: #0d5c3a;
+            color: white;
+        }
+        .sales-table input {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .btn-add {
+            background-color: #00e676;
+            color: #000;
             font-weight: bold;
-            line-height: 1.3;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 12px;
         }
-        .result-box a {
-            background-color: #ffffff;
-            color: #00a651;
-            text-decoration: none;
+        .btn-delete {
+            background-color: #ff5252;
+            color: white;
+            border: none;
             padding: 5px 8px;
             border-radius: 4px;
-            font-size: 11px;
+            cursor: pointer;
+        }
+        .sales-summary {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #e8f5e9;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
             font-weight: bold;
-            transition: 0.2s;
-            width: 100%;
-            display: block;
+            font-size: 14px;
         }
-        .result-box a:hover {
-            background-color: #222;
-            color: #ffffff;
-        }
-
-        /* প্রোডাক্ট কার্ড */
-        .products {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            padding: 8px;
-        }
-        .card {
-            background: #fff;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .card h4 {
-            margin: 10px 0 5px;
-        }
-        .card p {
-            color: #00e676;
-            font-weight: bold;
-        }
-
-        /* নিচের ফিক্সড নেভিগেশন বার */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
+        .btn-save-sale {
             width: 100%;
             background-color: #0d5c3a;
-            display: flex;
-            justify-content: space-around;
-            padding: 12px 0;
-            box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
-            z-index: 900;
-        }
-        .nav-item {
-            color: #fff;
-            text-decoration: none;
-            font-size: 13px;
-            text-align: center;
+            color: white;
+            font-size: 16px;
             font-weight: bold;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            margin-top: 15px;
+            cursor: pointer;
         }
+
+        /* মূল ওয়েবসাইট স্টাইল */
+        .banner { width: 100%; background-color: #111; padding: 10px; margin-bottom: 10px; }
+        .banner-img { width: 100%; height: auto; border-radius: 8px; }
+        .result-archive-section { padding: 8px; margin-bottom: 10px; }
+        .section-header { background-color: #008d43; color: #fff; text-align: center; padding: 12px; font-size: 18px; font-weight: bold; border-radius: 8px 8px 0 0; }
+        .boxes-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background-color: #e8f5e9; padding: 8px; border-radius: 0 0 8px 8px; }
+        @media (max-width: 480px) { .boxes-container { grid-template-columns: repeat(2, 1fr); } }
+        .result-box { background-color: #00a651; color: white; padding: 10px 6px; border-radius: 6px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; text-align: center; gap: 8px; }
+        .result-box .title { font-size: 12px; font-weight: bold; }
+        .result-box a { background-color: #ffffff; color: #00a651; text-decoration: none; padding: 5px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; width: 100%; display: block; }
+
+        /* নিচের ফিক্সড বার */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d5c3a; display: flex; justify-content: space-around; padding: 12px 0; z-index: 900; }
+        .nav-item { color: #fff; text-decoration: none; font-size: 13px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <!-- বাম পাশের সাইডবার মেনু -->
+    <!-- বাম পাশের সাইডবার -->
     <div id="mySidebar" class="sidebar">
         <span class="close-btn" onclick="closeNav()">&times;</span>
         
-        <!-- এডমিন প্যানেল বাটন -->
         <button class="admin-dropdown-btn" onclick="handleAdminClick()">
             🔐 এডমিন প্যানেল <span id="arrow">▾</span>
         </button>
         
-        <!-- এডমিন প্যানেলের ভিতরের ফিচার -->
         <div class="admin-submenu" id="adminSubmenu">
-            <a href="#">📊 ড্যাশবোর্ড</a>
+            <a href="#" onclick="showMainSection()">📊 ড্যাশবোর্ড</a>
             <a href="#">📦 স্টক পণ্য</a>
-            <a href="#">🛍️ সেল পণ্য</a>
+            <a href="#" onclick="showSalesSection()">🛍️ সেল পণ্য</a>
             <a href="#">🧾 ইনভয়েস</a>
             <a href="#" onclick="logoutAdmin()" style="color: #ff5252;">🔒 লগআউট</a>
         </div>
     </div>
 
-    <!-- ব্যাকগ্রাউন্ড ওভারলে -->
     <div id="overlay" class="overlay" onclick="closeNav()"></div>
 
-    <!-- পাসওয়ার্ড পপ-আপ মডাল -->
+    <!-- পাসওয়ার্ড মডাল -->
     <div id="passwordModal" class="modal">
         <div class="modal-content">
             <h3>🔐 এডমিন পাসওয়ার্ড</h3>
@@ -396,161 +361,88 @@
         </div>
     </header>
 
-    <!-- ব্যানার -->
-    <div class="banner">
-        <img src="banner.png" alt="SM-TECH Banner" class="banner-img">
+    <!-- সেল পণ্য সেকশন (এন্ট্রি ফর্ম) -->
+    <div id="salesSection" class="sales-container">
+        <div class="sales-header">
+            <h2>🛍️ বিক্রয় পণ্য এন্ট্রি</h2>
+            <button class="btn-delete" onclick="showMainSection()">❌ বন্ধ করুন</button>
+        </div>
+
+        <div class="table-responsive">
+            <table class="sales-table">
+                <thead>
+                    <tr>
+                        <th style="width: 5%;">ক্র:নং</th>
+                        <th style="width: 35%;">পণ্যের নাম ও মডেল</th>
+                        <th style="width: 12%;">পরিমাণ</th>
+                        <th style="width: 15%;">ক্রয় মূল্য (৳)</th>
+                        <th style="width: 15%;">বিক্রয় মূল্য (৳)</th>
+                        <th style="width: 13%;">লভ্যাংশ (৳)</th>
+                        <th style="width: 5%;">মুছুন</th>
+                    </tr>
+                </thead>
+                <tbody id="salesTableBody">
+                    <!-- ডাইনামিক রো যোগ হবে -->
+                </tbody>
+            </table>
+        </div>
+
+        <button class="btn-add" onclick="addSaleRow()">➕ নতুন পণ্য যোগ করুন</button>
+
+        <div class="sales-summary">
+            <span>মোট বিক্রি: <span id="totalSellAmount">0</span> ৳</span>
+            <span>মোট লভ্যাংশ: <span id="totalProfitAmount">0</span> ৳</span>
+        </div>
+
+        <button class="btn-save-sale" onclick="saveSalesData()">💾 বিক্রয় নিশ্চিত করুন</button>
     </div>
 
-    <!-- ১. দাপ্তরিক ওয়েবসাইট সেকশন -->
-    <div class="result-archive-section">
-        <div class="section-header">🏛️ দাপ্তরিক ওয়েবসাইট</div>
-        <div class="boxes-container">
-            
-            <div class="result-box">
-                <span class="title">মাদ্রাসা শিক্ষা বোর্ড</span>
-                <a href="http://bmeb.gov.bd/" target="_blank">ভিজিট করুন</a>
-            </div>
+    <!-- মূল ওয়েবসাইট কনটেন্ট -->
+    <div id="mainWebsiteContent">
+        <div class="banner">
+            <img src="banner.png" alt="SM-TECH Banner" class="banner-img">
+        </div>
 
-            <div class="result-box">
-                <span class="title">মাদ্রাসা শিক্ষা অধিদপ্তর</span>
-                <a href="https://dme.gov.bd/" target="_blank">ভিজিট করুন</a>
+        <!-- দাপ্তরিক ওয়েবসাইট সেকশন -->
+        <div class="result-archive-section">
+            <div class="section-header">🏛️ দাপ্তরিক ওয়েবসাইট</div>
+            <div class="boxes-container">
+                <div class="result-box"><span class="title">মাদ্রাসা শিক্ষা বোর্ড</span><a href="http://bmeb.gov.bd/" target="_blank">ভিজিট করুন</a></div>
+                <div class="result-box"><span class="title">মাদ্রাসা শিক্ষা অধিদপ্তর</span><a href="https://dme.gov.bd/" target="_blank">ভিজিট করুন</a></div>
+                <div class="result-box"><span class="title">মাধ্যমিক ও উচ্চশিক্ষা অধিদপ্তর</span><a href="https://dshe.gov.bd/" target="_blank">ভিজিট করুন</a></div>
+                <div class="result-box"><span class="title">কারিগরি শিক্ষা বোর্ড</span><a href="https://bteb.gov.bd/" target="_blank">ভিজিট করুন</a></div>
+                <div class="result-box"><span class="title">কারিগরি ও মাদ্রাসা শিক্ষা বিভাগ</span><a href="https://tmed.gov.bd/" target="_blank">ভিজিট করুন</a></div>
+                <div class="result-box"><span class="title">ময়মনসিংহ শিক্ষা বোর্ড</span><a href="https://www.mymensingheducationboard.gov.bd/" target="_blank">ভিজিট করুন</a></div>
+                <div class="result-box"><span class="title">ঢাকা শিক্ষা বোর্ড</span><a href="https://www.dhakaeducationboard.gov.bd" target="_blank">ভিজিট করুন</a></div>
+                <div class="result-box"><span class="title">জাতীয় বিশ্ববিদ্যালয়</span><a href="https://www.nu.ac.bd/" target="_blank">ভিজিট করুন</a></div>
+                <div class="result-box"><span class="title">ইসলামিক আরবি বিশ্ববিদ্যালয়</span><a href="http://iau.edu.bd/" target="_blank">ভিজিট করুন</a></div>
+                <div class="result-box"><span class="title">প্রাথমিক শিক্ষা অধিদপ্তর</span><a href="https://dpe.gov.bd/" target="_blank">ভিজিট করুন</a></div>
+                <div class="result-box"><span class="title">এনটিআরসিএ</span><a href="https://ntrca.gov.bd/" target="_blank">ভিজিট করুন</a></div>
+                <div class="result-box"><span class="title">এনজিটিআই</span><a href="http://103.230.104.210:8088/ntrca/c8/app/index.php" target="_blank">ভিজিট করুন</a></div>
+                <div class="result-box"><span class="title">ই-পাসপোর্ট</span><a href="https://www.epassport.gov.bd/landing" target="_blank">ভিজিট করুন</a></div>
+                <div class="result-box"><span class="title">পুলিশ ক্লিয়ারেন্স</span><a href="https://pcc.police.gov.bd/ords/r/pcc/pcc/home?clear=1" target="_blank">ভিজিট করুন</a></div>
+                <div class="result-box"><span class="title">বিএমইটি ট্রেনিং</span><a href="https://employee.oep.gov.bd/employee/login-with-otp" target="_blank">ভিজিট করুন</a></div>
+                <div class="result-box"><span class="title">বেসরকারি শিক্ষক/কর্মচারী অবসর বোর্ড</span><a href="https://terbb.gov.bd/" target="_blank">ভিজিট করুন</a></div>
+                <div class="result-box"><span class="title">বেসরকারি শিক্ষক/কর্মচারী কল্যাণ বোর্ড</span><a href="https://ngte-welfaretrust.gov.bd/" target="_blank">ভিজিট করুন</a></div>
+                <div class="result-box"><span class="title">ভূমি তথ্য বাতায়ন</span><a href="https://land.gov.bd/" target="_blank">ভিজিট করুন</a></div>
+                <div class="result-box"><span class="title">অনলাইন জিডি</span><a href="https://gd.police.gov.bd/" target="_blank">ভিজিট করুন</a></div>
             </div>
+        </div>
 
-            <div class="result-box">
-                <span class="title">মাধ্যমিক ও উচ্চশিক্ষা অধিদপ্তর</span>
-                <a href="https://dshe.gov.bd/" target="_blank">ভিজিট করুন</a>
+        <!-- রেজাল্ট লিঙ্ক সেকশন -->
+        <div class="result-archive-section">
+            <div class="section-header">📜 রেজাল্ট লিংক</div>
+            <div class="boxes-container">
+                <div class="result-box"><span class="title">রেজাল্ট ময়মনসিংহ বোর্ড</span><a href="https://www.mymensingheducationboard.gov.bd/resultmbh25/" target="_blank">ভিজিট করুন</a></div>
+                <div class="result-box"><span class="title">রেজাল্ট মাদ্রাসা বোর্ড</span><a href="https://www.educationboardresults.gov.bd/v2/home" target="_blank">ভিজিট করুন</a></div>
+                <div class="result-box"><span class="title">রেজাল্ট ঢাকা বোর্ড</span><a href="https://result.dhakaeducationboard.gov.bd/v2/home" target="_blank">ভিজিট করুন</a></div>
+                <div class="result-box"><span class="title">রেজাল্ট জাতীয় বিশ্ববিদ্যালয়</span><a href="https://results.nu.ac.bd/" target="_blank">ভিজিট করুন</a></div>
+                <div class="result-box"><span class="title">রেজাল্ট আরবি বিশ্ববিদ্যালয়</span><a href="http://result.iau.edu.bd/" target="_blank">ভিজিট করুন</a></div>
             </div>
-
-            <div class="result-box">
-                <span class="title">কারিগরি শিক্ষা বোর্ড</span>
-                <a href="https://bteb.gov.bd/" target="_blank">ভিজিট করুন</a>
-            </div>
-
-            <div class="result-box">
-                <span class="title">কারিগরি ও মাদ্রাসা শিক্ষা বিভাগ</span>
-                <a href="https://tmed.gov.bd/" target="_blank">ভিজিট করুন</a>
-            </div>
-
-            <div class="result-box">
-                <span class="title">ময়মনসিংহ শিক্ষা বোর্ড</span>
-                <a href="https://www.mymensingheducationboard.gov.bd/" target="_blank">ভিজিট করুন</a>
-            </div>
-
-            <div class="result-box">
-                <span class="title">ঢাকা শিক্ষা বোর্ড</span>
-                <a href="https://www.dhakaeducationboard.gov.bd" target="_blank">ভিজিট করুন</a>
-            </div>
-
-            <div class="result-box">
-                <span class="title">জাতীয় বিশ্ববিদ্যালয়</span>
-                <a href="https://www.nu.ac.bd/" target="_blank">ভিজিট করুন</a>
-            </div>
-
-            <div class="result-box">
-                <span class="title">ইসলামিক আরবি বিশ্ববিদ্যালয়</span>
-                <a href="http://iau.edu.bd/" target="_blank">ভিজিট করুন</a>
-            </div>
-
-            <div class="result-box">
-                <span class="title">প্রাথমিক শিক্ষা অধিদপ্তর</span>
-                <a href="https://dpe.gov.bd/" target="_blank">ভিজিট করুন</a>
-            </div>
-
-            <div class="result-box">
-                <span class="title">এনটিআরসিএ</span>
-                <a href="https://ntrca.gov.bd/" target="_blank">ভিজিট করুন</a>
-            </div>
-
-            <div class="result-box">
-                <span class="title">এনজিটিআই</span>
-                <a href="http://103.230.104.210:8088/ntrca/c8/app/index.php" target="_blank">ভিজিট করুন</a>
-            </div>
-
-            <div class="result-box">
-                <span class="title">ই-পাসপোর্ট</span>
-                <a href="https://www.epassport.gov.bd/landing" target="_blank">ভিজিট করুন</a>
-            </div>
-
-            <div class="result-box">
-                <span class="title">পুলিশ ক্লিয়ারেন্স</span>
-                <a href="https://pcc.police.gov.bd/ords/r/pcc/pcc/home?clear=1" target="_blank">ভিজিট করুন</a>
-            </div>
-
-            <div class="result-box">
-                <span class="title">বিএমইটি ট্রেনিং</span>
-                <a href="https://employee.oep.gov.bd/employee/login-with-otp" target="_blank">ভিজিট করুন</a>
-            </div>
-
-            <!-- বিএমইটি ট্রেনিং এর নিচে যুক্ত করা নতুন ৪টি সার্ভিস -->
-            <div class="result-box">
-                <span class="title">বেসরকারি শিক্ষক/কর্মচারী অবসর বোর্ড</span>
-                <a href="https://terbb.gov.bd/" target="_blank">ভিজিট করুন</a>
-            </div>
-
-            <div class="result-box">
-                <span class="title">বেসরকারি শিক্ষক/কর্মচারী কল্যাণ বোর্ড</span>
-                <a href="https://ngte-welfaretrust.gov.bd/" target="_blank">ভিজিট করুন</a>
-            </div>
-
-            <div class="result-box">
-                <span class="title">ভূমি তথ্য বাতায়ন</span>
-                <a href="https://land.gov.bd/" target="_blank">ভিজিট করুন</a>
-            </div>
-
-            <div class="result-box">
-                <span class="title">অনলাইন জিডি</span>
-                <a href="https://gd.police.gov.bd/" target="_blank">ভিজিট করুন</a>
-            </div>
-
         </div>
     </div>
 
-    <!-- ২. রেজাল্ট লিংক সেকশন -->
-    <div class="result-archive-section">
-        <div class="section-header">📜 রেজাল্ট লিংক</div>
-        <div class="boxes-container">
-            
-            <div class="result-box">
-                <span class="title">রেজাল্ট ময়মনসিংহ বোর্ড</span>
-                <a href="https://www.mymensingheducationboard.gov.bd/resultmbh25/" target="_blank">ভিজিট করুন</a>
-            </div>
-
-            <div class="result-box">
-                <span class="title">রেজাল্ট মাদ্রাসা বোর্ড</span>
-                <a href="https://www.educationboardresults.gov.bd/v2/home" target="_blank">ভিজিট করুন</a>
-            </div>
-
-            <div class="result-box">
-                <span class="title">রেজাল্ট ঢাকা বোর্ড</span>
-                <a href="https://result.dhakaeducationboard.gov.bd/v2/home" target="_blank">ভিজিট করুন</a>
-            </div>
-
-            <div class="result-box">
-                <span class="title">রেজাল্ট জাতীয় বিশ্ববিদ্যালয় বোর্ড</span>
-                <a href="https://results.nu.ac.bd/" target="_blank">ভিজিট করুন</a>
-            </div>
-
-            <div class="result-box">
-                <span class="title">রেজাল্ট আরবি বিশ্ববিদ্যালয়</span>
-                <a href="http://result.iau.edu.bd/" target="_blank">ভিজিট করুন</a>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- প্রোডাক্ট ক্যাটাগরি -->
-    <div class="products">
-        <div class="card">
-            <h4>PC Build</h4>
-            <p>অফার মূল্য</p>
-        </div>
-        <div class="card">
-            <h4>Accessories</h4>
-            <p>ডিসকাউন্ট</p>
-        </div>
-    </div>
-
-    <!-- নিচের ফিক্সড নেভিগেশন বার -->
+    <!-- বটম নেভিগেশন -->
     <div class="bottom-nav">
         <a href="#" class="nav-item">🖥️ PC Builder</a>
         <a href="#" class="nav-item">📢 Campaign</a>
@@ -558,7 +450,7 @@
         <a href="#" class="nav-item">🛒 Cart</a>
     </div>
 
-    <!-- জাভাস্ক্রিপ্ট কোড -->
+    <!-- জাভাস্ক্রিপ্ট লজিক -->
     <script>
         function openNav() {
             document.getElementById("mySidebar").style.width = "260px";
@@ -612,7 +504,96 @@
             isAdminLoggedIn = false;
             document.getElementById("adminSubmenu").style.display = "none";
             document.getElementById("arrow").innerHTML = "▾";
+            showMainSection();
             alert("আপনি সফলভাবে লগআউট করেছেন।");
+        }
+
+        /* সেল পণ্য কন্ট্রোল ফাংশনসমূহ */
+        function showSalesSection() {
+            closeNav();
+            document.getElementById("mainWebsiteContent").style.display = "none";
+            document.getElementById("salesSection").style.display = "block";
+            if (document.getElementById("salesTableBody").children.length === 0) {
+                addSaleRow(); // শুরুতে একটি খালি সারি যুক্ত করবে
+            }
+        }
+
+        function showMainSection() {
+            document.getElementById("salesSection").style.display = "none";
+            document.getElementById("mainWebsiteContent").style.display = "block";
+        }
+
+        function addSaleRow() {
+            const tbody = document.getElementById("salesTableBody");
+            const rowCount = tbody.children.length + 1;
+            const tr = document.createElement("tr");
+
+            tr.innerHTML = `
+                <td class="sl-no">${rowCount}</td>
+                <td><input type="text" placeholder="পণ্যের নাম ও মডেল"></td>
+                <td><input type="number" value="1" min="1" oninput="calculateProfit(this)"></td>
+                <td><input type="number" placeholder="0" min="0" oninput="calculateProfit(this)"></td>
+                <td><input type="number" placeholder="0" min="0" oninput="calculateProfit(this)"></td>
+                <td><input type="number" value="0" readonly style="background:#f0f0f0; font-weight:bold;"></td>
+                <td><button class="btn-delete" onclick="removeSaleRow(this)">🗑️</button></td>
+            `;
+            tbody.appendChild(tr);
+            updateSerialNumbers();
+        }
+
+        function removeSaleRow(btn) {
+            const tbody = document.getElementById("salesTableBody");
+            if (tbody.children.length > 1) {
+                btn.closest("tr").remove();
+                updateSerialNumbers();
+                calculateTotal();
+            } else {
+                alert("কমপক্ষে একটি সারি থাকা আবশ্যক!");
+            }
+        }
+
+        function updateSerialNumbers() {
+            const rows = document.querySelectorAll("#salesTableBody tr");
+            rows.forEach((row, index) => {
+                row.querySelector(".sl-no").innerText = index + 1;
+            });
+        }
+
+        function calculateProfit(inputElement) {
+            const row = inputElement.closest("tr");
+            const qty = parseFloat(row.children[2].querySelector("input").value) || 0;
+            const buyPrice = parseFloat(row.children[3].querySelector("input").value) || 0;
+            const sellPrice = parseFloat(row.children[4].querySelector("input").value) || 0;
+
+            const totalProfit = (sellPrice - buyPrice) * qty;
+            row.children[5].querySelector("input").value = totalProfit;
+
+            calculateTotal();
+        }
+
+        function calculateTotal() {
+            let totalSell = 0;
+            let totalProfit = 0;
+            const rows = document.querySelectorAll("#salesTableBody tr");
+
+            rows.forEach(row => {
+                const qty = parseFloat(row.children[2].querySelector("input").value) || 0;
+                const sellPrice = parseFloat(row.children[4].querySelector("input").value) || 0;
+                const profit = parseFloat(row.children[5].querySelector("input").value) || 0;
+
+                totalSell += (sellPrice * qty);
+                totalProfit += profit;
+            });
+
+            document.getElementById("totalSellAmount").innerText = totalSell;
+            document.getElementById("totalProfitAmount").innerText = totalProfit;
+        }
+
+        function saveSalesData() {
+            alert("বিক্রয় তথ্য সফলভাবে সংরক্ষিত হয়েছে!");
+            document.getElementById("salesTableBody").innerHTML = "";
+            addSaleRow();
+            calculateTotal();
         }
     </script>
 
