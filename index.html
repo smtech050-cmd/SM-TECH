@@ -9,7 +9,7 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         body {
             background-color: #f4f4f9;
@@ -21,8 +21,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 20px;
+            padding: 12px 20px;
             border-bottom: 2px solid #008751;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
         .header-left {
             display: flex;
@@ -30,17 +31,22 @@
             gap: 15px;
         }
         .menu-btn {
-            font-size: 20px;
+            font-size: 22px;
             background: none;
             border: none;
             color: #fff;
             cursor: pointer;
+            transition: color 0.2s;
+        }
+        .menu-btn:hover {
+            color: #00ff66;
         }
         .brand-logo {
             color: #00ff66;
             font-size: 22px;
             font-weight: bold;
             cursor: pointer;
+            letter-spacing: 0.5px;
         }
 
         /* Sidebar Panel */
@@ -53,93 +59,120 @@
             background: rgba(0,0,0,0.6);
             display: none;
             z-index: 999;
+            backdrop-filter: blur(2px);
         }
         .sidebar {
             position: fixed;
             top: 0;
-            left: -300px;
-            width: 280px;
+            left: -320px;
+            width: 290px;
             height: 100%;
-            background-color: #121212;
+            background: linear-gradient(135deg, #121212 0%, #1a1a1a 100%);
             color: #fff;
             z-index: 1000;
-            transition: 0.3s ease;
-            box-shadow: 3px 0 10px rgba(0,0,0,0.5);
+            transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 5px 0 15px rgba(0,0,0,0.6);
             overflow-y: auto;
         }
         .sidebar.active {
             left: 0;
         }
         .sidebar-header {
-            background: #121212;
-            padding: 18px 20px;
+            padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #222;
+            border-bottom: 1px solid #2a2a2a;
         }
         .sidebar-header h3 {
-            color: #00ff66;
-            font-size: 18px;
+            color: #fff;
+            font-size: 17px;
+            font-weight: 600;
         }
         .close-sidebar {
-            background: none;
+            background: #252525;
             border: none;
-            color: #fff;
-            font-size: 18px;
+            color: #aaa;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-size: 16px;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+        .close-sidebar:hover {
+            background: #ff4d4d;
+            color: #fff;
         }
 
-        /* Dropdown Admin Menu Styles */
+        /* Modern Dropdown Admin Menu */
         .admin-dropdown-btn {
-            padding: 16px 20px;
-            background: #1a1a1a;
+            padding: 18px 20px;
+            background: rgba(0, 255, 102, 0.08);
             color: #00ff66;
             font-weight: bold;
             display: flex;
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
-            border-bottom: 1px solid #222;
-            font-size: 16px;
+            border-bottom: 1px solid #2a2a2a;
+            border-left: 4px solid #00ff66;
+            font-size: 15px;
+            transition: background 0.2s;
         }
         .admin-dropdown-btn:hover {
-            background: #222;
+            background: rgba(0, 255, 102, 0.15);
         }
         .arrow-icon {
             transition: transform 0.3s ease;
+            font-size: 12px;
         }
         .arrow-icon.rotate {
             transform: rotate(180deg);
         }
 
-        /* Password Box inside Dropdown */
+        /* Styled Password Box */
         .admin-pass-box {
-            padding: 15px 20px;
-            background: #0d0d0d;
-            border-bottom: 1px solid #222;
+            padding: 18px 20px;
+            background: #161616;
+            border-bottom: 1px solid #2a2a2a;
             display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .admin-pass-box label {
+            display: block;
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 6px;
         }
         .admin-pass-box input {
             width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            background: #1a1a1a;
+            padding: 10px 12px;
+            margin-bottom: 12px;
+            background: #222;
             border: 1px solid #444;
             color: #fff;
-            border-radius: 4px;
-            text-align: center;
+            border-radius: 6px;
             font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .admin-pass-box input:focus {
+            border-color: #00ff66;
         }
         .admin-pass-box button {
             width: 100%;
-            padding: 8px;
+            padding: 10px;
             background: #00ff66;
             color: #000;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
+            transition: background 0.2s;
         }
         .admin-pass-box button:hover {
             background: #00cc52;
@@ -149,19 +182,21 @@
         .admin-sub-menu {
             list-style: none;
             display: none;
-            background: #161616;
+            background: #151515;
+            animation: fadeIn 0.3s ease-in-out;
         }
         .admin-sub-menu li {
             padding: 14px 20px 14px 35px;
             border-bottom: 1px solid #222;
             cursor: pointer;
-            transition: 0.2s;
+            transition: all 0.2s;
             font-size: 14px;
-            color: #ddd;
+            color: #ccc;
         }
         .admin-sub-menu li:hover {
             background: #222;
             color: #00ff66;
+            padding-left: 40px;
         }
         .admin-sub-menu li a {
             color: inherit;
@@ -171,14 +206,23 @@
             gap: 12px;
         }
         .logout-item {
-            padding: 15px 20px;
-            border-bottom: 1px solid #222;
+            padding: 16px 20px;
+            border-top: 1px solid #2a2a2a;
             cursor: pointer;
             font-size: 15px;
-            color: #ff4d4d;
+            color: #ff5252;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background 0.2s;
         }
         .logout-item:hover {
-            background: #1a1a1a;
+            background: rgba(255, 82, 82, 0.1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* Main Content Area */
@@ -342,10 +386,11 @@
             <span class="arrow-icon" id="arrowIcon">▼</span>
         </div>
 
-        <!-- Password Input Box (Hidden initially) -->
+        <!-- Password Input Box (Hidden initially, protected with dots type="password") -->
         <div class="admin-pass-box" id="adminPassBox">
-            <input type="password" id="adminPasswordInput" placeholder=
-            <button onclick="verifyAdminPassword()">লগইন করুন</button>
+            <label>এডমিন পাসওয়ার্ড দিন</label>
+            <input type="password" id="adminPasswordInput" placeholder="••••••••">
+            <button onclick="verifyAdminPassword()">প্রবেশ করুন</button>
         </div>
 
         <!-- Features Sub-menu (Unlocked after password) -->
@@ -491,7 +536,6 @@
             const arrow = document.getElementById('arrowIcon');
 
             if (isAdminLoggedIn) {
-                // If already logged in, toggle sub-menu directly
                 if (subMenu.style.display === 'block') {
                     subMenu.style.display = 'none';
                     arrow.classList.remove('rotate');
@@ -500,7 +544,6 @@
                     arrow.classList.add('rotate');
                 }
             } else {
-                // If not logged in, toggle password box
                 if (passBox.style.display === 'block') {
                     passBox.style.display = 'none';
                     arrow.classList.remove('rotate');
@@ -511,15 +554,13 @@
             }
         }
 
-        // Verify Password
+        // Verify Password (Default: 1234)
         function verifyAdminPassword() {
             const passInput = document.getElementById('adminPasswordInput').value;
-            // ডিফল্ট পাসওয়ার্ড '1234' রাখা হয়েছে
             if (passInput === '1234') {
                 isAdminLoggedIn = true;
                 document.getElementById('adminPassBox').style.display = 'none';
                 document.getElementById('adminSubMenu').style.display = 'block';
-                alert('সফলভাবে এডমিন প্যানেলে প্রবেশ করেছেন!');
             } else {
                 alert('ভুল পাসওয়ার্ড! আবার চেষ্টা করুন।');
             }
@@ -534,7 +575,6 @@
             document.getElementById('adminPasswordInput').value = '';
             switchSection('homeSection');
             toggleSidebar();
-            alert('লগআউট সফল হয়েছে!');
         }
 
         // Section Switcher
