@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SM TECH</title>
+    <title>SM-TECH</title>
     <style>
         * {
             margin: 0;
@@ -20,18 +20,20 @@
         header {
             background-color: #000;
             color: #fff;
-            padding: 15px;
+            padding: 12px 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             position: sticky;
             top: 0;
             z-index: 100;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         .header-left {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
         }
         .menu-btn {
             font-size: 24px;
@@ -40,8 +42,39 @@
             color: #fff;
             cursor: pointer;
         }
+        
+        /* অনার ও কন্টাক্ট ইনফো (বাম কোণে) */
+        .owner-info {
+            display: flex;
+            flex-direction: column;
+            font-size: 11px;
+            color: #ddd;
+            line-height: 1.3;
+        }
+        .owner-name {
+            font-weight: bold;
+            color: #ffffff;
+            font-size: 13px;
+        }
+        .owner-title {
+            color: #00e676;
+            font-weight: bold;
+            font-size: 11px;
+        }
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #bbb;
+        }
+        .wa-icon {
+            color: #25D366;
+            font-weight: bold;
+        }
+
+        /* লোগো (ডানে SM-TECH) */
         .logo {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: bold;
             color: #00e676;
             letter-spacing: 0.5px;
@@ -77,7 +110,7 @@
             font-weight: bold;
         }
         
-        /* এডমিন প্যানেল ড্রপডাউন ডিজাইন */
+        /* এডমিন প্যানেল ড্রপডাউন ડિઝાઇન */
         .admin-dropdown-btn {
             padding: 15px 25px;
             font-size: 16px;
@@ -226,7 +259,7 @@
         }
         .boxes-container {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* ৩টি কলাম */
+            grid-template-columns: repeat(3, 1fr);
             gap: 8px;
             background-color: #e8f5e9;
             padding: 8px;
@@ -234,7 +267,6 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        /* খুব ছোট ডিসপ্লেতে ২ কলাম */
         @media (max-width: 480px) {
             .boxes-container {
                 grid-template-columns: repeat(2, 1fr);
@@ -356,13 +388,22 @@
         </div>
     </div>
 
-    <!-- হেডার -->
+    <!-- হেডার (আপডেট করা অনার ইনফো ও ব্র্যান্ডিং) -->
     <header>
         <div class="header-left">
             <button class="menu-btn" onclick="openNav()">☰</button>
-            <div class="logo">SM TECH</div>
+            <div class="owner-info">
+                <span class="owner-name">Sheikh Muhammad Ibrahim</span>
+                <span class="owner-title">Owner</span>
+                <div class="contact-item">
+                    <span class="wa-icon">💬</span> 01940-556114, 01810-499166
+                </div>
+                <div class="contact-item">
+                    ✉️ sm-tech050@gmail.com
+                </div>
+            </div>
         </div>
-        <div>🔍</div>
+        <div class="logo">SM-TECH</div>
     </header>
 
     <!-- ব্যানার -->
