@@ -210,9 +210,10 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
-        /* দাপ্তরিক ওয়েবসাইট সেকশন (৩ কলাম গ্রিড) */
+        /* সেকশন ডিজাইন (৩ কলাম গ্রিড) */
         .result-archive-section {
             padding: 8px;
+            margin-bottom: 10px;
         }
         .section-header {
             background-color: #008d43;
@@ -225,7 +226,7 @@
         }
         .boxes-container {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* ৩টি কলাম করা হয়েছে */
+            grid-template-columns: repeat(3, 1fr); /* ৩টি কলাম */
             gap: 8px;
             background-color: #e8f5e9;
             padding: 8px;
@@ -233,7 +234,7 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        /* খুব ছোট ডিসপ্লে হলে ২ কলাম হবে যাতে টেক্সট ভেঙে না যায় */
+        /* খুব ছোট ডিসপ্লেতে ২ কলাম */
         @media (max-width: 480px) {
             .boxes-container {
                 grid-template-columns: repeat(2, 1fr);
@@ -369,7 +370,7 @@
         <img src="banner.png" alt="SM-TECH Banner" class="banner-img">
     </div>
 
-    <!-- দাপ্তরিক ওয়েবসাইট সেকশন -->
+    <!-- ১. দাপ্তরিক ওয়েবসাইট সেকশন -->
     <div class="result-archive-section">
         <div class="section-header">🏛️ দাপ্তরিক ওয়েবসাইট</div>
         <div class="boxes-container">
@@ -447,6 +448,39 @@
             <div class="result-box">
                 <span class="title">বিএমইটি ট্রেনিং</span>
                 <a href="https://employee.oep.gov.bd/employee/login-with-otp" target="_blank">ভিজিট করুন</a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ২. রেজাল্ট লিংক সেকশন -->
+    <div class="result-archive-section">
+        <div class="section-header">📜 রেজাল্ট লিংক</div>
+        <div class="boxes-container">
+            
+            <div class="result-box">
+                <span class="title">রেজাল্ট ময়মনসিংহ বোর্ড</span>
+                <a href="https://www.mymensingheducationboard.gov.bd/resultmbh25/" target="_blank">ভিজিট করুন</a>
+            </div>
+
+            <div class="result-box">
+                <span class="title">রেজাল্ট মাদ্রাসা বোর্ড</span>
+                <a href="https://www.educationboardresults.gov.bd/v2/home" target="_blank">ভিজিট করুন</a>
+            </div>
+
+            <div class="result-box">
+                <span class="title">রেজাল্ট ঢাকা বোর্ড</span>
+                <a href="https://result.dhakaeducationboard.gov.bd/v2/home" target="_blank">ভিজিট করুন</a>
+            </div>
+
+            <div class="result-box">
+                <span class="title">রেজাল্ট জাতীয় বিশ্ববিদ্যালয় বোর্ড</span>
+                <a href="https://results.nu.ac.bd/" target="_blank">ভিজিট করুন</a>
+            </div>
+
+            <div class="result-box">
+                <span class="title">রেজাল্ট আরবি বিশ্ববিদ্যালয়</span>
+                <a href="http://result.iau.edu.bd/" target="_blank">ভিজিট করুন</a>
             </div>
 
         </div>
