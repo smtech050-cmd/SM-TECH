@@ -71,7 +71,7 @@
             font-weight: 500;
         }
 
-        /* বাম পাশের সাইডবার (Sidebar / Menu Bar) */
+        /* সাইডবার মেনু */
         .sidebar {
             height: 100%;
             width: 0;
@@ -101,7 +101,6 @@
             font-weight: bold;
         }
         
-        /* এডমিন প্যানেল ড্রপডাউন */
         .admin-dropdown-btn {
             padding: 15px 25px;
             font-size: 16px;
@@ -117,23 +116,10 @@
             justify-content: space-between;
             align-items: center;
         }
-        .admin-dropdown-btn:hover {
-            background-color: #1a1a1a;
-        }
-        .admin-submenu {
-            display: none;
-            background-color: #181818;
-        }
-        .admin-submenu a {
-            padding-left: 45px;
-            font-size: 15px;
-            color: #ccc;
-            border-bottom: 1px solid #252525;
-        }
-        .admin-submenu a:hover {
-            background-color: #00e676;
-            color: #000;
-        }
+        .admin-dropdown-btn:hover { background-color: #1a1a1a; }
+        .admin-submenu { display: none; background-color: #181818; }
+        .admin-submenu a { padding-left: 45px; font-size: 15px; color: #ccc; border-bottom: 1px solid #252525; }
+        .admin-submenu a:hover { background-color: #00e676; color: #000; }
 
         .sidebar .close-btn {
             position: absolute;
@@ -144,158 +130,54 @@
             cursor: pointer;
         }
 
-        /* পাসওয়ার্ড পপ-আপ মডাল */
+        /* পাসওয়ার্ড মডাল */
         .modal {
             display: none;
             position: fixed;
             z-index: 2000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
+            left: 0; top: 0; width: 100%; height: 100%;
             background-color: rgba(0,0,0,0.7);
-            justify-content: center;
-            align-items: center;
+            justify-content: center; align-items: center;
         }
         .modal-content {
-            background-color: #222;
-            padding: 20px 25px;
-            border-radius: 8px;
-            text-align: center;
-            width: 85%;
-            max-width: 320px;
-            color: #fff;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            background-color: #222; padding: 20px 25px; border-radius: 8px;
+            text-align: center; width: 85%; max-width: 320px; color: #fff;
             border: 1px solid #00e676;
         }
-        .modal-content h3 {
-            margin-bottom: 15px;
-            color: #00e676;
-        }
+        .modal-content h3 { margin-bottom: 15px; color: #00e676; }
         .modal-content input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #444;
-            border-radius: 4px;
-            background: #111;
-            color: #fff;
-            text-align: center;
-            font-size: 16px;
+            width: 100%; padding: 10px; margin-bottom: 15px;
+            border: 1px solid #444; border-radius: 4px; background: #111; color: #fff; text-align: center; font-size: 16px;
         }
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-        }
-        .modal-buttons button {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 4px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+        .modal-buttons { display: flex; gap: 10px; }
+        .modal-buttons button { flex: 1; padding: 10px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
         .btn-submit { background-color: #00e676; color: #000; }
         .btn-cancel { background-color: #444; color: #fff; }
 
-        /* ওভারলে */
         .overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 999;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 999;
         }
 
-        /* সেল পণ্য (Sales Section) স্টাইল */
-        .sales-container {
-            display: none;
-            padding: 15px;
-            background: #fff;
-            margin: 15px;
-            border-radius: 8px;
+        /* সেল পণ্য সেকশন */
+        .sales-container, .invoice-container {
+            display: none; padding: 15px; background: #fff; margin: 15px; border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-        .sales-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid #00e676;
-            padding-bottom: 10px;
-            margin-bottom: 15px;
+        .sales-header, .invoice-header {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid #00e676; padding-bottom: 10px; margin-bottom: 15px;
         }
-        .sales-header h2 {
-            font-size: 18px;
-            color: #0d5c3a;
-        }
-        .table-responsive {
-            overflow-x: auto;
-        }
-        .sales-table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 600px;
-        }
-        .sales-table th, .sales-table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
-            font-size: 13px;
-        }
-        .sales-table th {
-            background-color: #0d5c3a;
-            color: white;
-        }
-        .sales-table input {
-            width: 100%;
-            padding: 6px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 13px;
-        }
-        .btn-add {
-            background-color: #00e676;
-            color: #000;
-            font-weight: bold;
-            padding: 8px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 12px;
-        }
-        .btn-delete {
-            background-color: #ff5252;
-            color: white;
-            border: none;
-            padding: 5px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .sales-summary {
-            margin-top: 15px;
-            padding: 10px;
-            background-color: #e8f5e9;
-            border-radius: 6px;
-            display: flex;
-            justify-content: space-between;
-            font-weight: bold;
-            font-size: 14px;
-        }
-        .btn-save-sale {
-            width: 100%;
-            background-color: #0d5c3a;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            padding: 12px;
-            border: none;
-            border-radius: 6px;
-            margin-top: 15px;
-            cursor: pointer;
-        }
+        .sales-header h2, .invoice-header h2 { font-size: 18px; color: #0d5c3a; }
+        .table-responsive { overflow-x: auto; }
+        .sales-table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        .sales-table th, .sales-table td { border: 1px solid #ddd; padding: 8px; text-align: center; font-size: 13px; }
+        .sales-table th { background-color: #0d5c3a; color: white; }
+        .sales-table input { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; }
+        .btn-add { background-color: #00e676; color: #000; font-weight: bold; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; margin-top: 12px; }
+        .btn-delete { background-color: #ff5252; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; }
+        .sales-summary { margin-top: 15px; padding: 10px; background-color: #e8f5e9; border-radius: 6px; display: flex; justify-content: space-between; font-weight: bold; font-size: 14px; }
+        .btn-save-sale { width: 100%; background-color: #0d5c3a; color: white; font-size: 16px; font-weight: bold; padding: 12px; border: none; border-radius: 6px; margin-top: 15px; cursor: pointer; }
 
         /* মূল ওয়েবসাইট স্টাইল */
         .banner { width: 100%; background-color: #111; padding: 10px; margin-bottom: 10px; }
@@ -308,14 +190,14 @@
         .result-box .title { font-size: 12px; font-weight: bold; }
         .result-box a { background-color: #ffffff; color: #00a651; text-decoration: none; padding: 5px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; width: 100%; display: block; }
 
-        /* নিচের ফিক্সড বার */
+        /* বটম নেভিগেশন */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d5c3a; display: flex; justify-content: space-around; padding: 12px 0; z-index: 900; }
         .nav-item { color: #fff; text-decoration: none; font-size: 13px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <!-- বাম পাশের সাইডবার -->
+    <!-- সাইডবার মেনু -->
     <div id="mySidebar" class="sidebar">
         <span class="close-btn" onclick="closeNav()">&times;</span>
         
@@ -327,7 +209,7 @@
             <a href="#" onclick="showMainSection()">📊 ড্যাশবোর্ড</a>
             <a href="#">📦 স্টক পণ্য</a>
             <a href="#" onclick="showSalesSection()">🛍️ সেল পণ্য</a>
-            <a href="#">🧾 ইনভয়েস</a>
+            <a href="#" onclick="showInvoiceSection()">🧾 ইনভয়েস</a>
             <a href="#" onclick="logoutAdmin()" style="color: #ff5252;">🔒 লগআউট</a>
         </div>
     </div>
@@ -361,7 +243,7 @@
         </div>
     </header>
 
-    <!-- সেল পণ্য সেকশন (এন্ট্রি ফর্ম) -->
+    <!-- ১. সেল পণ্য সেকশন (এন্ট্রি ফর্ম) -->
     <div id="salesSection" class="sales-container">
         <div class="sales-header">
             <h2>🛍️ বিক্রয় পণ্য এন্ট্রি</h2>
@@ -382,7 +264,7 @@
                     </tr>
                 </thead>
                 <tbody id="salesTableBody">
-                    <!-- ডাইনামিক রো যোগ হবে -->
+                    <!-- ডাইনামিক রো -->
                 </tbody>
             </table>
         </div>
@@ -394,7 +276,32 @@
             <span>মোট লভ্যাংশ: <span id="totalProfitAmount">0</span> ৳</span>
         </div>
 
-        <button class="btn-save-sale" onclick="saveSalesData()">💾 বিক্রয় নিশ্চিত করুন</button>
+        <button class="btn-save-sale" onclick="saveSalesData()">💾 বিক্রয় নিশ্চিত করুন ও সেভ করুন</button>
+    </div>
+
+    <!-- ২. ইনভয়েস / ক্যাশ মেমো সেকশন -->
+    <div id="invoiceSection" class="invoice-container">
+        <div class="invoice-header">
+            <h2>🧾 সাম্প্রতিক বিক্রয় ও ইনভয়েস</h2>
+            <button class="btn-delete" onclick="showMainSection()">❌ বন্ধ করুন</button>
+        </div>
+        <div class="table-responsive">
+            <table class="sales-table">
+                <thead>
+                    <tr>
+                        <th>তারিখ ও সময়</th>
+                        <th>পণ্যের বিবরণ</th>
+                        <th>মোট পরিমাণ</th>
+                        <th>মোট বিক্রি (৳)</th>
+                        <th>মোট লাভ (৳)</th>
+                    </tr>
+                </thead>
+                <tbody id="invoiceTableBody">
+                    <!-- সেভ করা ডাটা এখানে দেখাবে -->
+                </tbody>
+            </table>
+        </div>
+        <button class="btn-delete" onclick="clearAllInvoices()" style="margin-top: 15px; width: 100%; padding: 10px;">🗑️ সমস্ত রেকর্ড মুছুন</button>
     </div>
 
     <!-- মূল ওয়েবসাইট কনটেন্ট -->
@@ -403,7 +310,6 @@
             <img src="banner.png" alt="SM-TECH Banner" class="banner-img">
         </div>
 
-        <!-- দাপ্তরিক ওয়েবসাইট সেকশন -->
         <div class="result-archive-section">
             <div class="section-header">🏛️ দাপ্তরিক ওয়েবসাইট</div>
             <div class="boxes-container">
@@ -429,7 +335,6 @@
             </div>
         </div>
 
-        <!-- রেজাল্ট লিঙ্ক সেকশন -->
         <div class="result-archive-section">
             <div class="section-header">📜 রেজাল্ট লিংক</div>
             <div class="boxes-container">
@@ -508,21 +413,32 @@
             alert("আপনি সফলভাবে লগআউট করেছেন।");
         }
 
-        /* সেল পণ্য কন্ট্রোল ফাংশনসমূহ */
+        /* নেভিগেশন কন্ট্রোল */
         function showSalesSection() {
             closeNav();
             document.getElementById("mainWebsiteContent").style.display = "none";
+            document.getElementById("invoiceSection").style.display = "none";
             document.getElementById("salesSection").style.display = "block";
             if (document.getElementById("salesTableBody").children.length === 0) {
-                addSaleRow(); // শুরুতে একটি খালি সারি যুক্ত করবে
+                addSaleRow();
             }
+        }
+
+        function showInvoiceSection() {
+            closeNav();
+            document.getElementById("mainWebsiteContent").style.display = "none";
+            document.getElementById("salesSection").style.display = "none";
+            document.getElementById("invoiceSection").style.display = "block";
+            loadInvoices();
         }
 
         function showMainSection() {
             document.getElementById("salesSection").style.display = "none";
+            document.getElementById("invoiceSection").style.display = "none";
             document.getElementById("mainWebsiteContent").style.display = "block";
         }
 
+        /* সেল টেবিল ফাংশন */
         function addSaleRow() {
             const tbody = document.getElementById("salesTableBody");
             const rowCount = tbody.children.length + 1;
@@ -530,11 +446,11 @@
 
             tr.innerHTML = `
                 <td class="sl-no">${rowCount}</td>
-                <td><input type="text" placeholder="পণ্যের নাম ও মডেল"></td>
-                <td><input type="number" value="1" min="1" oninput="calculateProfit(this)"></td>
-                <td><input type="number" placeholder="0" min="0" oninput="calculateProfit(this)"></td>
-                <td><input type="number" placeholder="0" min="0" oninput="calculateProfit(this)"></td>
-                <td><input type="number" value="0" readonly style="background:#f0f0f0; font-weight:bold;"></td>
+                <td><input type="text" placeholder="পণ্যের নাম ও মডেল" class="item-name"></td>
+                <td><input type="number" value="1" min="1" class="item-qty" oninput="calculateProfit(this)"></td>
+                <td><input type="number" placeholder="0" min="0" class="item-buy" oninput="calculateProfit(this)"></td>
+                <td><input type="number" placeholder="0" min="0" class="item-sell" oninput="calculateProfit(this)"></td>
+                <td><input type="number" value="0" readonly style="background:#f0f0f0; font-weight:bold;" class="item-profit"></td>
                 <td><button class="btn-delete" onclick="removeSaleRow(this)">🗑️</button></td>
             `;
             tbody.appendChild(tr);
@@ -561,12 +477,12 @@
 
         function calculateProfit(inputElement) {
             const row = inputElement.closest("tr");
-            const qty = parseFloat(row.children[2].querySelector("input").value) || 0;
-            const buyPrice = parseFloat(row.children[3].querySelector("input").value) || 0;
-            const sellPrice = parseFloat(row.children[4].querySelector("input").value) || 0;
+            const qty = parseFloat(row.querySelector(".item-qty").value) || 0;
+            const buyPrice = parseFloat(row.querySelector(".item-buy").value) || 0;
+            const sellPrice = parseFloat(row.querySelector(".item-sell").value) || 0;
 
             const totalProfit = (sellPrice - buyPrice) * qty;
-            row.children[5].querySelector("input").value = totalProfit;
+            row.querySelector(".item-profit").value = totalProfit;
 
             calculateTotal();
         }
@@ -577,9 +493,9 @@
             const rows = document.querySelectorAll("#salesTableBody tr");
 
             rows.forEach(row => {
-                const qty = parseFloat(row.children[2].querySelector("input").value) || 0;
-                const sellPrice = parseFloat(row.children[4].querySelector("input").value) || 0;
-                const profit = parseFloat(row.children[5].querySelector("input").value) || 0;
+                const qty = parseFloat(row.querySelector(".item-qty").value) || 0;
+                const sellPrice = parseFloat(row.querySelector(".item-sell").value) || 0;
+                const profit = parseFloat(row.querySelector(".item-profit").value) || 0;
 
                 totalSell += (sellPrice * qty);
                 totalProfit += profit;
@@ -589,11 +505,87 @@
             document.getElementById("totalProfitAmount").innerText = totalProfit;
         }
 
+        /* লোকাল স্টোরেজে ডাটা সেভ করার ফাংশন */
         function saveSalesData() {
-            alert("বিক্রয় তথ্য সফলভাবে সংরক্ষিত হয়েছে!");
+            const rows = document.querySelectorAll("#salesTableBody tr");
+            let itemsList = "";
+            let totalQty = 0;
+            let totalSell = 0;
+            let totalProfit = 0;
+
+            let isValid = true;
+            rows.forEach(row => {
+                const name = row.querySelector(".item-name").value.trim();
+                const qty = parseFloat(row.querySelector(".item-qty").value) || 0;
+                const sellPrice = parseFloat(row.querySelector(".item-sell").value) || 0;
+                const profit = parseFloat(row.querySelector(".item-profit").value) || 0;
+
+                if(name === "") {
+                    isValid = false;
+                }
+
+                itemsList += `${name} (${qty}টি), `;
+                totalQty += qty;
+                totalSell += (sellPrice * qty);
+                totalProfit += profit;
+            });
+
+            if(!isValid) {
+                alert("দয়া করে সকল পণ্যের নাম ও মডেল সঠিকভাবে লিখুন!");
+                return;
+            }
+
+            const saleRecord = {
+                date: new Date().toLocaleString('en-GB'),
+                items: itemsList,
+                qty: totalQty,
+                sell: totalSell,
+                profit: totalProfit
+            };
+
+            let savedInvoices = JSON.parse(localStorage.getItem("sm_tech_invoices")) || [];
+            savedInvoices.unshift(saleRecord); // নতুন রেকর্ড উপরে যোগ হবে
+            localStorage.setItem("sm_tech_invoices", JSON.stringify(savedInvoices));
+
+            alert("বিক্রয় তথ্য সফলভাবে সংরক্ষিত হয়েছে এবং ইনভয়েসে যুক্ত করা হয়েছে!");
+            
+            // ফর্ম রিসেট
             document.getElementById("salesTableBody").innerHTML = "";
             addSaleRow();
             calculateTotal();
+
+            // ইনভয়েস পেজে রিডাইরেক্ট করা
+            showInvoiceSection();
+        }
+
+        function loadInvoices() {
+            const tbody = document.getElementById("invoiceTableBody");
+            tbody.innerHTML = "";
+            let savedInvoices = JSON.parse(localStorage.getItem("sm_tech_invoices")) || [];
+
+            if(savedInvoices.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="padding: 20px; color: #777;">কোনো বিক্রয়ের রেকর্ড পাওয়া যায়নি!</td></tr>`;
+                return;
+            }
+
+            savedInvoices.forEach(inv => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${inv.date}</td>
+                    <td style="text-align: left; padding-left: 10px;">${inv.items}</td>
+                    <td>${inv.qty}</td>
+                    <td>${inv.sell} ৳</td>
+                    <td style="color: green; font-weight: bold;">${inv.profit} ৳</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function clearAllInvoices() {
+            if(confirm("আপনি কি সমস্ত বিক্রয় রেকর্ড মুছে ফেলতে চান?")) {
+                localStorage.removeItem("sm_tech_invoices");
+                loadInvoices();
+            }
         }
     </script>
 
