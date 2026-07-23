@@ -76,6 +76,7 @@
             color: #000;
             font-weight: bold;
         }
+        
         /* এডমিন প্যানেল ড্রপডাউন ডিজাইন */
         .admin-dropdown-btn {
             padding: 15px 25px;
@@ -209,7 +210,7 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
-        /* দাপ্তরিক ওয়েবসাইট সেকশন */
+        /* দাপ্তরিক ওয়েবসাইট সেকশন (২ কলাম রেসপন্সিভ গ্রিড) */
         .result-archive-section {
             padding: 10px;
         }
@@ -223,14 +224,22 @@
             border-radius: 8px 8px 0 0;
         }
         .boxes-container {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* দুই ভাগ বা দুই কলাম করা হয়েছে */
+            gap: 10px;
             background-color: #e8f5e9;
-            padding: 10px;
+            padding: 12px;
             border-radius: 0 0 8px 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
+
+        /* ছোট মোবাইলের জন্য সিঙ্গেল কলাম */
+        @media (max-width: 600px) {
+            .boxes-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .result-box {
             background-color: #00a651;
             color: white;
@@ -242,18 +251,19 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.12);
         }
         .result-box .title {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: bold;
         }
         .result-box a {
             background-color: #ffffff;
             color: #00a651;
             text-decoration: none;
-            padding: 6px 12px;
+            padding: 6px 10px;
             border-radius: 4px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: bold;
             transition: 0.2s;
+            white-space: nowrap;
         }
         .result-box a:hover {
             background-color: #222;
@@ -310,12 +320,12 @@
     <div id="mySidebar" class="sidebar">
         <span class="close-btn" onclick="closeNav()">&times;</span>
         
-        <!-- এডমিন প্যানেল বাটনে ক্লিক করলে পাসওয়ার্ড সিস্টেম কল হবে -->
+        <!-- এডমিন প্যানেল বাটন -->
         <button class="admin-dropdown-btn" onclick="handleAdminClick()">
             🔐 এডমিন প্যানেল <span id="arrow">▾</span>
         </button>
         
-        <!-- এডমিন প্যানেলের ভিতরের ফিচারগুলো -->
+        <!-- এডমিন প্যানেলের ভিতরের ফিচার -->
         <div class="admin-submenu" id="adminSubmenu">
             <a href="#">📊 ড্যাশবোর্ড</a>
             <a href="#">📦 স্টক পণ্য</a>
@@ -354,7 +364,7 @@
         <img src="banner.png" alt="SM-TECH Banner" class="banner-img">
     </div>
 
-    <!-- দাপ্তরিক ওয়েবসাইট -->
+    <!-- দাপ্তরিক ওয়েবসাইট সেকশন -->
     <div class="result-archive-section">
         <div class="section-header">🏛️ দাপ্তরিক ওয়েবসাইট</div>
         <div class="boxes-container">
@@ -367,6 +377,21 @@
             <div class="result-box">
                 <span class="title">মাদ্রাসা শিক্ষা অধিদপ্তর</span>
                 <a href="https://dme.gov.bd/" target="_blank">ভিজিট করুন</a>
+            </div>
+
+            <div class="result-box">
+                <span class="title">মাধ্যমিক ও উচ্চশিক্ষা অধিদপ্তর</span>
+                <a href="https://dshe.gov.bd/" target="_blank">ভিজিট করুন</a>
+            </div>
+
+            <div class="result-box">
+                <span class="title">কারিগরি শিক্ষা বোর্ড</span>
+                <a href="https://bteb.gov.bd/" target="_blank">ভিজিট করুন</a>
+            </div>
+
+            <div class="result-box">
+                <span class="title">কারিগরি ও মাদ্রাসা শিক্ষা বিভাগ</span>
+                <a href="https://tmed.gov.bd/" target="_blank">ভিজিট করুন</a>
             </div>
 
             <div class="result-box">
@@ -395,11 +420,11 @@
         </div>
         <div class="card">
             <h4>Accessories</h4>
-            <p>ডিসকাウント</p>
+            <p>ডিসকাউন্ট</p>
         </div>
     </div>
 
-    <!-- নিচের সবুজ নেভিগেশন বার -->
+    <!-- নিচের ফিক্সড নেভিগেশন বার -->
     <div class="bottom-nav">
         <a href="#" class="nav-item">🖥️ PC Builder</a>
         <a href="#" class="nav-item">📢 Campaign</a>
@@ -409,7 +434,6 @@
 
     <!-- জাভাস্ক্রিপ্ট কোড -->
     <script>
-        // সাইডবার ওপেন ও ক্লোজ
         function openNav() {
             document.getElementById("mySidebar").style.width = "260px";
             document.getElementById("overlay").style.display = "block";
@@ -420,16 +444,14 @@
             document.getElementById("overlay").style.display = "none";
         }
 
-        // এডমিন পাসওয়ার্ড ভ্যালিডেশন
         let isAdminLoggedIn = false;
-        const correctPassword = "1234"; // 🔑 এখানে আপনার পছন্দমতো পাসওয়ার্ড বসান
+        const correctPassword = "1234";
 
         function handleAdminClick() {
             var submenu = document.getElementById("adminSubmenu");
             var arrow = document.getElementById("arrow");
 
             if (isAdminLoggedIn) {
-                // অলরেডি লগইন করা থাকলে ড্রপডাউন টগল হবে
                 if (submenu.style.display === "block") {
                     submenu.style.display = "none";
                     arrow.innerHTML = "▾";
@@ -438,7 +460,6 @@
                     arrow.innerHTML = "▴";
                 }
             } else {
-                // লগইন না করা থাকলে পাসওয়ার্ড মডাল খুলবে
                 document.getElementById("passwordModal").style.display = "flex";
             }
         }
