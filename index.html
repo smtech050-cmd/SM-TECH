@@ -58,16 +58,14 @@
             font-weight: bold;
         }
 
-        /* Banner Slider Section */
+        /* Banner Slider Section - Fully Fixed */
         .slider-container {
             width: 100%;
             max-width: 1200px;
-            margin: 10px auto;
+            margin: 0 auto;
             position: relative;
             overflow: hidden;
-            border-radius: 6px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-            background: #111;
+            background: #000;
         }
         .slide-track {
             display: flex;
@@ -80,27 +78,26 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #1a1a1a;
         }
         .slide img {
             width: 100%;
             height: auto;
             aspect-ratio: 16 / 5;
-            object-fit: cover;
+            object-fit: fill;
             display: block;
         }
         .slider-dots {
             position: absolute;
-            bottom: 10px;
+            bottom: 8px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 8px;
+            gap: 6px;
             z-index: 10;
         }
         .dot {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             background: rgba(255, 255, 255, 0.5);
             border-radius: 50%;
             cursor: pointer;
@@ -546,7 +543,7 @@
                         <div class="portal-card-btn" onclick="window.open('http://www.ntrca.gov.bd', '_blank')">ভিজিট করুন</div>
                     </div>
                     <div class="portal-card">
-                        <div class="portal-card-title">এন지আইআই</div>
+                        <div class="portal-card-title">এনসিটিবি</div>
                         <div class="portal-card-btn" onclick="window.open('http://www.nctb.gov.bd', '_blank')">ভিজিট করুন</div>
                     </div>
                     <div class="portal-card">
@@ -570,7 +567,7 @@
                         <div class="portal-card-btn" onclick="window.open('http://www.welfareboard.gov.bd', '_blank')">ভিজিট করুন</div>
                     </div>
                     <div class="portal-card">
-                        <div class="portal-card-title">তুমি তথ্য বাতায়ন</div>
+                        <div class="portal-card-title">জাতীয় তথ্য বাতায়ন</div>
                         <div class="portal-card-btn" onclick="window.open('https://bangladesh.gov.bd', '_blank')">ভিজিট করুন</div>
                     </div>
                     <div class="portal-card">
