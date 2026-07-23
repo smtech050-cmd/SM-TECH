@@ -24,20 +24,22 @@
             padding: 10px 20px;
             border-bottom: 2px solid #008751;
         }
-        .brand-logo {
-            color: #00ff66;
-            font-size: 22px;
-            font-weight: bold;
+        .header-left {
             display: flex;
             align-items: center;
-            gap: 10px;
-            cursor: pointer;
+            gap: 15px;
         }
         .menu-btn {
             font-size: 20px;
             background: none;
             border: none;
             color: #fff;
+            cursor: pointer;
+        }
+        .brand-logo {
+            color: #00ff66;
+            font-size: 22px;
+            font-weight: bold;
             cursor: pointer;
         }
 
@@ -174,7 +176,7 @@
             display: block;
         }
 
-        /* Invoice Container Styling (First Image Format) */
+        /* Invoice Container Styling */
         .invoice-container {
             background: #fff;
             padding: 25px;
@@ -300,27 +302,27 @@
 </head>
 <body>
 
-    <!-- Top Header -->
+    <!-- Top Header (SM-TECH with Menu Button on Left) -->
     <div class="top-header">
-        <div class="brand-logo" onclick="switchSection('homeSection')">
-            <span>SM-TECH</span>
+        <div class="header-left">
+            <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+            <div class="brand-logo" onclick="switchSection('homeSection')">SM-TECH</div>
         </div>
-        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
     </div>
 
     <!-- Sidebar Overlay & Menu Panel -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <h3>🔒 এডমিন প্যানেল</h3>
+            <h3>মেনুবার</h3>
             <button class="close-sidebar" onclick="toggleSidebar()">✕</button>
         </div>
         <ul class="sidebar-menu">
-            <li onclick="switchSection('homeSection'); toggleSidebar();"><a>📊 ড্যাশবোর্ড</a></li>
-            <li onclick="switchSection('homeSection'); toggleSidebar();"><a>📦 স্টক পণ্য</a></li>
-            <li onclick="switchSection('homeSection'); toggleSidebar();"><a>🛒 সেল পণ্য</a></li>
-            <li onclick="checkAdminPassword()"><a>📄 ইনভয়েস</a></li>
-            <li onclick="alert('লগআউট সফল!'); toggleSidebar();"><a>🔒 লগআউট</a></li>
+            <li onclick="checkAdminPassword('dashboardSection')"><a>📊 ড্যাশবোর্ড</a></li>
+            <li onclick="checkAdminPassword('stockSection')"><a>📦 স্টক পণ্য</a></li>
+            <li onclick="checkAdminPassword('sellSection')"><a>🛒 সেল পণ্য</a></li>
+            <li onclick="switchSection('invoiceSection'); toggleSidebar();"><a>📄 ইনভয়েস</a></li>
+            <li onclick="alert('লগআউট সফল!'); toggleSidebar(); switchSection('homeSection');"><a>🔒 লগআউট</a></li>
         </ul>
     </div>
 
@@ -342,11 +344,35 @@
         <div id="homeSection" class="section-view active">
             <div style="text-align: center; padding: 40px; background: #fff; border-radius: 8px; border: 1px solid #ddd;">
                 <h2 style="color: #008751; margin-bottom: 10px;">স্বাগতম SM-TECH এ</h2>
-                <p style="color: #555;">আপনার কম্পিউটর ও আইটি সলিউশন ম্যানেজমেন্ট সিস্টেম। ওপরের মেনু থেকে ইনভয়েস অপশনে প্রবেশ করুন।</p>
+                <p style="color: #555;">আপনার কম্পিউটর ও আইটি সলিউশন ম্যানেজমেন্ট সিস্টেম। বাঁ পাশের মেনু থেকে ইনভয়েস বা এডমিন ফিচার ব্যবহার করুন।</p>
             </div>
         </div>
 
-        <!-- Invoice Section (Matches First Image) -->
+        <!-- Dashboard Section -->
+        <div id="dashboardSection" class="section-view">
+            <div style="padding: 20px; background: #fff; border-radius: 8px;">
+                <h3 style="color: #002d62; margin-bottom: 10px;">📊 ড্যাশবোর্ড প্যানেল</h3>
+                <p>এখানে আপনার সমস্ত হিসাব-নিকাশ ও ওভারভিউ দেখতে পাবেন।</p>
+            </div>
+        </div>
+
+        <!-- Stock Section -->
+        <div id="stockSection" class="section-view">
+            <div style="padding: 20px; background: #fff; border-radius: 8px;">
+                <h3 style="color: #002d62; margin-bottom: 10px;">📦 স্টক পণ্য প্যানেল</h3>
+                <p>এখানে পণ্যের স্টক ম্যানেজ করতে পারবেন।</p>
+            </div>
+        </div>
+
+        <!-- Sell Section -->
+        <div id="sellSection" class="section-view">
+            <div style="padding: 20px; background: #fff; border-radius: 8px;">
+                <h3 style="color: #002d62; margin-bottom: 10px;">🛒 সেল পণ্য প্যানেল</h3>
+                <p>এখানে বিক্রির হিসাব ও তালিকা থাকবে।</p>
+            </div>
+        </div>
+
+        <!-- Invoice Section (No Password Required) -->
         <div id="invoiceSection" class="section-view">
             <div class="invoice-container">
                 <div class="invoice-header">
@@ -419,6 +445,8 @@
     </div>
 
     <script>
+        let targetSectionAfterLogin = '';
+
         // Sidebar Toggle
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
@@ -438,8 +466,9 @@
             document.getElementById(sectionId).classList.add('active');
         }
 
-        // Password Modal Controls
-        function checkAdminPassword() {
+        // Password Modal Controls for Admin Features
+        function checkAdminPassword(sectionId) {
+            targetSectionAfterLogin = sectionId;
             toggleSidebar();
             document.getElementById('passwordModal').style.display = 'flex';
             document.getElementById('adminPassInput').value = '';
@@ -449,10 +478,10 @@
         }
         function verifyPassword() {
             const pass = document.getElementById('adminPassInput').value;
-            // ডিফল্ট পাসওয়ার্ড হিসেবে '1234' সেট করা হয়েছে, প্রয়োজনে পরিবর্তন করতে পারেন
+            // ডিফল্ট পাসওয়ার্ড '1234' সেট করা আছে, প্রয়োজনে বদল করে নিতে পারেন
             if (pass === '1234' || pass === '') { 
                 closePasswordModal();
-                switchSection('invoiceSection');
+                switchSection(targetSectionAfterLogin);
             } else {
                 alert('ভুল পাসওয়ার্ড! আবার চেষ্টা করুন।');
             }
